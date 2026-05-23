@@ -1,6 +1,6 @@
 const panels = Array.from(document.querySelectorAll("[data-panel-view]"));
 const panelButtons = Array.from(document.querySelectorAll("[data-panel]"));
-const RSVP_ENDPOINT = "";
+const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwi56JbNyH1P5vNk7sxOo28DQh988xGWq0S0fSUCm5Hd3nmKyw5DSDNHnQGalAbGlSMdw/exec";
 
 function setPanel(panelName) {
   panels.forEach((panel) => {
