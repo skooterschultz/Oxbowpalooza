@@ -11,27 +11,46 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cooper+Black&family=Rye&family=Ultra&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Fascinate+Inline&family=Modak&display=swap"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://cdn.babylonjs.com" />
     <link rel="stylesheet" href="./styles.css?v=2026-05-22" />
   </head>
   <body>
-    <canvas id="scene-canvas" aria-hidden="true"></canvas>
-
     <main>
-      <section class="hero" aria-labelledby="page-title">
+      <header class="site-nav" aria-label="Page navigation">
+        <a href="#home">Home</a>
+        <a href="#trip-board">Schedule</a>
+        <a href="#experience">Experience</a>
+        <a href="#rsvp">RSVP</a>
+      </header>
+
+      <section class="hero" id="home" aria-labelledby="page-title">
         <div class="hero__paper" aria-hidden="true"></div>
         <div class="hero__content">
-          <p class="eyebrow">July 10-12, 2026 / Over by Oxbow Park</p>
-          <div class="hero__logo-crop" aria-label="Oxbowpalooza mountain and river artwork">
+          <p class="eyebrow">Over by Oxbow Park / July 10-12, 2026</p>
+          <div class="hero-carousel" aria-label="Oxbowpalooza banner artwork">
             <img
-              class="hero__logo"
-              src="./assets/oxbow-palooza-main.png"
-              alt=""
+              class="hero-carousel__slide is-active"
+              src="./assets/ticket-banner.png"
+              alt="Oxbowpalooza weekend pass ticket artwork"
+            />
+            <img
+              class="hero-carousel__slide"
+              src="./assets/crosswalk-poster-banner.png"
+              alt="Oxbowpalooza psychedelic crosswalk poster artwork"
+            />
+            <img
+              class="hero-carousel__slide"
+              src="./assets/flower-poster-banner.png"
+              alt="Oxbowpalooza psychedelic flower poster artwork"
             />
           </div>
+          <img
+            class="hero__logo"
+            src="./assets/Oxbowpalooza-Transparent-Graphic-Logo.png"
+            alt="Oxbowpalooza mountain, sun, forest, and river logo"
+          />
           <h1 id="page-title">Oxbowpalooza</h1>
           <p class="hero__copy">
             A weekend of friends, camping, music, food trucks, yoga, games, and
@@ -46,21 +65,51 @@
             >
               Open Map
             </a>
-            <a class="button button--ghost" href="#trip-board">See Weekend Board</a>
+            <a class="button button--ghost" href="#trip-board">View Schedule</a>
           </div>
         </div>
-        <div class="hero__facts" aria-label="Event quick facts">
-          <article>
-            <span>150</span>
-            <p>family and friends expected</p>
+      </section>
+
+      <section class="info-strip" aria-label="Event highlights">
+        <article>
+          <span>July 10-12</span>
+          <p>Three sunny days of open-house festival energy.</p>
+        </article>
+        <article>
+          <span>150 People</span>
+          <p>Family and friends, big-group friendly, not kid-centric.</p>
+        </article>
+        <article>
+          <span>20 Acres</span>
+          <p>Camping room, games, music, movement, and slow goodbyes.</p>
+        </article>
+      </section>
+
+      <section class="intro-section" id="experience" aria-labelledby="intro-title">
+        <div class="section-heading">
+          <p class="eyebrow">What is Oxbowpalooza?</p>
+          <h2 id="intro-title">A backyard festival world for family, friends, food, music, and being gloriously off-schedule.</h2>
+        </div>
+        <div class="experience-grid" aria-label="Oxbowpalooza activities">
+          <article class="experience-card experience-card--food">
+            <span>01</span>
+            <h3>Food Trucks</h3>
+            <p>Coffee in the morning, trucks through the day, and enough buffet energy to keep 150 people moving.</p>
           </article>
-          <article>
-            <span>3</span>
-            <p>easygoing summer days</p>
+          <article class="experience-card experience-card--camp">
+            <span>02</span>
+            <h3>Camping</h3>
+            <p>Open acres, RV room for a few, tents welcome, and a short walk back to the fun.</p>
           </article>
-          <article>
-            <span>20</span>
-            <p>open acres for camping</p>
+          <article class="experience-card experience-card--music">
+            <span>03</span>
+            <h3>Jam Time</h3>
+            <p>Music, drum circle moments, casual hangs, and whatever songs survive the weekend.</p>
+          </article>
+          <article class="experience-card experience-card--games">
+            <span>04</span>
+            <h3>Move Around</h3>
+            <p>Yoga, outdoor games, movement, and open time for doing exactly as much as you feel like doing.</p>
           </article>
         </div>
       </section>
@@ -68,7 +117,7 @@
       <section class="board-section" id="trip-board" aria-labelledby="board-title">
         <div class="section-heading">
           <p class="eyebrow">The weekend board</p>
-          <h2 id="board-title">Tap a poster. Keep the plan big and readable.</h2>
+          <h2 id="board-title">Schedule, camping, drinks, and getting there.</h2>
         </div>
 
         <div class="poster-shell">
@@ -78,6 +127,7 @@
             <button type="button" data-panel="camping">Camping</button>
             <button type="button" data-panel="getting">Getting There</button>
             <button type="button" data-panel="lodging">Hotels</button>
+            <button type="button" data-panel="airbnb">Airbnb</button>
           </div>
 
           <div class="poster-frame">
@@ -147,18 +197,120 @@
 
             <article class="poster-panel" data-panel-view="lodging">
               <p class="panel-kicker">Need a nearby bed?</p>
-              <h3>Hotels, Airbnbs, Etc.</h3>
-              <ul>
-                <li>Ask us for nearby recommendations.</li>
-                <li>Camping is welcome if you want to stay close to the action.</li>
-              </ul>
+              <h3>Hotels</h3>
+              <div class="hotel-grid" aria-label="Nearby hotel areas">
+                <article>
+                  <span>Closest cluster</span>
+                  <h4>Troutdale</h4>
+                  <p>
+                    Best first search for staying near Oxbow. Look around Edgefield,
+                    Best Western Cascade Inn & Suites, Holiday Inn Express Troutdale,
+                    and the I-84 corridor.
+                  </p>
+                  <a
+                    class="hotel-link"
+                    href="https://www.google.com/travel/hotels/Troutdale%2C%20Oregon?q=hotels%20in%20Troutdale%20Oregon&checkin=2026-07-10&checkout=2026-07-12"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Search Troutdale
+                  </a>
+                </article>
+                <article>
+                  <span>Practical nearby</span>
+                  <h4>Gresham</h4>
+                  <p>
+                    A straightforward option with more everyday hotel/motel choices.
+                    Good for people who want simple access to town, stores, and rideshare.
+                  </p>
+                  <a
+                    class="hotel-link"
+                    href="https://www.google.com/travel/hotels/Gresham%2C%20Oregon?q=hotels%20in%20Gresham%20Oregon&checkin=2026-07-10&checkout=2026-07-12"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Search Gresham
+                  </a>
+                </article>
+                <article>
+                  <span>Mt. Hood side</span>
+                  <h4>Sandy</h4>
+                  <p>
+                    Fewer hotels, but useful if your weekend route points toward Sandy
+                    or Mt. Hood. Best Western Sandy Inn is the clearest starting point.
+                  </p>
+                  <a
+                    class="hotel-link"
+                    href="https://www.google.com/travel/hotels/Sandy%2C%20Oregon?q=hotels%20in%20Sandy%20Oregon&checkin=2026-07-10&checkout=2026-07-12"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Search Sandy
+                  </a>
+                </article>
+              </div>
+            </article>
+
+            <article class="poster-panel" data-panel-view="airbnb">
+              <p class="panel-kicker">House, cabin, cottage, crash pad</p>
+              <h3>Airbnb</h3>
+              <div class="hotel-grid" aria-label="Nearby Airbnb areas">
+                <article>
+                  <span>Closest search</span>
+                  <h4>Troutdale</h4>
+                  <p>
+                    Start here if you want the easiest drive back and forth. Look for
+                    whole homes, guest suites, and anything near the Sandy River side.
+                  </p>
+                  <a
+                    class="hotel-link"
+                    href="https://www.airbnb.com/s/Troutdale--Oregon--United-States/homes?checkin=2026-07-10&checkout=2026-07-12&adults=2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Search Troutdale
+                  </a>
+                </article>
+                <article>
+                  <span>Most practical</span>
+                  <h4>Gresham</h4>
+                  <p>
+                    Good if you want more neighborhood choices, stores nearby, and an
+                    easy rideshare/carpool option for the weekend.
+                  </p>
+                  <a
+                    class="hotel-link"
+                    href="https://www.airbnb.com/s/Gresham--Oregon--United-States/homes?checkin=2026-07-10&checkout=2026-07-12&adults=2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Search Gresham
+                  </a>
+                </article>
+                <article>
+                  <span>Mt. Hood route</span>
+                  <h4>Sandy</h4>
+                  <p>
+                    Worth checking for cabins or homes if you are coming from the east
+                    or want to turn the weekend into a bigger Oregon foothills moment.
+                  </p>
+                  <a
+                    class="hotel-link"
+                    href="https://www.airbnb.com/s/Sandy--Oregon--United-States/homes?checkin=2026-07-10&checkout=2026-07-12&adults=2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Search Sandy
+                  </a>
+                </article>
+              </div>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="rsvp-section" aria-labelledby="rsvp-title">
-        <div>
+      <section class="rsvp-section" id="rsvp" aria-labelledby="rsvp-title">
+        <div class="rsvp-copy">
           <p class="eyebrow">Headcount magic</p>
           <h2 id="rsvp-title">RSVP to whoever brought you into this beautiful situation.</h2>
           <p>
@@ -166,11 +318,136 @@
             and the appropriate amount of good decision-making.
           </p>
         </div>
-        <img src="./assets/oxbow-seal.jpg" alt="Oxbowpalooza seal artwork" />
+        <div class="rsvp-game" aria-labelledby="travel-game-title">
+          <div class="rsvp-game__intro">
+            <p class="eyebrow">Travel leaderboard</p>
+            <h3 id="travel-game-title">Who came the farthest?</h3>
+            <p class="optional-note">
+              Totally optional. Share only what you want, and we will use it to make
+              the weekend board more fun.
+            </p>
+            <p>
+              Drop your info and we will turn the guest list into a friendly mileage
+              contest. Your city becomes the starting line. Oxbow is the finish.
+            </p>
+          </div>
+
+          <form class="travel-form" id="travel-form">
+            <label>
+              Name
+              <input name="name" autocomplete="name" />
+            </label>
+            <label>
+              Nickname
+              <input name="nickname" placeholder="Optional, but encouraged" />
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" />
+            </label>
+            <label>
+              City traveling from
+              <input name="city" autocomplete="address-level2" placeholder="City, State" />
+            </label>
+            <label>
+              Food notes
+              <select name="foodNotes">
+                <option value="">Choose one if helpful</option>
+                <option>Eats everything</option>
+                <option>Vegetarian</option>
+                <option>Gluten-free</option>
+                <option>Food allergy</option>
+                <option>NA drinks preferred</option>
+              </select>
+            </label>
+            <label>
+              Height
+              <div class="height-fields">
+                <input name="heightFeet" inputmode="numeric" placeholder="ft" aria-label="Height feet" />
+                <input name="heightInches" inputmode="numeric" placeholder="in" aria-label="Height inches" />
+              </div>
+            </label>
+            <label>
+              Birthday
+              <div class="birthday-fields">
+                <select name="birthMonth" aria-label="Birth month">
+                  <option value="">Month</option>
+                  <option>January</option>
+                  <option>February</option>
+                  <option>March</option>
+                  <option>April</option>
+                  <option>May</option>
+                  <option>June</option>
+                  <option>July</option>
+                  <option>August</option>
+                  <option>September</option>
+                  <option>October</option>
+                  <option>November</option>
+                  <option>December</option>
+                </select>
+                <select name="birthDay" aria-label="Birth day">
+                  <option value="">Day</option>
+                  <option>1</option><option>2</option><option>3</option><option>4</option>
+                  <option>5</option><option>6</option><option>7</option><option>8</option>
+                  <option>9</option><option>10</option><option>11</option><option>12</option>
+                  <option>13</option><option>14</option><option>15</option><option>16</option>
+                  <option>17</option><option>18</option><option>19</option><option>20</option>
+                  <option>21</option><option>22</option><option>23</option><option>24</option>
+                  <option>25</option><option>26</option><option>27</option><option>28</option>
+                  <option>29</option><option>30</option><option>31</option>
+                </select>
+              </div>
+            </label>
+            <button class="button button--primary" type="submit">Enter the mileage game</button>
+            <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="leaderboard-stack">
+            <div class="leaderboard" aria-labelledby="leaderboard-title">
+              <h4 id="leaderboard-title">Miles leaders</h4>
+              <ol id="leaderboard-list">
+                <li><span>Connect the Sheet</span><strong>Ready</strong></li>
+              </ol>
+            </div>
+            <div class="leaderboard" aria-labelledby="height-title">
+              <h4 id="height-title">Tallest attendees</h4>
+              <ol id="height-list">
+                <li><span>Awaiting tall tales.</span><strong>0 ft</strong></li>
+              </ol>
+            </div>
+          </div>
+        </div>
+        <div class="travel-map-card" aria-labelledby="travel-map-title">
+          <div>
+            <p class="eyebrow">Where everyone starts</p>
+            <h3 id="travel-map-title">Oxbow orbit map</h3>
+            <p>
+              Once the Sheet is connected, this map draws a line from Oxbow to
+              each origin city. Tap a starting pin to see the nickname behind the trip.
+            </p>
+          </div>
+          <div class="origin-map" id="origin-map" aria-label="Map of guest origin cities">
+            <svg class="origin-map__lines" id="origin-map-lines" viewBox="0 0 100 100" aria-hidden="true"></svg>
+            <div class="origin-map__pin origin-map__pin--home" style="left: 57%; top: 44%;">
+              <span>Oxbow</span>
+            </div>
+            <div class="origin-map__empty" id="origin-map-empty">
+              Connect the Sheet to light up the travel lines.
+            </div>
+          </div>
+        </div>
+        <div class="birthday-calendar" aria-labelledby="birthday-calendar-title">
+          <div>
+            <p class="eyebrow">Birthday board</p>
+            <h3 id="birthday-calendar-title">Weekend birthday calendar</h3>
+          </div>
+          <div class="birthday-months" id="birthday-calendar">
+            <article><h4>July</h4><p>Birthdays appear here as people play along.</p></article>
+          </div>
+        </div>
       </section>
     </main>
 
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="./app.js?v=2026-05-22"></script>
   </body>
 </html>
