@@ -24,20 +24,6 @@ const birthdayCalendar = document.querySelector("#birthday-calendar");
 const originMap = document.querySelector("#origin-map");
 const originMapLines = document.querySelector("#origin-map-lines");
 const originMapEmpty = document.querySelector("#origin-map-empty");
-const carouselSlides = Array.from(document.querySelectorAll(".hero-carousel__slide"));
-
-function bootHeroCarousel() {
-  if (carouselSlides.length <= 1) {
-    return;
-  }
-
-  let activeIndex = 0;
-  window.setInterval(() => {
-    carouselSlides[activeIndex].classList.remove("is-active");
-    activeIndex = (activeIndex + 1) % carouselSlides.length;
-    carouselSlides[activeIndex].classList.add("is-active");
-  }, 5200);
-}
 
 function setFormStatus(message) {
   if (formStatus) {
@@ -261,4 +247,3 @@ if (travelForm) {
 }
 
 loadLeaderboard();
-bootHeroCarousel();
