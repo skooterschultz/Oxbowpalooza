@@ -326,6 +326,33 @@ dt {
   padding: clamp(3rem, 8vw, 7rem) 0;
 }
 
+.intro-section {
+  position: relative;
+  width: 100%;
+  padding-inline: max(1rem, calc((100% - 1180px) / 2));
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 244, 220, 0.28), transparent 19rem),
+    radial-gradient(circle at 88% 24%, rgba(198, 95, 128, 0.26), transparent 20rem),
+    linear-gradient(135deg, #c94d21 0%, #e58a2e 44%, #f1c75a 100%);
+  box-shadow:
+    inset 0 4px 0 rgba(255, 244, 220, 0.2),
+    inset 0 -4px 0 rgba(21, 17, 13, 0.14);
+}
+
+.intro-section .eyebrow {
+  color: #fff4dc;
+  text-shadow: 0 2px 0 rgba(21, 17, 13, 0.28);
+}
+
+.intro-section h2 {
+  color: #fff4dc;
+  font-weight: 400;
+  opacity: 0.92;
+  text-shadow:
+    0 2px 0 rgba(21, 17, 13, 0.18),
+    0 8px 20px rgba(21, 17, 13, 0.12);
+}
+
 .experience-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -411,6 +438,39 @@ dt {
   grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
   gap: clamp(1rem, 3vw, 2rem);
   align-items: stretch;
+}
+
+.screenshot-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  padding: clamp(1rem, 2.5vw, 1.35rem);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(214, 81, 42, 0.18), transparent 12rem),
+    #fff1c8;
+  box-shadow: 7px 8px 0 rgba(21, 17, 13, 0.16);
+}
+
+.screenshot-card h3 {
+  margin: 0;
+  color: var(--deep);
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+}
+
+.screenshot-facts {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.screenshot-facts p {
+  margin: 0;
+  font-size: clamp(0.95rem, 1.35vw, 1.08rem);
+  font-weight: 850;
+  line-height: 1.35;
 }
 
 .poster-tabs {
@@ -737,7 +797,8 @@ dt {
 }
 
 .travel-form input,
-.travel-form select {
+.travel-form select,
+.travel-form textarea {
   width: 100%;
   min-height: 50px;
   padding: 0.75rem;
@@ -748,6 +809,11 @@ dt {
   font: inherit;
   font-size: 1rem;
   font-weight: 850;
+}
+
+.travel-form textarea {
+  min-height: 112px;
+  resize: vertical;
 }
 
 .birthday-fields {
@@ -1045,6 +1111,7 @@ dt {
   }
 
   .poster-shell,
+  .screenshot-card,
   .experience-grid,
   .hotel-grid,
   .rsvp-game,

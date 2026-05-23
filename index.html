@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Fascinate+Inline&family=Modak&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=2026-05-23-posters-6" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-23-safe-assets" />
   </head>
   <body>
     <main>
@@ -32,38 +32,38 @@
           <div class="hero-carousel" aria-label="Oxbowpalooza banner artwork">
             <img
               class="hero-carousel__slide is-active"
-              src="./assets/ticket-banner.png"
+              src="./assets/banner-ticket.png"
               alt="Oxbowpalooza weekend pass ticket artwork"
             />
             <img
               class="hero-carousel__slide"
-              src="./assets/crosswalk-poster-banner.png"
+              src="./assets/banner-crosswalk.png"
               alt="Oxbowpalooza psychedelic crosswalk poster artwork"
             />
             <img
               class="hero-carousel__slide"
-              src="./assets/flower-poster-banner.png"
+              src="./assets/banner-flower.png"
               alt="Oxbowpalooza psychedelic flower poster artwork"
             />
             <img
               class="hero-carousel__slide"
-              src="./assets/oxbow-the-creator-poster- banner.png"
+              src="./assets/banner-creator.png"
               alt="Oxbowpalooza psychedelic creator poster artwork"
             />
             <img
               class="hero-carousel__slide"
-              src="./assets/Oxbowpalooza Dollar-poster-banner.png"
+              src="./assets/banner-dollar.png"
               alt="Oxbowpalooza dollar poster artwork"
             />
             <img
               class="hero-carousel__slide"
-              src="./assets/oxbowpalooza-space-poster-banner.png"
+              src="./assets/banner-space.png"
               alt="Oxbowpalooza space poster artwork"
             />
           </div>
           <img
             class="hero__logo"
-            src="./assets/Oxbowpalooza-Transparent-Graphic-Logo.png"
+            src="./assets/oxbow-logo-transparent.png"
             alt="Oxbowpalooza mountain, sun, forest, and river logo"
           />
           <h1 id="page-title">Oxbowpalooza</h1>
@@ -134,6 +134,29 @@
           <p class="eyebrow">The weekend board</p>
           <h2 id="board-title">Schedule, camping, drinks, and getting there.</h2>
         </div>
+
+        <aside class="screenshot-card" id="screenshot-card" aria-labelledby="screenshot-title">
+          <div>
+            <p class="eyebrow">Screenshot this</p>
+            <h3 id="screenshot-title">The quick-save version</h3>
+          </div>
+          <div class="screenshot-facts">
+            <p><strong>Oxbowpalooza:</strong> July 10-12, 2026</p>
+            <p><strong>Where:</strong> Over by Oxbow Park</p>
+            <p><strong>Friday:</strong> Pizza party + casual hangs</p>
+            <p><strong>Saturday:</strong> Coffee truck, yoga, breakfast, food trucks, music, games</p>
+            <p><strong>Sunday:</strong> Coffee, movement, breakfast, slow goodbyes</p>
+            <p><strong>Bring:</strong> Cup, chair, layers, camping gear if staying over</p>
+          </div>
+          <a
+            class="button button--primary"
+            href="https://www.google.com/maps/dir/?api=1&destination=5238%20SE%20Oxbow%20Parkway%2C%20Gresham%2C%20OR%2097080"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Map
+          </a>
+        </aside>
 
         <div class="poster-shell">
           <div class="poster-tabs" role="tablist" aria-label="Weekend information">
@@ -365,6 +388,10 @@
               <input name="city" autocomplete="address-level2" placeholder="City, State" />
             </label>
             <label>
+              Who invited you?
+              <input name="invitedBy" placeholder="Name, family branch, group chat, etc." />
+            </label>
+            <label>
               Food notes
               <select name="foodNotes">
                 <option value="">Choose one if helpful</option>
@@ -412,6 +439,10 @@
                   <option>29</option><option>30</option><option>31</option>
                 </select>
               </div>
+            </label>
+            <label>
+              Got a question?
+              <textarea name="question" rows="4" placeholder="Ask anything the planners should see."></textarea>
             </label>
             <button class="button button--primary" type="submit">Enter the mileage game</button>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
@@ -474,6 +505,6 @@
       </section>
     </main>
 
-    <script src="./app.js?v=2026-05-23-posters-6"></script>
+    <script src="./app.js?v=2026-05-23-safe-assets"></script>
   </body>
 </html>
