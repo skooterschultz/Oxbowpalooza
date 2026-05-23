@@ -108,11 +108,6 @@ function renderBirthdayCalendar(entries = []) {
       return monthDiff || Number(a.birthDay) - Number(b.birthDay);
     });
 
-  if (!birthdayEntries.length) {
-    birthdayCalendar.innerHTML = "<article><h4>July</h4><p>Birthdays appear here as people play along.</p></article>";
-    return;
-  }
-
   const grouped = birthdayEntries.reduce((acc, entry) => {
     acc[entry.birthMonth] ||= [];
     acc[entry.birthMonth].push(entry);
@@ -120,15 +115,14 @@ function renderBirthdayCalendar(entries = []) {
   }, {});
 
   birthdayCalendar.innerHTML = months
-    .filter((month) => grouped[month])
     .map((month) => {
-      const people = grouped[month]
+      const people = (grouped[month] || [])
         .map((entry) => {
           const displayName = entry.nickname || entry.name;
           return `<li><strong>${entry.birthDay}</strong><span>${displayName}</span></li>`;
         })
         .join("");
-      return `<article><h4>${month}</h4><ul>${people}</ul></article>`;
+      return `<article><h4>${month}</h4>${people ? `<ul>${people}</ul>` : "<p>Waiting for birthdays.</p>"}</article>`;
     })
     .join("");
 }
