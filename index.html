@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Oxbowpalooza 2026: a sunny family and friends weekend near Oxbow Park with camping, food trucks, yoga, music, games, and good hangs."
+    />
+    <title>Oxbowpalooza 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cooper+Black&family=Rye&family=Ultra&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://cdn.babylonjs.com" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-22" />
+  </head>
+  <body>
+    <canvas id="scene-canvas" aria-hidden="true"></canvas>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero__paper" aria-hidden="true"></div>
+        <div class="hero__content">
+          <p class="eyebrow">July 10-12, 2026 / Over by Oxbow Park</p>
+          <div class="hero__logo-crop" aria-label="Oxbowpalooza mountain and river artwork">
+            <img
+              class="hero__logo"
+              src="./assets/oxbow-palooza-main.png"
+              alt=""
+            />
+          </div>
+          <h1 id="page-title">Oxbowpalooza</h1>
+          <p class="hero__copy">
+            A weekend of friends, camping, music, food trucks, yoga, games, and
+            the kind of open-ended hanging out that somehow becomes the whole point.
+          </p>
+          <div class="hero__actions" aria-label="Event actions">
+            <a
+              class="button button--primary"
+              href="https://www.google.com/maps/dir/?api=1&destination=5238%20SE%20Oxbow%20Parkway%2C%20Gresham%2C%20OR%2097080"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open Map
+            </a>
+            <a class="button button--ghost" href="#trip-board">See Weekend Board</a>
+          </div>
+        </div>
+        <div class="hero__facts" aria-label="Event quick facts">
+          <article>
+            <span>150</span>
+            <p>family and friends expected</p>
+          </article>
+          <article>
+            <span>3</span>
+            <p>easygoing summer days</p>
+          </article>
+          <article>
+            <span>20</span>
+            <p>open acres for camping</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="board-section" id="trip-board" aria-labelledby="board-title">
+        <div class="section-heading">
+          <p class="eyebrow">The weekend board</p>
+          <h2 id="board-title">Tap a poster. Keep the plan big and readable.</h2>
+        </div>
+
+        <div class="poster-shell">
+          <div class="poster-tabs" role="tablist" aria-label="Weekend information">
+            <button class="is-active" type="button" data-panel="schedule">Itinerary</button>
+            <button type="button" data-panel="food">Food & Drinks</button>
+            <button type="button" data-panel="camping">Camping</button>
+            <button type="button" data-panel="getting">Getting There</button>
+            <button type="button" data-panel="lodging">Hotels</button>
+          </div>
+
+          <div class="poster-frame">
+            <article class="poster-panel is-active" data-panel-view="schedule">
+              <p class="panel-kicker">July 10-12</p>
+              <h3>Itinerary</h3>
+              <dl class="schedule-list">
+                <div>
+                  <dt>Friday</dt>
+                  <dd>Pizza party + casual hangs</dd>
+                </div>
+                <div>
+                  <dt>Saturday</dt>
+                  <dd>AM coffee truck</dd>
+                  <dd>Morning yoga</dd>
+                  <dd>Breakfast buffet</dd>
+                  <dd>Food trucks for lunch + dinner</dd>
+                  <dd>Music, games, open time</dd>
+                </div>
+                <div>
+                  <dt>Sunday</dt>
+                  <dd>Coffee</dd>
+                  <dd>Movement</dd>
+                  <dd>Breakfast buffet</dd>
+                  <dd>Slow goodbyes</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="poster-panel" data-panel-view="food">
+              <p class="panel-kicker">Bring a cup, bring an appetite</p>
+              <h3>Food & Drinks</h3>
+              <ul>
+                <li>We will provide beer, wine, and NA beverages.</li>
+                <li>BYO cups to reduce waste.</li>
+                <li>Feel free to bring your own food and favorite libations.</li>
+              </ul>
+            </article>
+
+            <article class="poster-panel" data-panel-view="camping">
+              <p class="panel-kicker">Room to spread out</p>
+              <h3>Camping</h3>
+              <ul>
+                <li>20 open acres on the property.</li>
+                <li>Limited RV spots with no hookups.</li>
+                <li>Electric for a few, first reserved.</li>
+              </ul>
+            </article>
+
+            <article class="poster-panel" data-panel-view="getting">
+              <p class="panel-kicker">Over by Oxbow Park</p>
+              <h3>Getting There</h3>
+              <ul>
+                <li>Carpooling encouraged.</li>
+                <li>Uber and Lyft are available.</li>
+                <li>Use the map button when you are ready to roll.</li>
+              </ul>
+              <a
+                class="button button--primary poster-map"
+                href="https://www.google.com/maps/dir/?api=1&destination=5238%20SE%20Oxbow%20Parkway%2C%20Gresham%2C%20OR%2097080"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open Map
+              </a>
+            </article>
+
+            <article class="poster-panel" data-panel-view="lodging">
+              <p class="panel-kicker">Need a nearby bed?</p>
+              <h3>Hotels, Airbnbs, Etc.</h3>
+              <ul>
+                <li>Ask us for nearby recommendations.</li>
+                <li>Camping is welcome if you want to stay close to the action.</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="rsvp-section" aria-labelledby="rsvp-title">
+        <div>
+          <p class="eyebrow">Headcount magic</p>
+          <h2 id="rsvp-title">RSVP to whoever brought you into this beautiful situation.</h2>
+          <p>
+            Tell your inviter you are in so the planners can count mouths, cups, campsites,
+            and the appropriate amount of good decision-making.
+          </p>
+        </div>
+        <img src="./assets/oxbow-seal.jpg" alt="Oxbowpalooza seal artwork" />
+      </section>
+    </main>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="./app.js?v=2026-05-22"></script>
+  </body>
+</html>
