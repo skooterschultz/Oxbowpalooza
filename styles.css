@@ -158,9 +158,9 @@ a {
 }
 
 .hero__logo {
-  width: min(360px, 48vw);
+  width: min(340px, 52vw);
   display: block;
-  margin: 0 auto -0.2rem;
+  margin: -0.4rem auto 0.45rem;
   filter: drop-shadow(0 12px 16px rgba(35, 24, 11, 0.18));
 }
 
@@ -180,26 +180,26 @@ h3 {
 }
 
 h1 {
-  margin: 0 0 1rem;
+  margin: clamp(0.45rem, 1.4vw, 0.9rem) 0 0.65rem;
   position: relative;
   display: inline-block;
   color: transparent;
-  font-family: var(--display);
-  font-size: clamp(3.25rem, 9vw, 7.8rem);
-  line-height: 0.74;
+  font-family: "Fascinate Inline", "Bungee Shade", var(--display);
+  font-size: clamp(3.45rem, 9.8vw, 8.6rem);
+  line-height: 0.78;
   font-weight: 400;
   background:
-    radial-gradient(circle at 22% 28%, #74d36a 0 7%, transparent 8%),
-    radial-gradient(circle at 70% 64%, #19a5d4 0 10%, transparent 11%),
-    linear-gradient(110deg, #073845 0%, #0e8aa8 28%, #4ba342 52%, #8bd060 70%, #08627d 100%);
+    radial-gradient(circle at 18% 24%, #ffe09b 0 7%, transparent 8%),
+    radial-gradient(circle at 72% 68%, #ff9b2f 0 10%, transparent 11%),
+    linear-gradient(115deg, #8a2d15 0%, #d94b1d 24%, #ff7a1f 48%, #ffc04d 66%, #b43b1e 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  transform: skewX(-7deg) rotate(-1deg);
+  transform: skewX(-9deg) rotate(-1.2deg);
   text-shadow:
     0 4px 0 #fff4dc,
-    4px 8px 0 #073845,
-    -5px 12px 0 rgba(74, 163, 66, 0.44),
-    0 18px 24px rgba(21, 17, 13, 0.24);
+    5px 8px 0 #5f2415,
+    -6px 12px 0 rgba(255, 146, 36, 0.48),
+    0 18px 24px rgba(83, 33, 13, 0.28);
   filter: url("#groovy-wobble");
 }
 
@@ -713,7 +713,7 @@ dt {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .rsvp-game h3,
@@ -758,6 +758,12 @@ dt {
 .travel-form {
   display: grid;
   gap: 0.9rem;
+}
+
+.leaderboard {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
 }
 
 .travel-form label {
@@ -820,9 +826,13 @@ dt {
 
 .leaderboard ol {
   display: grid;
+  align-content: start;
   gap: 0.65rem;
   margin: 0;
-  padding: 0;
+  min-height: 0;
+  padding: 0 0.35rem 0 0;
+  overflow-y: auto;
+  scrollbar-color: rgba(214, 81, 42, 0.72) rgba(255, 244, 220, 0.78);
   list-style: none;
 }
 
@@ -834,6 +844,26 @@ dt {
   border-radius: 6px;
   background: rgba(241, 199, 90, 0.42);
   font-weight: 950;
+}
+
+.leaderboard button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 950;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+.leaderboard button:hover,
+.leaderboard button:focus-visible {
+  color: var(--rust);
+  outline: none;
 }
 
 .leaderboard li:nth-child(2n) {
@@ -848,6 +878,16 @@ dt {
 .leaderboard-stack {
   display: grid;
   gap: 1rem;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  min-height: 0;
+  max-height: 100%;
+}
+
+@media (min-width: 821px) {
+  .leaderboard-stack {
+    height: 100%;
+    max-height: 860px;
+  }
 }
 
 .travel-map-card {
@@ -874,25 +914,87 @@ dt {
 
 .origin-map {
   position: relative;
-  min-height: 360px;
+  min-height: 430px;
   overflow: hidden;
   border: 3px solid rgba(21, 17, 13, 0.82);
   border-radius: 8px;
   background:
-    radial-gradient(circle at 57% 44%, rgba(214, 81, 42, 0.18), transparent 8rem),
-    radial-gradient(circle at 18% 42%, rgba(49, 135, 166, 0.2), transparent 10rem),
-    linear-gradient(135deg, #d9f0c7 0%, #b7d7cf 38%, #efddae 39%, #f4e7bd 100%);
+    radial-gradient(circle at 58% 38%, rgba(255, 244, 220, 0.36), transparent 8rem),
+    radial-gradient(circle at 35% 34%, rgba(49, 135, 166, 0.22), transparent 14rem),
+    linear-gradient(155deg, #78bdd1 0%, #9fd8df 44%, #f1d58a 100%);
 }
 
 .origin-map::before {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.34;
+  z-index: 1;
+  opacity: 0.28;
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.45) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.45) 1px, transparent 1px);
-  background-size: 42px 42px;
+  background-size: 52px 52px;
+  pointer-events: none;
+}
+
+.origin-map__controls {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.8rem;
+  z-index: 5;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.origin-map__controls button {
+  width: 44px;
+  aspect-ratio: 1;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  background: #d6512a;
+  color: #fff4dc;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.45rem;
+  font-weight: 950;
+  line-height: 1;
+  box-shadow: 3px 4px 0 rgba(21, 17, 13, 0.18);
+}
+
+.origin-map__world {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform-origin: 0 0;
+  transition: transform 420ms ease;
+}
+
+.origin-map__background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.origin-map__land {
+  fill: rgba(88, 140, 74, 0.7);
+  stroke: rgba(21, 17, 13, 0.52);
+  stroke-width: 0.45;
+}
+
+.origin-map__land--central {
+  fill: rgba(98, 157, 76, 0.78);
+}
+
+.origin-map__land--south {
+  fill: rgba(70, 126, 82, 0.76);
+}
+
+.origin-map__coast {
+  fill: none;
+  stroke: rgba(255, 244, 220, 0.7);
+  stroke-width: 1.2;
+  stroke-linecap: round;
 }
 
 .origin-map__lines {
@@ -904,13 +1006,21 @@ dt {
 
 .origin-map__lines line {
   stroke: rgba(214, 81, 42, 0.62);
-  stroke-width: 0.6;
+  stroke-width: 0.45;
   stroke-dasharray: 2 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.origin-map__lines line.is-highlighted {
+  stroke: #ff6b1f;
+  stroke-width: 1.5;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 4px rgba(255, 244, 220, 0.9));
 }
 
 .origin-map__pin {
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   transform: translate(-50%, -100%);
 }
 
@@ -924,6 +1034,7 @@ dt {
   border-radius: 50% 50% 50% 0;
   background: #d6512a;
   transform: rotate(-45deg);
+  box-shadow: 2px 3px 0 rgba(21, 17, 13, 0.2);
 }
 
 .origin-map__pin span {
@@ -958,11 +1069,19 @@ dt {
   font: inherit;
 }
 
+.origin-map__pin--guest.is-highlighted::before {
+  width: 1.35rem;
+  background: #ff7a1f;
+  box-shadow:
+    0 0 0 5px rgba(255, 244, 220, 0.72),
+    3px 4px 0 rgba(21, 17, 13, 0.22);
+}
+
 .origin-map__empty {
   position: absolute;
   left: 50%;
   top: 60%;
-  z-index: 2;
+  z-index: 6;
   width: min(360px, calc(100% - 2rem));
   transform: translate(-50%, -50%);
   padding: 0.85rem;
@@ -1089,6 +1208,15 @@ dt {
   .poster-frame {
     min-height: 0;
     border-width: 12px;
+  }
+
+  .leaderboard-stack {
+    grid-template-rows: none;
+    max-height: none;
+  }
+
+  .leaderboard ol {
+    max-height: 320px;
   }
 }
 

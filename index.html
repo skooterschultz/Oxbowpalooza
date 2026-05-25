@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Bungee+Shade&family=Fascinate+Inline&family=Modak&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./styles.css?v=2026-05-24-d1-rsvp" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-24-map-leaderboard" />
   </head>
   <body>
     <main>
@@ -478,17 +478,29 @@
             <p class="eyebrow">Where everyone starts</p>
             <h3 id="travel-map-title">Oxbow orbit map</h3>
             <p>
-              Once the Sheet is connected, this map draws a line from Oxbow to
-              each origin city. Tap a starting pin to see the nickname behind the trip.
+              As RSVPs come in, this map starts zoomed in on Gresham. Zoom out
+              to follow each line back to where people are starting from.
             </p>
           </div>
-          <div class="origin-map" id="origin-map" aria-label="Map of guest origin cities">
-            <svg class="origin-map__lines" id="origin-map-lines" viewBox="0 0 100 100" aria-hidden="true"></svg>
-            <div class="origin-map__pin origin-map__pin--home" style="left: 57%; top: 44%;">
-              <span>Oxbow</span>
+          <div class="origin-map" id="origin-map" aria-label="Zoomable map of guest origin cities">
+            <div class="origin-map__controls" aria-label="Map zoom controls">
+              <button type="button" data-map-zoom="in" aria-label="Zoom in">+</button>
+              <button type="button" data-map-zoom="out" aria-label="Zoom out">-</button>
+            </div>
+            <div class="origin-map__world" id="origin-map-world">
+              <svg class="origin-map__background" viewBox="0 0 100 100" aria-hidden="true">
+                <path class="origin-map__land origin-map__land--north" d="M18 7 C30 1 49 4 58 17 C65 27 60 37 69 47 C58 51 47 48 40 41 C30 43 21 35 17 25 C11 20 10 12 18 7 Z" />
+                <path class="origin-map__land origin-map__land--central" d="M48 47 C53 48 58 52 61 57 C57 60 50 59 45 55 C41 52 43 48 48 47 Z" />
+                <path class="origin-map__land origin-map__land--south" d="M58 57 C69 59 74 70 70 82 C67 91 59 99 53 94 C48 89 53 79 50 71 C47 64 51 58 58 57 Z" />
+                <path class="origin-map__coast" d="M18 7 C30 1 49 4 58 17 C65 27 60 37 69 47 M58 57 C69 59 74 70 70 82 C67 91 59 99 53 94" />
+              </svg>
+              <svg class="origin-map__lines" id="origin-map-lines" viewBox="0 0 100 100" aria-hidden="true"></svg>
+              <div class="origin-map__pin origin-map__pin--home" id="origin-map-home">
+                <span>Oxbow</span>
+              </div>
             </div>
             <div class="origin-map__empty" id="origin-map-empty">
-              Connect the Sheet to light up the travel lines.
+              Connect D1 to light up the travel lines.
             </div>
           </div>
         </div>
@@ -515,6 +527,6 @@
       </section>
     </main>
 
-    <script src="./app.js?v=2026-05-24-d1-rsvp"></script>
+    <script src="./app.js?v=2026-05-24-map-leaderboard"></script>
   </body>
 </html>

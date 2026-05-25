@@ -1,7 +1,7 @@
 const panels = Array.from(document.querySelectorAll("[data-panel-view]"));
 const panelButtons = Array.from(document.querySelectorAll("[data-panel]"));
 const carouselSlides = Array.from(document.querySelectorAll(".hero-carousel__slide"));
-const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwi56JbNyH1P5vNk7sxOo28DQh988xGWq0S0fSUCm5Hd3nmKyw5DSDNHnQGalAbGlSMdw/exec";
+const RSVP_ENDPOINT = "/api/rsvp";
 
 function startHeroCarousel() {
   if (carouselSlides.length < 2) {
@@ -44,13 +44,32 @@ const leaderboardList = document.querySelector("#leaderboard-list");
 const heightList = document.querySelector("#height-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
 const originMap = document.querySelector("#origin-map");
+const originMapWorld = document.querySelector("#origin-map-world");
 const originMapLines = document.querySelector("#origin-map-lines");
 const originMapEmpty = document.querySelector("#origin-map-empty");
+const originMapHome = document.querySelector("#origin-map-home");
+const mapZoomButtons = Array.from(document.querySelectorAll("[data-map-zoom]"));
+const OXBOW_POSITION = { lat: 45.5308, lng: -122.2443 };
+const mapZoomLevels = [1, 1.75, 3.1];
+let mapZoomIndex = 2;
 
 function setFormStatus(message) {
   if (formStatus) {
     formStatus.textContent = message;
   }
+}
+
+function entryKey(entry) {
+  return String(entry.id || `${entry.name}-${entry.city || ""}-${entry.nickname || ""}`).replace(/[^a-zA-Z0-9_-]/g, "-");
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function renderLeaderboard(entries = []) {
@@ -71,8 +90,8 @@ function renderLeaderboard(entries = []) {
   leaderboardList.innerHTML = leaders
     .map((entry) => {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
-      const city = entry.city ? ` from ${entry.city}` : "";
-      return `<li><span>${entry.name}${city}</span><strong>${miles} mi</strong></li>`;
+      const city = entry.city ? ` from ${escapeHtml(entry.city)}` : "";
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(entry.name)}${city}</button><strong>${miles} mi</strong></li>`;
     })
     .join("");
 }
@@ -98,7 +117,7 @@ function renderHeightLeaderboard(entries = []) {
       const feet = Math.floor(total / 12);
       const inches = total % 12;
       const displayName = entry.nickname || entry.name;
-      return `<li><span>${displayName}</span><strong>${feet}' ${inches}\"</strong></li>`;
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayName)}</button><strong>${feet}' ${inches}\"</strong></li>`;
     })
     .join("");
 }
@@ -149,23 +168,84 @@ function renderBirthdayCalendar(entries = []) {
     .join("");
 }
 
-function projectOrigin(lat, lng) {
-  const minLng = -125;
-  const maxLng = -66;
-  const minLat = 24;
-  const maxLat = 50;
+function projectMapPoint(lat, lng) {
+  const minLng = -170;
+  const maxLng = -30;
+  const minLat = -60;
+  const maxLat = 75;
   const left = Math.max(4, Math.min(94, ((lng - minLng) / (maxLng - minLng)) * 100));
-  const top = Math.max(6, Math.min(88, (1 - (lat - minLat) / (maxLat - minLat)) * 100));
+  const top = Math.max(4, Math.min(94, (1 - (lat - minLat) / (maxLat - minLat)) * 100));
   return { left, top };
 }
 
-function renderOriginMap(entries = []) {
-  if (!originMap || !originMapLines) {
+function updateOriginMapZoom() {
+  if (!originMap || !originMapWorld) {
     return;
   }
 
-  originMap.querySelectorAll(".origin-map__pin--guest").forEach((pin) => pin.remove());
+  const zoom = mapZoomLevels[mapZoomIndex];
+  const home = projectMapPoint(OXBOW_POSITION.lat, OXBOW_POSITION.lng);
+  const rect = originMap.getBoundingClientRect();
+  const x = rect.width * 0.5 - rect.width * (home.left / 100) * zoom;
+  const y = rect.height * 0.5 - rect.height * (home.top / 100) * zoom;
+
+  originMapWorld.style.transform = `translate(${x}px, ${y}px) scale(${zoom})`;
+  originMap.dataset.zoom = String(zoom);
+}
+
+mapZoomButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const direction = button.dataset.mapZoom;
+    mapZoomIndex += direction === "in" ? 1 : -1;
+    mapZoomIndex = Math.max(0, Math.min(mapZoomLevels.length - 1, mapZoomIndex));
+    updateOriginMapZoom();
+  });
+});
+
+window.addEventListener("resize", updateOriginMapZoom);
+
+function highlightMapEntry(entryId) {
+  if (!originMapWorld || !entryId) {
+    return;
+  }
+
+  originMapWorld.querySelectorAll("[data-entry-id]").forEach((element) => {
+    element.classList.toggle("is-highlighted", element.dataset.entryId === entryId);
+    element.classList.toggle("is-open", element.dataset.entryId === entryId && element.classList.contains("origin-map__pin"));
+  });
+
+  const matchingPin = Array.from(originMapWorld.querySelectorAll(".origin-map__pin--guest")).find(
+    (pin) => pin.dataset.entryId === entryId
+  );
+
+  if (matchingPin) {
+    matchingPin.focus({ preventScroll: true });
+  }
+}
+
+document.addEventListener("click", (event) => {
+  const mapButton = event.target.closest("[data-map-entry-id]");
+
+  if (!mapButton) {
+    return;
+  }
+
+  highlightMapEntry(mapButton.dataset.mapEntryId);
+});
+
+function renderOriginMap(entries = []) {
+  if (!originMap || !originMapWorld || !originMapLines) {
+    return;
+  }
+
+  originMapWorld.querySelectorAll(".origin-map__pin--guest").forEach((pin) => pin.remove());
   originMapLines.innerHTML = "";
+  const home = projectMapPoint(OXBOW_POSITION.lat, OXBOW_POSITION.lng);
+
+  if (originMapHome) {
+    originMapHome.style.left = `${home.left}%`;
+    originMapHome.style.top = `${home.top}%`;
+  }
 
   const origins = entries
     .filter((entry) => entry.name && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng)))
@@ -176,15 +256,17 @@ function renderOriginMap(entries = []) {
   }
 
   origins.forEach((entry) => {
-    const position = projectOrigin(Number(entry.originLat), Number(entry.originLng));
+    const position = projectMapPoint(Number(entry.originLat), Number(entry.originLng));
     const displayName = entry.nickname || entry.name;
     const city = entry.city || "Somewhere fun";
+    const id = entryKey(entry);
 
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", position.left);
     line.setAttribute("y1", position.top);
-    line.setAttribute("x2", 57);
-    line.setAttribute("y2", 44);
+    line.setAttribute("x2", home.left);
+    line.setAttribute("y2", home.top);
+    line.dataset.entryId = id;
     originMapLines.append(line);
 
     const pin = document.createElement("button");
@@ -192,15 +274,19 @@ function renderOriginMap(entries = []) {
     pin.type = "button";
     pin.style.left = `${position.left}%`;
     pin.style.top = `${position.top}%`;
-    pin.innerHTML = `<span>${displayName}</span>`;
+    pin.innerHTML = `<span>${escapeHtml(displayName)}</span>`;
+    pin.dataset.entryId = id;
     pin.setAttribute("aria-label", `${displayName} traveling from ${city}`);
     pin.addEventListener("click", () => {
-      originMap.querySelectorAll(".origin-map__pin--guest").forEach((otherPin) => {
+      originMapWorld.querySelectorAll(".origin-map__pin--guest").forEach((otherPin) => {
         otherPin.classList.toggle("is-open", otherPin === pin);
       });
+      highlightMapEntry(id);
     });
-    originMap.append(pin);
+    originMapWorld.append(pin);
   });
+
+  updateOriginMapZoom();
 }
 
 async function loadLeaderboard() {
@@ -213,7 +299,7 @@ async function loadLeaderboard() {
   }
 
   try {
-    const response = await fetch(`${RSVP_ENDPOINT}?action=leaderboard`);
+    const response = await fetch(`${RSVP_ENDPOINT}?view=leaderboards`);
     const data = await response.json();
     const entries = data.entries || [];
     renderLeaderboard(entries);
@@ -233,7 +319,7 @@ if (travelForm) {
     payload.heightInches = (Number(payload.heightFeet) || 0) * 12 + (Number(payload.heightInches) || 0);
 
     if (!RSVP_ENDPOINT) {
-      setFormStatus("Form is designed and ready. Paste the Google Apps Script web app URL into RSVP_ENDPOINT in app.js to send this to the Sheet.");
+      setFormStatus("Form is designed and ready. Connect the Cloudflare D1 endpoint to collect RSVPs.");
       return;
     }
 
@@ -243,6 +329,9 @@ if (travelForm) {
     try {
       const response = await fetch(RSVP_ENDPOINT, {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(payload),
       });
       const data = await response.json();
@@ -252,10 +341,14 @@ if (travelForm) {
       }
 
       travelForm.reset();
-      setFormStatus(`You're in. ${Math.round(data.entry.miles).toLocaleString()} miles on the board.`);
+      if (Number.isFinite(Number(data.entry.miles))) {
+        setFormStatus(`You're in. ${Math.round(data.entry.miles).toLocaleString()} miles on the board.`);
+      } else {
+        setFormStatus("You're in. We saved the RSVP, and the mileage board will update when the city can be mapped.");
+      }
       await loadLeaderboard();
     } catch (error) {
-      setFormStatus("Could not save that yet. Check the Sheet connection and try again.");
+      setFormStatus("Could not save that yet. Check the Cloudflare D1 connection and try again.");
     } finally {
       submitButton.disabled = false;
     }
