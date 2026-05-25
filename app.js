@@ -107,7 +107,7 @@ function renderLeaderboard(entries = []) {
     .map((entry) => {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
       const city = entry.city ? ` from ${escapeHtml(entry.city)}` : "";
-      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(entry.name)}${city}</button><strong>${miles} mi</strong></li>`;
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}${city}</button><strong>${miles} mi</strong></li>`;
     })
     .join("");
 }
@@ -132,7 +132,7 @@ function renderHeightLeaderboard(entries = []) {
       const total = Number(entry.heightInches);
       const feet = Math.floor(total / 12);
       const inches = total % 12;
-      const displayName = entry.nickname || entry.name;
+      const displayName = displayShortName(entry);
       return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayName)}</button><strong>${feet}' ${inches}\"</strong></li>`;
     })
     .join("");
