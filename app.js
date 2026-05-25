@@ -520,8 +520,16 @@ if (travelForm) {
   travelForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const submitButton = travelForm.querySelector("button[type='submit']");
-    const payload = Object.fromEntries(new FormData(travelForm).entries());
+    const formData = new FormData(travelForm);
+    const daysAttending = formData.getAll("daysAttending");
+    const payload = Object.fromEntries(formData.entries());
+    payload.daysAttending = daysAttending.join(", ");
     payload.heightInches = (Number(payload.heightFeet) || 0) * 12 + (Number(payload.heightInches) || 0);
+
+    if (!daysAttending.length) {
+      setFormStatus("Pick at least one day you are attending.");
+      return;
+    }
 
     if (!RSVP_ENDPOINT) {
       setFormStatus("Form is designed and ready. Connect the Cloudflare D1 endpoint to collect RSVPs.");

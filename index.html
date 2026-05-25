@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2026-05-25-d1-debug" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-25-days-address" />
   </head>
   <body>
     <main>
@@ -394,6 +394,10 @@
               <input name="city" autocomplete="address-level2" placeholder="City, State" />
             </label>
             <label>
+              Address if you want to get real specific
+              <input name="address" autocomplete="street-address" placeholder="Optional street address" />
+            </label>
+            <label>
               Who invited you?
               <select name="invitedBy">
                 <option value="">Choose your inviter</option>
@@ -461,10 +465,21 @@
                 </select>
               </div>
             </label>
-            <label>
-              Got a question?
-              <textarea name="question" rows="4" placeholder="Ask anything the planners should see."></textarea>
-            </label>
+            <fieldset class="days-field">
+              <legend>Days attending <span>Required</span></legend>
+              <label>
+                <input name="daysAttending" type="checkbox" value="Friday" />
+                Friday
+              </label>
+              <label>
+                <input name="daysAttending" type="checkbox" value="Saturday" />
+                Saturday
+              </label>
+              <label>
+                <input name="daysAttending" type="checkbox" value="Sunday" />
+                Sunday
+              </label>
+            </fieldset>
             <button class="button button--primary" type="submit">Enter the mileage game</button>
             <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
           </form>
@@ -532,6 +547,6 @@
     </main>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2026-05-25-d1-debug"></script>
+    <script src="./app.js?v=2026-05-25-days-address"></script>
   </body>
 </html>
