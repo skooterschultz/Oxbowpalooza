@@ -150,27 +150,19 @@ a {
   border-radius: 7px;
   object-fit: contain;
   opacity: 0;
-  animation: bannerCarousel 31.2s infinite;
+  animation: bannerCarousel 24s infinite;
 }
 
 .hero-carousel__slide:nth-child(2) {
-  animation-delay: 5.2s;
+  animation-delay: 6s;
 }
 
 .hero-carousel__slide:nth-child(3) {
-  animation-delay: 10.4s;
+  animation-delay: 12s;
 }
 
 .hero-carousel__slide:nth-child(4) {
-  animation-delay: 15.6s;
-}
-
-.hero-carousel__slide:nth-child(5) {
-  animation-delay: 20.8s;
-}
-
-.hero-carousel__slide:nth-child(6) {
-  animation-delay: 26s;
+  animation-delay: 18s;
 }
 
 .hero__logo {
@@ -1071,12 +1063,12 @@ dt {
 
 @keyframes bannerCarousel {
   0%,
-  13.6% {
+  20% {
     opacity: 1;
   }
 
-  16.7%,
-  94% {
+  25%,
+  95% {
     opacity: 0;
   }
 
