@@ -80,6 +80,14 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function displayShortName(entry) {
+  if (entry.nickname && entry.nickname.trim()) {
+    return entry.nickname.trim();
+  }
+
+  return String(entry.name || "").trim().split(/\s+/)[0] || "Friend";
+}
+
 function renderLeaderboard(entries = []) {
   if (!leaderboardList) {
     return;
@@ -168,7 +176,7 @@ function renderBirthdayCalendar(entries = []) {
       const people = (grouped[month] || [])
         .sort((a, b) => Number(a.birthDay) - Number(b.birthDay))
         .map((entry) => {
-          const displayName = entry.nickname || entry.name;
+          const displayName = displayShortName(entry);
           return `<li><strong>${entry.birthDay}</strong><span title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</span></li>`;
         })
         .join("");
