@@ -80,12 +80,19 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function titleCase(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\b([a-z])/g, (match) => match.toUpperCase());
+}
+
 function displayShortName(entry) {
   if (entry.nickname && entry.nickname.trim()) {
-    return entry.nickname.trim();
+    return titleCase(entry.nickname);
   }
 
-  return String(entry.name || "").trim().split(/\s+/)[0] || "Friend";
+  return titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
 }
 
 function renderLeaderboard(entries = []) {
@@ -106,8 +113,8 @@ function renderLeaderboard(entries = []) {
   leaderboardList.innerHTML = leaders
     .map((entry) => {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
-      const city = entry.city ? ` from ${escapeHtml(entry.city)}` : "";
-      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}${city}</button><strong>${miles} mi</strong></li>`;
+      const city = entry.city ? `<small>${escapeHtml(titleCase(entry.city))}</small>` : "";
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${miles} mi${city}</strong></li>`;
     })
     .join("");
 }
@@ -207,8 +214,8 @@ function setActiveMapStyle(styleName) {
 }
 
 function makePopupHtml(entry) {
-  const displayName = escapeHtml(entry.nickname || entry.name);
-  const city = escapeHtml(entry.city || "Somewhere fun");
+  const displayName = escapeHtml(displayShortName(entry));
+  const city = escapeHtml(titleCase(entry.city || "Somewhere fun"));
   const miles = Number.isFinite(Number(entry.miles)) ? `${Math.round(Number(entry.miles)).toLocaleString()} mi` : "";
   return `<strong>${displayName}</strong><span>${city}</span>${miles ? `<small>${miles}</small>` : ""}`;
 }
@@ -245,7 +252,7 @@ function makeRibbonCoordinates(originLng, originLat, destinationLng, destination
 
 function makeRouteFeature(entry) {
   const id = entryKey(entry);
-  const displayName = entry.nickname || entry.name;
+  const displayName = displayShortName(entry);
   const miles = Number(entry.miles);
   return {
     type: "Feature",
@@ -269,7 +276,7 @@ function makeRouteFeature(entry) {
 }
 
 function setMapData(entries = latestMapEntries) {
-  if (!originMapInstance || !originMapInstance.isStyleLoaded()) {
+  if (!originMapInstance || !originMapInstance.getStyle()) {
     return;
   }
 
@@ -279,6 +286,7 @@ function setMapData(entries = latestMapEntries) {
     type: "FeatureCollection",
     features: entries.map(makeRouteFeature),
   };
+  console.info("Oxbow route features", routeData.features.length);
 
   if (routeSource) {
     routeSource.setData(routeData);
@@ -309,9 +317,13 @@ function addMapSourcesAndLayers() {
     id: "origin-routes-shadow",
     type: "line",
     source: "origin-routes",
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+    },
     paint: {
       "line-color": "rgba(21, 17, 13, 0.38)",
-      "line-width": ["case", ["==", ["get", "routeType"], "drive"], 10, 8],
+      "line-width": 11,
       "line-blur": 5,
     },
   });
@@ -320,10 +332,14 @@ function addMapSourcesAndLayers() {
     id: "origin-routes-ribbon",
     type: "line",
     source: "origin-routes",
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+    },
     paint: {
-      "line-color": ["case", ["==", ["get", "routeType"], "drive"], "#ff6b1f", "#f6b64b"],
-      "line-width": ["case", ["==", ["get", "routeType"], "drive"], 6, 5],
-      "line-opacity": 0.9,
+      "line-color": "#ff7a1f",
+      "line-width": 7,
+      "line-opacity": 0.96,
     },
   });
 
@@ -331,6 +347,10 @@ function addMapSourcesAndLayers() {
     id: "highlighted-route-glow",
     type: "line",
     source: "highlighted-route",
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+    },
     paint: {
       "line-color": "#fff4dc",
       "line-width": 12,
@@ -343,6 +363,10 @@ function addMapSourcesAndLayers() {
     id: "highlighted-route-ribbon",
     type: "line",
     source: "highlighted-route",
+    layout: {
+      "line-cap": "round",
+      "line-join": "round",
+    },
     paint: {
       "line-color": "#ff6b1f",
       "line-width": 8,
@@ -369,12 +393,12 @@ function fitMapToEntries(entries = latestMapEntries) {
   entries.forEach((entry) => {
     bounds.extend([Number(entry.originLng), Number(entry.originLat)]);
   });
-  originMapInstance.fitBounds(bounds, { padding: 72, duration: 900, maxZoom: 6 });
+  originMapInstance.fitBounds(bounds, { padding: 72, duration: 900, maxZoom: 7, pitch: 0, bearing: 0 });
 }
 
 function flyToOxbow() {
   if (originMapInstance) {
-    originMapInstance.flyTo({ center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat], zoom: 11, pitch: 48, bearing: -18 });
+    originMapInstance.flyTo({ center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat], zoom: 11, pitch: 0, bearing: 0 });
   }
 }
 
@@ -406,7 +430,7 @@ function highlightMapEntry(entryId) {
 
   const bounds = new mapboxgl.LngLatBounds([OXBOW_POSITION.lng, OXBOW_POSITION.lat], [OXBOW_POSITION.lng, OXBOW_POSITION.lat]);
   bounds.extend([Number(entry.originLng), Number(entry.originLat)]);
-  originMapInstance.fitBounds(bounds, { padding: 90, duration: 900, maxZoom: 5.5 });
+  originMapInstance.fitBounds(bounds, { padding: 90, duration: 900, maxZoom: 7, pitch: 0, bearing: 0 });
 }
 
 document.addEventListener("click", (event) => {
@@ -443,7 +467,7 @@ function renderOriginMap(entries = []) {
       .addTo(originMapInstance);
 
     marker.getElement().dataset.entryId = id;
-    marker.getElement().setAttribute("aria-label", `${entry.nickname || entry.name} traveling from ${entry.city || "somewhere fun"}`);
+    marker.getElement().setAttribute("aria-label", `${displayShortName(entry)} traveling from ${titleCase(entry.city || "somewhere fun")}`);
     marker.getElement().addEventListener("click", () => highlightMapEntry(id));
     mapMarkers.set(id, marker);
   });
@@ -469,8 +493,8 @@ async function startOriginMap() {
     style: MAPBOX_STYLES[activeMapStyle],
     center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat],
     zoom: 11,
-    pitch: 48,
-    bearing: -18,
+    pitch: 0,
+    bearing: 0,
     attributionControl: true,
   });
 

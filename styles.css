@@ -943,7 +943,16 @@ dt {
 
 .leaderboard strong {
   flex: 0 0 auto;
+  display: grid;
+  gap: 0.1rem;
   color: var(--rust);
+  text-align: right;
+}
+
+.leaderboard strong small {
+  color: rgba(21, 17, 13, 0.68);
+  font-size: 0.72rem;
+  line-height: 1;
 }
 
 .leaderboard-stack {
@@ -1165,7 +1174,7 @@ dt {
   align-items: center;
   gap: 0.35rem;
   min-width: 0;
-  font-weight: 950;
+  font-weight: 500;
 }
 
 .birthday-months li strong {
@@ -1185,7 +1194,8 @@ dt {
   min-width: 0;
   overflow: hidden;
   color: var(--ink);
-  font-size: clamp(0.78rem, 1vw, 0.95rem);
+  font-size: 1rem;
+  font-weight: 500;
   line-height: 1.1;
   text-overflow: ellipsis;
   white-space: nowrap;
