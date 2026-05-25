@@ -539,9 +539,12 @@ if (travelForm) {
         },
         body: JSON.stringify(payload),
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => ({
+        ok: false,
+        error: `Server returned ${response.status}.`,
+      }));
 
-      if (!data.ok) {
+      if (!response.ok || !data.ok) {
         throw new Error(data.error || "Unable to save RSVP.");
       }
 
@@ -553,7 +556,7 @@ if (travelForm) {
       }
       await loadLeaderboard();
     } catch (error) {
-      setFormStatus("Could not save that yet. Check the Cloudflare D1 connection and try again.");
+      setFormStatus(`Could not save that yet: ${error.message}`);
     } finally {
       submitButton.disabled = false;
     }
