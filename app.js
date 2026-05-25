@@ -1,6 +1,28 @@
 const panels = Array.from(document.querySelectorAll("[data-panel-view]"));
 const panelButtons = Array.from(document.querySelectorAll("[data-panel]"));
+const carouselSlides = Array.from(document.querySelectorAll(".hero-carousel__slide"));
 const RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbwi56JbNyH1P5vNk7sxOo28DQh988xGWq0S0fSUCm5Hd3nmKyw5DSDNHnQGalAbGlSMdw/exec";
+
+function startHeroCarousel() {
+  if (carouselSlides.length < 2) {
+    return;
+  }
+
+  let activeIndex = carouselSlides.findIndex((slide) => slide.classList.contains("is-active"));
+
+  if (activeIndex < 0) {
+    activeIndex = 0;
+    carouselSlides[activeIndex].classList.add("is-active");
+  }
+
+  window.setInterval(() => {
+    carouselSlides[activeIndex].classList.remove("is-active");
+    activeIndex = (activeIndex + 1) % carouselSlides.length;
+    carouselSlides[activeIndex].classList.add("is-active");
+  }, 5500);
+}
+
+startHeroCarousel();
 
 function setPanel(panelName) {
   panels.forEach((panel) => {

@@ -150,19 +150,11 @@ a {
   border-radius: 7px;
   object-fit: contain;
   opacity: 0;
-  animation: bannerCarousel 24s infinite;
+  transition: opacity 700ms ease;
 }
 
-.hero-carousel__slide:nth-child(2) {
-  animation-delay: 6s;
-}
-
-.hero-carousel__slide:nth-child(3) {
-  animation-delay: 12s;
-}
-
-.hero-carousel__slide:nth-child(4) {
-  animation-delay: 18s;
+.hero-carousel__slide.is-active {
+  opacity: 1;
 }
 
 .hero__logo {
@@ -1058,22 +1050,6 @@ dt {
   }
   50% {
     transform: rotate(0.55deg) translateY(-6px);
-  }
-}
-
-@keyframes bannerCarousel {
-  0%,
-  20% {
-    opacity: 1;
-  }
-
-  25%,
-  95% {
-    opacity: 0;
-  }
-
-  100% {
-    opacity: 1;
   }
 }
 
