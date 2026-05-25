@@ -19,7 +19,7 @@ function startHeroCarousel() {
     carouselSlides[activeIndex].classList.remove("is-active");
     activeIndex = (activeIndex + 1) % carouselSlides.length;
     carouselSlides[activeIndex].classList.add("is-active");
-  }, 5500);
+  }, 4500);
 }
 
 startHeroCarousel();
@@ -44,14 +44,22 @@ const leaderboardList = document.querySelector("#leaderboard-list");
 const heightList = document.querySelector("#height-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
 const originMap = document.querySelector("#origin-map");
-const originMapWorld = document.querySelector("#origin-map-world");
-const originMapLines = document.querySelector("#origin-map-lines");
+const originMapCanvas = document.querySelector("#origin-map-canvas");
 const originMapEmpty = document.querySelector("#origin-map-empty");
-const originMapHome = document.querySelector("#origin-map-home");
-const mapZoomButtons = Array.from(document.querySelectorAll("[data-map-zoom]"));
-const OXBOW_POSITION = { lat: 45.5308, lng: -122.2443 };
-const mapZoomLevels = [1, 1.75, 3.1];
-let mapZoomIndex = 2;
+const mapStyleButtons = Array.from(document.querySelectorAll("[data-map-style]"));
+const mapActionButtons = Array.from(document.querySelectorAll("[data-map-action]"));
+let mapboxAccessToken = "";
+const OXBOW_POSITION = { lat: 45.5308, lng: -122.2443, label: "Oxbow" };
+const MAPBOX_STYLES = {
+  satellite: "mapbox://styles/mapbox/standard-satellite",
+  outdoors: "mapbox://styles/mapbox/outdoors-v12",
+  standard: "mapbox://styles/mapbox/standard",
+  night: "mapbox://styles/mapbox/dark-v11",
+};
+let originMapInstance;
+let activeMapStyle = "satellite";
+let latestMapEntries = [];
+let mapMarkers = new Map();
 
 function setFormStatus(message) {
   if (formStatus) {
@@ -168,59 +176,216 @@ function renderBirthdayCalendar(entries = []) {
     .join("");
 }
 
-function projectMapPoint(lat, lng) {
-  const minLng = -170;
-  const maxLng = -30;
-  const minLat = -60;
-  const maxLat = 75;
-  const left = Math.max(4, Math.min(94, ((lng - minLng) / (maxLng - minLng)) * 100));
-  const top = Math.max(4, Math.min(94, (1 - (lat - minLat) / (maxLat - minLat)) * 100));
-  return { left, top };
+function hasMapboxToken() {
+  return Boolean(mapboxAccessToken);
 }
 
-function updateOriginMapZoom() {
-  if (!originMap || !originMapWorld) {
+async function loadMapboxToken() {
+  try {
+    const response = await fetch("/api/config");
+    const data = await response.json();
+    mapboxAccessToken = data.mapboxPublicToken || "";
+  } catch (error) {
+    mapboxAccessToken = "";
+  }
+}
+
+function setActiveMapStyle(styleName) {
+  activeMapStyle = styleName;
+  mapStyleButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.mapStyle === styleName);
+  });
+}
+
+function makePopupHtml(entry) {
+  const displayName = escapeHtml(entry.nickname || entry.name);
+  const city = escapeHtml(entry.city || "Somewhere fun");
+  const miles = Number.isFinite(Number(entry.miles)) ? `${Math.round(Number(entry.miles)).toLocaleString()} mi` : "";
+  return `<strong>${displayName}</strong><span>${city}</span>${miles ? `<small>${miles}</small>` : ""}`;
+}
+
+function makeRibbonCoordinates(originLng, originLat, destinationLng, destinationLat) {
+  const coordinates = [];
+  const dx = destinationLng - originLng;
+  const dy = destinationLat - originLat;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  const bow = Math.min(18, Math.max(4, distance * 0.18));
+  const normalLng = -dy / (distance || 1);
+  const normalLat = dx / (distance || 1);
+
+  for (let i = 0; i <= 64; i += 1) {
+    const t = i / 64;
+    const curve = Math.sin(Math.PI * t) * bow;
+    coordinates.push([
+      originLng + dx * t + normalLng * curve,
+      originLat + dy * t + normalLat * curve,
+    ]);
+  }
+
+  return coordinates;
+}
+
+function makeRouteFeature(entry) {
+  const id = entryKey(entry);
+  return {
+    type: "Feature",
+    id,
+    properties: {
+      id,
+      name: entry.nickname || entry.name,
+      city: entry.city || "",
+    },
+    geometry: {
+      type: "LineString",
+      coordinates: makeRibbonCoordinates(
+        Number(entry.originLng),
+        Number(entry.originLat),
+        OXBOW_POSITION.lng,
+        OXBOW_POSITION.lat
+      ),
+    },
+  };
+}
+
+function setMapData(entries = latestMapEntries) {
+  if (!originMapInstance || !originMapInstance.isStyleLoaded()) {
     return;
   }
 
-  const zoom = mapZoomLevels[mapZoomIndex];
-  const home = projectMapPoint(OXBOW_POSITION.lat, OXBOW_POSITION.lng);
-  const rect = originMap.getBoundingClientRect();
-  const x = rect.width * 0.5 - rect.width * (home.left / 100) * zoom;
-  const y = rect.height * 0.5 - rect.height * (home.top / 100) * zoom;
+  const routeSource = originMapInstance.getSource("origin-routes");
+  const highlightedSource = originMapInstance.getSource("highlighted-route");
+  const routeData = {
+    type: "FeatureCollection",
+    features: entries.map(makeRouteFeature),
+  };
 
-  originMapWorld.style.transform = `translate(${x}px, ${y}px) scale(${zoom})`;
-  originMap.dataset.zoom = String(zoom);
+  if (routeSource) {
+    routeSource.setData(routeData);
+  }
+
+  if (highlightedSource) {
+    highlightedSource.setData({ type: "FeatureCollection", features: [] });
+  }
 }
 
-mapZoomButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const direction = button.dataset.mapZoom;
-    mapZoomIndex += direction === "in" ? 1 : -1;
-    mapZoomIndex = Math.max(0, Math.min(mapZoomLevels.length - 1, mapZoomIndex));
-    updateOriginMapZoom();
-  });
-});
+function addMapSourcesAndLayers() {
+  if (!originMapInstance || originMapInstance.getSource("origin-routes")) {
+    setMapData();
+    return;
+  }
 
-window.addEventListener("resize", updateOriginMapZoom);
+  originMapInstance.addSource("origin-routes", {
+    type: "geojson",
+    data: { type: "FeatureCollection", features: [] },
+  });
+
+  originMapInstance.addSource("highlighted-route", {
+    type: "geojson",
+    data: { type: "FeatureCollection", features: [] },
+  });
+
+  originMapInstance.addLayer({
+    id: "origin-routes-shadow",
+    type: "line",
+    source: "origin-routes",
+    paint: {
+      "line-color": "rgba(21, 17, 13, 0.38)",
+      "line-width": 8,
+      "line-blur": 5,
+    },
+  });
+
+  originMapInstance.addLayer({
+    id: "origin-routes-ribbon",
+    type: "line",
+    source: "origin-routes",
+    paint: {
+      "line-color": "#f6b64b",
+      "line-width": 5,
+      "line-opacity": 0.72,
+    },
+  });
+
+  originMapInstance.addLayer({
+    id: "highlighted-route-glow",
+    type: "line",
+    source: "highlighted-route",
+    paint: {
+      "line-color": "#fff4dc",
+      "line-width": 12,
+      "line-blur": 6,
+      "line-opacity": 0.9,
+    },
+  });
+
+  originMapInstance.addLayer({
+    id: "highlighted-route-ribbon",
+    type: "line",
+    source: "highlighted-route",
+    paint: {
+      "line-color": "#ff6b1f",
+      "line-width": 8,
+      "line-opacity": 0.96,
+    },
+  });
+
+  setMapData();
+}
+
+function makeMarker(className) {
+  const marker = document.createElement("button");
+  marker.type = "button";
+  marker.className = className;
+  return marker;
+}
+
+function fitMapToEntries(entries = latestMapEntries) {
+  if (!originMapInstance) {
+    return;
+  }
+
+  const bounds = new mapboxgl.LngLatBounds([OXBOW_POSITION.lng, OXBOW_POSITION.lat], [OXBOW_POSITION.lng, OXBOW_POSITION.lat]);
+  entries.forEach((entry) => {
+    bounds.extend([Number(entry.originLng), Number(entry.originLat)]);
+  });
+  originMapInstance.fitBounds(bounds, { padding: 72, duration: 900, maxZoom: 6 });
+}
+
+function flyToOxbow() {
+  if (originMapInstance) {
+    originMapInstance.flyTo({ center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat], zoom: 11, pitch: 48, bearing: -18 });
+  }
+}
 
 function highlightMapEntry(entryId) {
-  if (!originMapWorld || !entryId) {
+  if (!originMapInstance || !entryId) {
     return;
   }
 
-  originMapWorld.querySelectorAll("[data-entry-id]").forEach((element) => {
-    element.classList.toggle("is-highlighted", element.dataset.entryId === entryId);
-    element.classList.toggle("is-open", element.dataset.entryId === entryId && element.classList.contains("origin-map__pin"));
+  mapMarkers.forEach((marker, id) => {
+    marker.getElement().classList.toggle("is-highlighted", id === entryId);
   });
 
-  const matchingPin = Array.from(originMapWorld.querySelectorAll(".origin-map__pin--guest")).find(
-    (pin) => pin.dataset.entryId === entryId
-  );
+  const entry = latestMapEntries.find((candidate) => entryKey(candidate) === entryId);
+  const highlightedSource = originMapInstance.getSource("highlighted-route");
 
-  if (matchingPin) {
-    matchingPin.focus({ preventScroll: true });
+  if (!entry || !highlightedSource) {
+    return;
   }
+
+  highlightedSource.setData({
+    type: "FeatureCollection",
+    features: [makeRouteFeature(entry)],
+  });
+
+  const marker = mapMarkers.get(entryId);
+  if (marker) {
+    marker.getPopup().addTo(originMapInstance);
+  }
+
+  const bounds = new mapboxgl.LngLatBounds([OXBOW_POSITION.lng, OXBOW_POSITION.lat], [OXBOW_POSITION.lng, OXBOW_POSITION.lat]);
+  bounds.extend([Number(entry.originLng), Number(entry.originLat)]);
+  originMapInstance.fitBounds(bounds, { padding: 90, duration: 900, maxZoom: 5.5 });
 }
 
 document.addEventListener("click", (event) => {
@@ -234,60 +399,100 @@ document.addEventListener("click", (event) => {
 });
 
 function renderOriginMap(entries = []) {
-  if (!originMap || !originMapWorld || !originMapLines) {
+  latestMapEntries = entries
+    .filter((entry) => entry.name && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng)))
+    .slice(0, 80);
+
+  if (originMapEmpty) {
+    originMapEmpty.hidden = hasMapboxToken() && Boolean(latestMapEntries.length);
+  }
+
+  if (!originMapInstance) {
     return;
   }
 
-  originMapWorld.querySelectorAll(".origin-map__pin--guest").forEach((pin) => pin.remove());
-  originMapLines.innerHTML = "";
-  const home = projectMapPoint(OXBOW_POSITION.lat, OXBOW_POSITION.lng);
+  mapMarkers.forEach((marker) => marker.remove());
+  mapMarkers = new Map();
 
-  if (originMapHome) {
-    originMapHome.style.left = `${home.left}%`;
-    originMapHome.style.top = `${home.top}%`;
-  }
-
-  const origins = entries
-    .filter((entry) => entry.name && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng)))
-    .slice(0, 24);
-
-  if (originMapEmpty) {
-    originMapEmpty.hidden = Boolean(origins.length);
-  }
-
-  origins.forEach((entry) => {
-    const position = projectMapPoint(Number(entry.originLat), Number(entry.originLng));
-    const displayName = entry.nickname || entry.name;
-    const city = entry.city || "Somewhere fun";
+  latestMapEntries.forEach((entry) => {
     const id = entryKey(entry);
+    const marker = new mapboxgl.Marker({ element: makeMarker("origin-marker"), anchor: "bottom" })
+      .setLngLat([Number(entry.originLng), Number(entry.originLat)])
+      .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML(makePopupHtml(entry)))
+      .addTo(originMapInstance);
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", position.left);
-    line.setAttribute("y1", position.top);
-    line.setAttribute("x2", home.left);
-    line.setAttribute("y2", home.top);
-    line.dataset.entryId = id;
-    originMapLines.append(line);
-
-    const pin = document.createElement("button");
-    pin.className = "origin-map__pin origin-map__pin--guest";
-    pin.type = "button";
-    pin.style.left = `${position.left}%`;
-    pin.style.top = `${position.top}%`;
-    pin.innerHTML = `<span>${escapeHtml(displayName)}</span>`;
-    pin.dataset.entryId = id;
-    pin.setAttribute("aria-label", `${displayName} traveling from ${city}`);
-    pin.addEventListener("click", () => {
-      originMapWorld.querySelectorAll(".origin-map__pin--guest").forEach((otherPin) => {
-        otherPin.classList.toggle("is-open", otherPin === pin);
-      });
-      highlightMapEntry(id);
-    });
-    originMapWorld.append(pin);
+    marker.getElement().dataset.entryId = id;
+    marker.getElement().setAttribute("aria-label", `${entry.nickname || entry.name} traveling from ${entry.city || "somewhere fun"}`);
+    marker.getElement().addEventListener("click", () => highlightMapEntry(id));
+    mapMarkers.set(id, marker);
   });
 
-  updateOriginMapZoom();
+  setMapData(latestMapEntries);
+  if (latestMapEntries.length) {
+    fitMapToEntries(latestMapEntries);
+  }
 }
+
+async function startOriginMap() {
+  await loadMapboxToken();
+
+  if (!originMapCanvas || !window.mapboxgl || !hasMapboxToken()) {
+    return;
+  }
+
+  mapboxgl.accessToken = mapboxAccessToken;
+  setActiveMapStyle(activeMapStyle);
+
+  originMapInstance = new mapboxgl.Map({
+    container: originMapCanvas,
+    style: MAPBOX_STYLES[activeMapStyle],
+    center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat],
+    zoom: 11,
+    pitch: 48,
+    bearing: -18,
+    attributionControl: true,
+  });
+
+  originMapInstance.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "bottom-right");
+
+  const homeMarker = new mapboxgl.Marker({ element: makeMarker("origin-marker origin-marker--home"), anchor: "bottom" })
+    .setLngLat([OXBOW_POSITION.lng, OXBOW_POSITION.lat])
+    .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML("<strong>Oxbowpalooza</strong><span>Over by Oxbow Park</span>"))
+    .addTo(originMapInstance);
+
+  homeMarker.getElement().setAttribute("aria-label", "Oxbowpalooza near Oxbow Park");
+  originMapInstance.on("load", () => {
+    addMapSourcesAndLayers();
+    renderOriginMap(latestMapEntries);
+  });
+
+  originMapInstance.on("style.load", addMapSourcesAndLayers);
+}
+
+mapStyleButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const styleName = button.dataset.mapStyle;
+    if (!MAPBOX_STYLES[styleName]) {
+      return;
+    }
+    setActiveMapStyle(styleName);
+    if (originMapInstance) {
+      originMapInstance.setStyle(MAPBOX_STYLES[styleName]);
+    }
+  });
+});
+
+mapActionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    if (button.dataset.mapAction === "home") {
+      flyToOxbow();
+    } else {
+      fitMapToEntries();
+    }
+  });
+});
+
+startOriginMap();
 
 async function loadLeaderboard() {
   if (!RSVP_ENDPOINT) {
