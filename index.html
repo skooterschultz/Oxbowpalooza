@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2026-05-25-days-address" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-25-daytiles-routes" />
   </head>
   <body>
     <main>
@@ -204,7 +204,8 @@
               <h3>Getting There</h3>
               <ul>
                 <li>Carpooling encouraged.</li>
-                <li>Uber and Lyft are available.</li>
+                <li>Uber and Lyft are available, but getting a ride back into town from the property can be harder.</li>
+                <li>If you are ridesharing home, consider scheduling your pickup in advance.</li>
                 <li>Use the map button when you are ready to roll.</li>
               </ul>
               <a
@@ -469,15 +470,15 @@
               <legend>Days attending <span>Required</span></legend>
               <label>
                 <input name="daysAttending" type="checkbox" value="Friday" />
-                Friday
+                <span>Friday</span>
               </label>
               <label>
                 <input name="daysAttending" type="checkbox" value="Saturday" />
-                Saturday
+                <span>Saturday</span>
               </label>
               <label>
                 <input name="daysAttending" type="checkbox" value="Sunday" />
-                Sunday
+                <span>Sunday</span>
               </label>
             </fieldset>
             <button class="button button--primary" type="submit">Enter the mileage game</button>
@@ -547,6 +548,6 @@
     </main>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2026-05-25-days-address"></script>
+    <script src="./app.js?v=2026-05-25-daytiles-routes"></script>
   </body>
 </html>

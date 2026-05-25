@@ -37,12 +37,13 @@ function toEntry(row) {
     nickname: row.nickname,
     email: row.email,
     city: row.city,
+    address: row.address,
     invitedBy: row.invited_by,
     foodNotes: row.food_notes,
+    daysAttending: row.days_attending,
     birthMonth: row.birth_month,
     birthDay: row.birth_day,
     heightInches: row.height_inches,
-    question: row.question,
     originLat: row.origin_lat,
     originLng: row.origin_lng,
     miles: row.miles,
@@ -188,14 +189,21 @@ async function createEntry(request, env) {
   const body = await request.json();
   const name = clean(body.name);
   const city = clean(body.city);
+  const address = clean(body.address);
+  const originQuery = address ? `${address}, ${city}` : city;
+  const daysAttending = clean(body.daysAttending);
 
   if (!name) {
     return json({ ok: false, error: "Name is required." }, 400);
   }
 
+  if (!daysAttending) {
+    return json({ ok: false, error: "Pick at least one day you are attending." }, 400);
+  }
+
   const heightInches = numeric(body.heightInches);
   const birthDay = numeric(body.birthDay);
-  const origin = await geocodeCity(city, env);
+  const origin = await geocodeCity(originQuery, env);
   const miles = distanceInMiles(origin, DESTINATION);
 
   const result = await env.DB.prepare(
@@ -204,28 +212,30 @@ async function createEntry(request, env) {
       nickname,
       email,
       city,
+      address,
       invited_by,
       food_notes,
+      days_attending,
       birth_month,
       birth_day,
       height_inches,
-      question,
       origin_lat,
       origin_lng,
       miles
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       name,
       clean(body.nickname),
       clean(body.email),
       city,
+      address,
       clean(body.invitedBy),
       clean(body.foodNotes),
+      daysAttending,
       clean(body.birthMonth),
       birthDay,
       heightInches,
-      clean(body.question),
       origin?.lat || null,
       origin?.lng || null,
       miles
@@ -240,12 +250,13 @@ async function createEntry(request, env) {
       nickname,
       email,
       city,
+      address,
       invited_by,
       food_notes,
+      days_attending,
       birth_month,
       birth_day,
       height_inches,
-      question,
       origin_lat,
       origin_lng,
       miles

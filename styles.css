@@ -793,21 +793,50 @@ dt {
 }
 
 .days-field label {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
+  position: relative;
+  display: grid;
+  place-items: center;
   min-height: 44px;
-  padding: 0.55rem 0.65rem;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.days-field label span {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.8rem;
   border: 3px solid rgba(21, 17, 13, 0.85);
   border-radius: 6px;
-  background: var(--cream);
+  background: rgba(255, 244, 220, 0.78);
+  color: rgba(21, 17, 13, 0.72);
+  text-align: center;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
 }
 
 .days-field input {
-  width: 1.2rem;
-  min-height: auto;
-  aspect-ratio: 1;
-  accent-color: #d6512a;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.days-field input:checked + span {
+  background: #d6512a;
+  color: #fff4dc;
+  transform: scale(1.045);
+  box-shadow:
+    inset 0 4px 0 rgba(255, 244, 220, 0.24),
+    inset 0 -5px 0 rgba(21, 17, 13, 0.18),
+    4px 5px 0 rgba(21, 17, 13, 0.16);
+}
+
+.days-field input:focus-visible + span {
+  outline: 3px solid #3187a6;
+  outline-offset: 3px;
 }
 
 .travel-form input,
@@ -823,6 +852,14 @@ dt {
   font: inherit;
   font-size: 1rem;
   font-weight: 850;
+}
+
+.travel-form .days-field input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
 }
 
 .travel-form textarea {

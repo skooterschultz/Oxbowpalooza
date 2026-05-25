@@ -205,6 +205,15 @@ function makePopupHtml(entry) {
 }
 
 function makeRibbonCoordinates(originLng, originLat, destinationLng, destinationLat) {
+  const miles = distanceInMiles({ lat: originLat, lng: originLng }, { lat: destinationLat, lng: destinationLng });
+
+  if (Number.isFinite(miles) && miles < 300) {
+    return [
+      [originLng, originLat],
+      [destinationLng, destinationLat],
+    ];
+  }
+
   const coordinates = [];
   const dx = destinationLng - originLng;
   const dy = destinationLat - originLat;
@@ -227,12 +236,13 @@ function makeRibbonCoordinates(originLng, originLat, destinationLng, destination
 
 function makeRouteFeature(entry) {
   const id = entryKey(entry);
+  const displayName = entry.nickname || entry.name;
   return {
     type: "Feature",
     id,
     properties: {
       id,
-      name: entry.nickname || entry.name,
+      name: displayName,
       city: entry.city || "",
     },
     geometry: {
