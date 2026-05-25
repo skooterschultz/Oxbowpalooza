@@ -943,16 +943,8 @@ dt {
 
 .leaderboard strong {
   flex: 0 0 auto;
-  display: grid;
-  gap: 0.1rem;
   color: var(--rust);
   text-align: right;
-}
-
-.leaderboard strong small {
-  color: rgba(21, 17, 13, 0.68);
-  font-size: 0.72rem;
-  line-height: 1;
 }
 
 .leaderboard-stack {
@@ -1021,8 +1013,8 @@ dt {
   right: 0.85rem;
   top: 0.85rem;
   z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.5rem;
 }
 
@@ -1046,7 +1038,7 @@ dt {
 }
 
 .origin-map__controls button:nth-child(2) {
-  background: #5f9b4b;
+  background: #422d67;
 }
 
 .origin-map__controls button:nth-child(3) {
@@ -1054,7 +1046,7 @@ dt {
 }
 
 .origin-map__controls button:nth-child(4) {
-  background: #422d67;
+  background: #5f9b4b;
 }
 
 .origin-map__controls button.is-active {
@@ -1074,13 +1066,14 @@ dt {
 }
 
 .origin-marker {
+  --pin-color: #d6512a;
   display: grid;
   place-items: center;
   width: 20px;
   aspect-ratio: 1;
   border: 3px solid #15110d;
   border-radius: 50% 50% 50% 0;
-  background: #d6512a;
+  background: var(--pin-color);
   transform: rotate(-45deg);
   box-shadow:
     0 0 0 4px rgba(255, 244, 220, 0.68),
@@ -1178,13 +1171,14 @@ dt {
 }
 
 .birthday-months li strong {
+  --birthday-color: #3187a6;
   flex: 0 0 1.65rem;
   width: 1.65rem;
   min-height: 1.65rem;
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #3187a6;
+  background: var(--birthday-color);
   color: var(--cream);
   font-size: 0.82rem;
   line-height: 1;

@@ -52,10 +52,9 @@ let mapboxAccessToken = "";
 const OXBOW_POSITION = { lat: 45.5308, lng: -122.2443, label: "Oxbow" };
 const MAPBOX_STYLES = {
   satellite: "mapbox://styles/mapbox/standard-satellite",
-  outdoors: "mapbox://styles/mapbox/outdoors-v12",
-  standard: "mapbox://styles/mapbox/standard",
   night: "mapbox://styles/mapbox/dark-v11",
 };
+const MAP_PIN_COLORS = ["#d6512a", "#3187a6", "#5f9b4b", "#c65f80", "#e58a2e", "#7a568f", "#0f6f78", "#f1c75a"];
 let originMapInstance;
 let activeMapStyle = "satellite";
 let latestMapEntries = [];
@@ -95,6 +94,21 @@ function displayShortName(entry) {
   return titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
 }
 
+function cityTown(value) {
+  return titleCase(String(value || "").split(",")[0] || "");
+}
+
+function entryColor(entry) {
+  const key = entryKey(entry);
+  let hash = 0;
+
+  for (let i = 0; i < key.length; i += 1) {
+    hash = (hash * 31 + key.charCodeAt(i)) % MAP_PIN_COLORS.length;
+  }
+
+  return MAP_PIN_COLORS[Math.abs(hash) % MAP_PIN_COLORS.length];
+}
+
 function renderLeaderboard(entries = []) {
   if (!leaderboardList) {
     return;
@@ -113,8 +127,9 @@ function renderLeaderboard(entries = []) {
   leaderboardList.innerHTML = leaders
     .map((entry) => {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
-      const city = entry.city ? `<small>${escapeHtml(titleCase(entry.city))}</small>` : "";
-      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${miles} mi${city}</strong></li>`;
+      const town = cityTown(entry.city);
+      const location = town ? `${escapeHtml(town)}: ` : "";
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${location}${miles} mi</strong></li>`;
     })
     .join("");
 }
@@ -184,7 +199,7 @@ function renderBirthdayCalendar(entries = []) {
         .sort((a, b) => Number(a.birthDay) - Number(b.birthDay))
         .map((entry) => {
           const displayName = displayShortName(entry);
-          return `<li><strong>${entry.birthDay}</strong><span title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</span></li>`;
+          return `<li style="--birthday-color: ${entryColor(entry)}"><strong>${entry.birthDay}</strong><span title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</span></li>`;
         })
         .join("");
       return `<article><h4>${month}</h4>${people ? `<ul>${people}</ul>` : "<p>Waiting for birthdays.</p>"}</article>`;
@@ -218,163 +233,6 @@ function makePopupHtml(entry) {
   const city = escapeHtml(titleCase(entry.city || "Somewhere fun"));
   const miles = Number.isFinite(Number(entry.miles)) ? `${Math.round(Number(entry.miles)).toLocaleString()} mi` : "";
   return `<strong>${displayName}</strong><span>${city}</span>${miles ? `<small>${miles}</small>` : ""}`;
-}
-
-function makeRibbonCoordinates(originLng, originLat, destinationLng, destinationLat) {
-  const miles = distanceInMiles({ lat: originLat, lng: originLng }, { lat: destinationLat, lng: destinationLng });
-
-  if (Number.isFinite(miles) && miles < 300) {
-    return [
-      [originLng, originLat],
-      [destinationLng, destinationLat],
-    ];
-  }
-
-  const coordinates = [];
-  const dx = destinationLng - originLng;
-  const dy = destinationLat - originLat;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  const bow = Math.min(18, Math.max(4, distance * 0.18));
-  const normalLng = -dy / (distance || 1);
-  const normalLat = dx / (distance || 1);
-
-  for (let i = 0; i <= 64; i += 1) {
-    const t = i / 64;
-    const curve = Math.sin(Math.PI * t) * bow;
-    coordinates.push([
-      originLng + dx * t + normalLng * curve,
-      originLat + dy * t + normalLat * curve,
-    ]);
-  }
-
-  return coordinates;
-}
-
-function makeRouteFeature(entry) {
-  const id = entryKey(entry);
-  const displayName = displayShortName(entry);
-  const miles = Number(entry.miles);
-  return {
-    type: "Feature",
-    id,
-    properties: {
-      id,
-      name: displayName,
-      city: entry.city || "",
-      routeType: Number.isFinite(miles) && miles < 300 ? "drive" : "flight",
-    },
-    geometry: {
-      type: "LineString",
-      coordinates: makeRibbonCoordinates(
-        Number(entry.originLng),
-        Number(entry.originLat),
-        OXBOW_POSITION.lng,
-        OXBOW_POSITION.lat
-      ),
-    },
-  };
-}
-
-function setMapData(entries = latestMapEntries) {
-  if (!originMapInstance || !originMapInstance.getStyle()) {
-    return;
-  }
-
-  const routeSource = originMapInstance.getSource("origin-routes");
-  const highlightedSource = originMapInstance.getSource("highlighted-route");
-  const routeData = {
-    type: "FeatureCollection",
-    features: entries.map(makeRouteFeature),
-  };
-  console.info("Oxbow route features", routeData.features.length);
-
-  if (routeSource) {
-    routeSource.setData(routeData);
-  }
-
-  if (highlightedSource) {
-    highlightedSource.setData({ type: "FeatureCollection", features: [] });
-  }
-}
-
-function addMapSourcesAndLayers() {
-  if (!originMapInstance || originMapInstance.getSource("origin-routes")) {
-    setMapData();
-    return;
-  }
-
-  originMapInstance.addSource("origin-routes", {
-    type: "geojson",
-    data: { type: "FeatureCollection", features: [] },
-  });
-
-  originMapInstance.addSource("highlighted-route", {
-    type: "geojson",
-    data: { type: "FeatureCollection", features: [] },
-  });
-
-  originMapInstance.addLayer({
-    id: "origin-routes-shadow",
-    type: "line",
-    source: "origin-routes",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "rgba(21, 17, 13, 0.38)",
-      "line-width": 11,
-      "line-blur": 5,
-    },
-  });
-
-  originMapInstance.addLayer({
-    id: "origin-routes-ribbon",
-    type: "line",
-    source: "origin-routes",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "#ff7a1f",
-      "line-width": 7,
-      "line-opacity": 0.96,
-    },
-  });
-
-  originMapInstance.addLayer({
-    id: "highlighted-route-glow",
-    type: "line",
-    source: "highlighted-route",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "#fff4dc",
-      "line-width": 12,
-      "line-blur": 6,
-      "line-opacity": 0.9,
-    },
-  });
-
-  originMapInstance.addLayer({
-    id: "highlighted-route-ribbon",
-    type: "line",
-    source: "highlighted-route",
-    layout: {
-      "line-cap": "round",
-      "line-join": "round",
-    },
-    paint: {
-      "line-color": "#ff6b1f",
-      "line-width": 8,
-      "line-opacity": 0.96,
-    },
-  });
-
-  setMapData();
 }
 
 function makeMarker(className) {
@@ -412,16 +270,9 @@ function highlightMapEntry(entryId) {
   });
 
   const entry = latestMapEntries.find((candidate) => entryKey(candidate) === entryId);
-  const highlightedSource = originMapInstance.getSource("highlighted-route");
-
-  if (!entry || !highlightedSource) {
+  if (!entry) {
     return;
   }
-
-  highlightedSource.setData({
-    type: "FeatureCollection",
-    features: [makeRouteFeature(entry)],
-  });
 
   const marker = mapMarkers.get(entryId);
   if (marker) {
@@ -466,13 +317,13 @@ function renderOriginMap(entries = []) {
       .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML(makePopupHtml(entry)))
       .addTo(originMapInstance);
 
+    marker.getElement().style.setProperty("--pin-color", entryColor(entry));
     marker.getElement().dataset.entryId = id;
     marker.getElement().setAttribute("aria-label", `${displayShortName(entry)} traveling from ${titleCase(entry.city || "somewhere fun")}`);
     marker.getElement().addEventListener("click", () => highlightMapEntry(id));
     mapMarkers.set(id, marker);
   });
 
-  setMapData(latestMapEntries);
   if (latestMapEntries.length) {
     fitMapToEntries(latestMapEntries);
   }
@@ -507,11 +358,8 @@ async function startOriginMap() {
 
   homeMarker.getElement().setAttribute("aria-label", "Oxbowpalooza near Oxbow Park");
   originMapInstance.on("load", () => {
-    addMapSourcesAndLayers();
     renderOriginMap(latestMapEntries);
   });
-
-  originMapInstance.on("style.load", addMapSourcesAndLayers);
 }
 
 mapStyleButtons.forEach((button) => {
