@@ -1154,7 +1154,7 @@ dt {
 
 .birthday-months ul {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.25rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1163,18 +1163,32 @@ dt {
 .birthday-months li {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem;
+  min-width: 0;
   font-weight: 950;
 }
 
 .birthday-months li strong {
-  width: 2.1rem;
-  aspect-ratio: 1;
+  flex: 0 0 1.65rem;
+  width: 1.65rem;
+  min-height: 1.65rem;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: #3187a6;
   color: var(--cream);
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+.birthday-months li span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: clamp(0.78rem, 1vw, 0.95rem);
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @keyframes posterDrift {

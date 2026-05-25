@@ -166,9 +166,10 @@ function renderBirthdayCalendar(entries = []) {
   birthdayCalendar.innerHTML = months
     .map((month) => {
       const people = (grouped[month] || [])
+        .sort((a, b) => Number(a.birthDay) - Number(b.birthDay))
         .map((entry) => {
           const displayName = entry.nickname || entry.name;
-          return `<li><strong>${entry.birthDay}</strong><span>${displayName}</span></li>`;
+          return `<li><strong>${entry.birthDay}</strong><span title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</span></li>`;
         })
         .join("");
       return `<article><h4>${month}</h4>${people ? `<ul>${people}</ul>` : "<p>Waiting for birthdays.</p>"}</article>`;
@@ -237,6 +238,7 @@ function makeRibbonCoordinates(originLng, originLat, destinationLng, destination
 function makeRouteFeature(entry) {
   const id = entryKey(entry);
   const displayName = entry.nickname || entry.name;
+  const miles = Number(entry.miles);
   return {
     type: "Feature",
     id,
@@ -244,6 +246,7 @@ function makeRouteFeature(entry) {
       id,
       name: displayName,
       city: entry.city || "",
+      routeType: Number.isFinite(miles) && miles < 300 ? "drive" : "flight",
     },
     geometry: {
       type: "LineString",
@@ -300,7 +303,7 @@ function addMapSourcesAndLayers() {
     source: "origin-routes",
     paint: {
       "line-color": "rgba(21, 17, 13, 0.38)",
-      "line-width": 8,
+      "line-width": ["case", ["==", ["get", "routeType"], "drive"], 10, 8],
       "line-blur": 5,
     },
   });
@@ -310,9 +313,9 @@ function addMapSourcesAndLayers() {
     type: "line",
     source: "origin-routes",
     paint: {
-      "line-color": "#f6b64b",
-      "line-width": 5,
-      "line-opacity": 0.72,
+      "line-color": ["case", ["==", ["get", "routeType"], "drive"], "#ff6b1f", "#f6b64b"],
+      "line-width": ["case", ["==", ["get", "routeType"], "drive"], 6, 5],
+      "line-opacity": 0.9,
     },
   });
 
