@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2026-05-25-daytiles-routes" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-25-nearby-crews" />
   </head>
   <body>
     <main>
@@ -65,6 +65,16 @@
               class="hero-carousel__slide"
               src="https://i.ibb.co/wx75KmQ/Chat-GPT-Image-May-24-2026-11-58-03-PM.png"
               alt="Oxbowpalooza psychedelic poster artwork"
+            />
+            <img
+              class="hero-carousel__slide"
+              src="https://i.ibb.co/N6DHVDhx/Chat-GPT-Image-May-25-2026-04-59-31-PM.png"
+              alt="Oxbowpalooza poster banner artwork"
+            />
+            <img
+              class="hero-carousel__slide"
+              src="https://i.ibb.co/Tq7177ZY/Chat-GPT-Image-May-25-2026-04-41-29-PM.png"
+              alt="Oxbowpalooza poster banner artwork"
             />
           </div>
           <h1 id="page-title">Oxbowpalooza</h1>
@@ -376,6 +386,12 @@
               Drop your info and we will turn the guest list into a friendly mileage
               contest. Your city becomes the starting line. Oxbow is the finish.
             </p>
+            <div class="travel-groups" aria-labelledby="travel-groups-title">
+              <h4 id="travel-groups-title">Nearby crews</h4>
+              <div id="travel-groups-list">
+                <p>Once out-of-state RSVPs come in, nearby travelers will gather here.</p>
+              </div>
+            </div>
           </div>
 
           <form class="travel-form" id="travel-form">
@@ -506,15 +522,15 @@
             <p class="eyebrow">Where everyone starts</p>
             <h3 id="travel-map-title">Oxbow orbit map</h3>
             <p>
-              As RSVPs come in, this map starts zoomed in on Gresham. Zoom out
-              to follow each line back to where people are starting from.
+              As RSVPs come in, this map opens wide enough to see everyone.
+              Zoom in from there to explore where people are starting from.
             </p>
           </div>
             <div class="origin-map" id="origin-map" aria-label="Zoomable map of guest origin cities">
             <div class="origin-map__controls" aria-label="Map controls">
               <button type="button" data-map-style="satellite">Satellite</button>
               <button type="button" data-map-style="night">Night</button>
-              <button type="button" data-map-action="home">Back to Oxbow</button>
+              <button type="button" data-map-action="home">Oxbow</button>
               <button type="button" data-map-action="all">Show Everyone</button>
             </div>
             <div class="origin-map__canvas" id="origin-map-canvas"></div>
@@ -547,6 +563,6 @@
     </main>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2026-05-25-pin-map-colors"></script>
+    <script src="./app.js?v=2026-05-25-nearby-crews"></script>
   </body>
 </html>

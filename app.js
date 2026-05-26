@@ -42,6 +42,7 @@ const travelForm = document.querySelector("#travel-form");
 const formStatus = document.querySelector("#form-status");
 const leaderboardList = document.querySelector("#leaderboard-list");
 const heightList = document.querySelector("#height-list");
+const travelGroupsList = document.querySelector("#travel-groups-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
 const originMap = document.querySelector("#origin-map");
 const originMapCanvas = document.querySelector("#origin-map-canvas");
@@ -98,8 +99,33 @@ function cityTown(value) {
   return titleCase(String(value || "").split(",")[0] || "");
 }
 
+function isOregonOrWashington(entry) {
+  const location = String(entry.city || entry.address || "").toLowerCase();
+  const lat = Number(entry.originLat);
+  const lng = Number(entry.originLng);
+  const looksLikeOregon = /\b(oregon|or)\b/.test(location);
+  const looksLikeWashington = /\b(washington|wa)\b/.test(location);
+  const insideOregon = Number.isFinite(lat) && Number.isFinite(lng) && lat >= 42 && lat <= 46.35 && lng >= -124.8 && lng <= -116.3;
+  const insideWashington = Number.isFinite(lat) && Number.isFinite(lng) && lat >= 45.45 && lat <= 49.05 && lng >= -124.85 && lng <= -116.75;
+
+  return looksLikeOregon || looksLikeWashington || insideOregon || insideWashington;
+}
+
+function distanceMiles(a, b) {
+  const earthRadiusMiles = 3958.8;
+  const lat1 = Number(a.originLat) * (Math.PI / 180);
+  const lat2 = Number(b.originLat) * (Math.PI / 180);
+  const deltaLat = (Number(b.originLat) - Number(a.originLat)) * (Math.PI / 180);
+  const deltaLng = (Number(b.originLng) - Number(a.originLng)) * (Math.PI / 180);
+  const haversine =
+    Math.sin(deltaLat / 2) ** 2 +
+    Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) ** 2;
+
+  return earthRadiusMiles * 2 * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+}
+
 function entryColor(entry) {
-  const key = entryKey(entry);
+  const key = String(entry.id || entryKey(entry));
   let hash = 0;
 
   for (let i = 0; i < key.length; i += 1) {
@@ -128,8 +154,56 @@ function renderLeaderboard(entries = []) {
     .map((entry) => {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
       const town = cityTown(entry.city);
-      const location = town ? `${escapeHtml(town)}: ` : "";
-      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${location}${miles} mi</strong></li>`;
+      const location = town ? `<small>${escapeHtml(town)}</small>` : "";
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${location}<span>${miles} mi</span></strong></li>`;
+    })
+    .join("");
+}
+
+function renderTravelGroups(entries = []) {
+  if (!travelGroupsList) {
+    return;
+  }
+
+  const candidates = entries
+    .filter((entry) => entry.name && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng)))
+    .filter((entry) => !isOregonOrWashington(entry));
+  const used = new Set();
+  const groups = [];
+
+  candidates.forEach((entry, index) => {
+    const key = entryKey(entry);
+    if (used.has(key)) {
+      return;
+    }
+
+    const group = [entry];
+    used.add(key);
+
+    candidates.slice(index + 1).forEach((candidate) => {
+      const candidateKey = entryKey(candidate);
+      if (!used.has(candidateKey) && group.some((member) => distanceMiles(member, candidate) <= 50)) {
+        group.push(candidate);
+        used.add(candidateKey);
+      }
+    });
+
+    if (group.length > 1) {
+      groups.push(group);
+    }
+  });
+
+  if (!groups.length) {
+    travelGroupsList.innerHTML = "<p>Nearby crews will appear when two or more out-of-state travelers are within 50 miles.</p>";
+    return;
+  }
+
+  travelGroupsList.innerHTML = groups
+    .sort((a, b) => b.length - a.length)
+    .map((group) => {
+      const label = cityTown(group[0].city) || "Road crew";
+      const names = group.map((entry) => `<span>${escapeHtml(displayShortName(entry))}</span>`).join("");
+      return `<article><strong>${escapeHtml(label)} area</strong><div>${names}</div></article>`;
     })
     .join("");
 }
@@ -391,6 +465,7 @@ async function loadLeaderboard() {
   if (!RSVP_ENDPOINT) {
     renderLeaderboard([]);
     renderHeightLeaderboard([]);
+    renderTravelGroups([]);
     renderBirthdayCalendar([]);
     renderOriginMap([]);
     return;
@@ -402,6 +477,7 @@ async function loadLeaderboard() {
     const entries = data.entries || [];
     renderLeaderboard(entries);
     renderHeightLeaderboard(entries);
+    renderTravelGroups(entries);
     renderBirthdayCalendar(entries);
     renderOriginMap(entries);
   } catch (error) {

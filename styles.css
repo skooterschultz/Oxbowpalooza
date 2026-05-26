@@ -736,6 +736,79 @@ dt {
   font-size: clamp(1.05rem, 1.7vw, 1.25rem);
 }
 
+.travel-groups {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: 25rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background: #fff1c8;
+  box-shadow: 6px 7px 0 rgba(21, 17, 13, 0.14);
+}
+
+.travel-groups h4 {
+  margin: 0 0 0.8rem;
+  color: var(--deep);
+  font-family: var(--western);
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  font-weight: 400;
+  line-height: 0.96;
+}
+
+.travel-groups > div {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  min-height: 0;
+  padding-right: 0.35rem;
+  overflow-y: auto;
+  scrollbar-color: rgba(49, 135, 166, 0.72) rgba(255, 244, 220, 0.78);
+}
+
+.travel-groups p {
+  margin: 0;
+  color: rgba(21, 17, 13, 0.72);
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.travel-groups article {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: rgba(85, 169, 216, 0.26);
+}
+
+.travel-groups article:nth-child(2n) {
+  background: rgba(241, 199, 90, 0.42);
+}
+
+.travel-groups strong {
+  color: var(--rust);
+  font-size: 0.94rem;
+  line-height: 1;
+}
+
+.travel-groups article div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.travel-groups span {
+  padding: 0.28rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(21, 17, 13, 0.1);
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
 .optional-note {
   max-width: 620px;
   margin-bottom: 0.9rem !important;
@@ -909,15 +982,19 @@ dt {
 
 .leaderboard li {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.75rem;
+  padding: 0.75rem 0.65rem 0.75rem 0.75rem;
   border-radius: 6px;
   background: rgba(241, 199, 90, 0.42);
   font-weight: 950;
+  min-width: 0;
 }
 
 .leaderboard button {
+  min-width: 0;
+  overflow: hidden;
   border: 0;
   padding: 0;
   background: transparent;
@@ -929,6 +1006,8 @@ dt {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 0.18em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .leaderboard button:hover,
@@ -942,9 +1021,33 @@ dt {
 }
 
 .leaderboard strong {
-  flex: 0 0 auto;
+  display: grid;
+  flex: 0 0 min(46%, 8.5rem);
+  gap: 0.08rem;
+  justify-items: end;
+  min-width: 0;
+  overflow: hidden;
   color: var(--rust);
   text-align: right;
+}
+
+.leaderboard strong small {
+  max-width: 100%;
+  overflow: hidden;
+  color: rgba(21, 17, 13, 0.62);
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard strong span {
+  font-size: 0.95rem;
+  font-weight: 950;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 .leaderboard-stack {
