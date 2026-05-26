@@ -50,12 +50,93 @@ const originMapEmpty = document.querySelector("#origin-map-empty");
 const mapStyleButtons = Array.from(document.querySelectorAll("[data-map-style]"));
 const mapActionButtons = Array.from(document.querySelectorAll("[data-map-action]"));
 let mapboxAccessToken = "";
-const OXBOW_POSITION = { lat: 45.5308, lng: -122.2443, label: "Oxbow" };
+const OXBOW_POSITION = { lat: 45.4859628, lng: -122.3071819, label: "Oxbow" };
 const MAPBOX_STYLES = {
   satellite: "mapbox://styles/mapbox/standard-satellite",
   night: "mapbox://styles/mapbox/dark-v11",
 };
 const MAP_PIN_COLORS = ["#d6512a", "#3187a6", "#5f9b4b", "#c65f80", "#e58a2e", "#7a568f", "#0f6f78", "#f1c75a"];
+const OREGON_WASHINGTON_CITIES = new Set([
+  "albany",
+  "aloha",
+  "ashland",
+  "astoria",
+  "beaverton",
+  "bend",
+  "canby",
+  "central point",
+  "clackamas",
+  "coos bay",
+  "corvallis",
+  "eagle creek",
+  "eugene",
+  "fairview",
+  "forest grove",
+  "gladstone",
+  "grants pass",
+  "gresham",
+  "happy valley",
+  "hermiston",
+  "hillsboro",
+  "hood river",
+  "keizer",
+  "klamath falls",
+  "lake oswego",
+  "lebanon",
+  "mcminnville",
+  "medford",
+  "milwaukie",
+  "molalla",
+  "newberg",
+  "oregon city",
+  "pendleton",
+  "portland",
+  "redmond",
+  "roseburg",
+  "salem",
+  "sandy",
+  "sherwood",
+  "springfield",
+  "the dalles",
+  "tigard",
+  "troutdale",
+  "tualatin",
+  "vancouver",
+  "west linn",
+  "wilsonville",
+  "wood village",
+  "woodburn",
+  "auburn",
+  "bellingham",
+  "bellevue",
+  "bothell",
+  "bremerton",
+  "camas",
+  "centralia",
+  "everett",
+  "federal way",
+  "kennewick",
+  "kent",
+  "kirkland",
+  "lacey",
+  "longview",
+  "marysville",
+  "olympia",
+  "pasco",
+  "pullman",
+  "puyallup",
+  "redmond",
+  "renton",
+  "richland",
+  "seattle",
+  "shoreline",
+  "spokane",
+  "tacoma",
+  "vancouver",
+  "walla walla",
+  "wenatchee",
+  "yakima",
+]);
 let originMapInstance;
 let activeMapStyle = "satellite";
 let latestMapEntries = [];
@@ -99,16 +180,22 @@ function cityTown(value) {
   return titleCase(String(value || "").split(",")[0] || "");
 }
 
+function hasUsableCoordinates(entry) {
+  return entry.originLat !== null && entry.originLng !== null && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng));
+}
+
 function isOregonOrWashington(entry) {
   const location = String(entry.city || entry.address || "").toLowerCase();
+  const town = String(entry.city || "").split(",")[0].trim().toLowerCase();
   const lat = Number(entry.originLat);
   const lng = Number(entry.originLng);
   const looksLikeOregon = /\b(oregon|or)\b/.test(location);
   const looksLikeWashington = /\b(washington|wa)\b/.test(location);
-  const insideOregon = Number.isFinite(lat) && Number.isFinite(lng) && lat >= 42 && lat <= 46.35 && lng >= -124.8 && lng <= -116.3;
-  const insideWashington = Number.isFinite(lat) && Number.isFinite(lng) && lat >= 45.45 && lat <= 49.05 && lng >= -124.85 && lng <= -116.75;
+  const cityIsLocal = OREGON_WASHINGTON_CITIES.has(town);
+  const insideOregon = hasUsableCoordinates(entry) && lat >= 42 && lat <= 46.35 && lng >= -124.8 && lng <= -116.3;
+  const insideWashington = hasUsableCoordinates(entry) && lat >= 45.45 && lat <= 49.05 && lng >= -124.85 && lng <= -116.75;
 
-  return looksLikeOregon || looksLikeWashington || insideOregon || insideWashington;
+  return looksLikeOregon || looksLikeWashington || cityIsLocal || insideOregon || insideWashington;
 }
 
 function distanceMiles(a, b) {
@@ -166,7 +253,7 @@ function renderTravelGroups(entries = []) {
   }
 
   const candidates = entries
-    .filter((entry) => entry.name && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng)))
+    .filter((entry) => entry.name && hasUsableCoordinates(entry))
     .filter((entry) => !isOregonOrWashington(entry));
   const used = new Set();
   const groups = [];
@@ -370,7 +457,7 @@ document.addEventListener("click", (event) => {
 
 function renderOriginMap(entries = []) {
   latestMapEntries = entries
-    .filter((entry) => entry.name && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng)))
+    .filter((entry) => entry.name && hasUsableCoordinates(entry))
     .slice(0, 80);
 
   if (originMapEmpty) {

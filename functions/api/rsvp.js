@@ -1,6 +1,6 @@
 const DESTINATION = {
-  lat: 45.5308,
-  lng: -122.2443,
+  lat: 45.4859628,
+  lng: -122.3071819,
 };
 
 const CORS_HEADERS = {
@@ -24,9 +24,32 @@ function clean(value) {
   return String(value || "").trim();
 }
 
+function geocodeQuery(address, city) {
+  const query = address ? `${address}, ${city}` : city;
+
+  return query && !/\b(usa|united states)\b/i.test(query) ? `${query}, USA` : query;
+}
+
 function numeric(value) {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
+}
+
+function normalizedLocation(value) {
+  return clean(value)
+    .toLowerCase()
+    .replace(/southeast/g, "se")
+    .replace(/parkway/g, "pkwy")
+    .replace(/[.,#]/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function isPartyAddress(address, city) {
+  const location = normalizedLocation(`${address} ${city}`);
+  const hasAddress = location.includes("5238") && location.includes("oxbow") && (location.includes("pkwy") || location.includes("park"));
+  const hasGresham = location.includes("gresham") || location.includes("97080");
+
+  return hasAddress && hasGresham;
 }
 
 function toEntry(row) {
@@ -190,7 +213,7 @@ async function createEntry(request, env) {
   const name = clean(body.name);
   const city = clean(body.city);
   const address = clean(body.address);
-  const originQuery = address ? `${address}, ${city}` : city;
+  const originQuery = geocodeQuery(address, city);
   const daysAttending = clean(body.daysAttending);
 
   if (!name) {
@@ -203,8 +226,8 @@ async function createEntry(request, env) {
 
   const heightInches = numeric(body.heightInches);
   const birthDay = numeric(body.birthDay);
-  const origin = await geocodeCity(originQuery, env);
-  const miles = distanceInMiles(origin, DESTINATION);
+  const origin = isPartyAddress(address, city) ? DESTINATION : await geocodeCity(originQuery, env);
+  const miles = isPartyAddress(address, city) ? 0 : distanceInMiles(origin, DESTINATION);
 
   const result = await env.DB.prepare(
     `INSERT INTO rsvps (
