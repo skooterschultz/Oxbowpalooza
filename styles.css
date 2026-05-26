@@ -1266,6 +1266,7 @@ dt {
 }
 
 .birthday-months li {
+  --birthday-color: #3187a6;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -1274,7 +1275,6 @@ dt {
 }
 
 .birthday-months li strong {
-  --birthday-color: #3187a6;
   flex: 0 0 1.65rem;
   width: 1.65rem;
   min-height: 1.65rem;
