@@ -1287,15 +1287,30 @@ dt {
   line-height: 1;
 }
 
-.birthday-months li span {
+.birthday-months li button {
   min-width: 0;
   overflow: hidden;
+  border: 0;
+  padding: 0;
+  background: transparent;
   color: var(--ink);
+  cursor: pointer;
+  font: inherit;
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.1;
+  text-align: left;
   text-overflow: ellipsis;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.14em;
   white-space: nowrap;
+}
+
+.birthday-months li button:hover,
+.birthday-months li button:focus-visible {
+  color: var(--rust);
+  outline: none;
 }
 
 @keyframes posterDrift {

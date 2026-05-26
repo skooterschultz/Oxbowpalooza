@@ -360,7 +360,7 @@ function renderBirthdayCalendar(entries = []) {
         .sort((a, b) => Number(a.birthDay) - Number(b.birthDay))
         .map((entry) => {
           const displayName = displayShortName(entry);
-          return `<li style="--birthday-color: ${entryColor(entry)}"><strong>${entry.birthDay}</strong><span title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</span></li>`;
+          return `<li style="--birthday-color: ${entryColor(entry)}"><strong>${entry.birthDay}</strong><button type="button" data-map-entry-id="${entryKey(entry)}" title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</button></li>`;
         })
         .join("");
       return `<article><h4>${month}</h4>${people ? `<ul>${people}</ul>` : "<p>Waiting for birthdays.</p>"}</article>`;
@@ -453,6 +453,9 @@ document.addEventListener("click", (event) => {
   }
 
   highlightMapEntry(mapButton.dataset.mapEntryId);
+  if (originMap) {
+    originMap.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 });
 
 function renderOriginMap(entries = []) {
