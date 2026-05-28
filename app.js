@@ -409,6 +409,25 @@ function renderFamilyClans(entries = []) {
   }).join("");
 }
 
+function heightTieRank(entry) {
+  const displayName = displayShortName(entry).toLowerCase();
+  const fullName = String(entry.name || "").toLowerCase();
+
+  if (displayName === "skooter" || fullName.includes("skooter")) {
+    return -2;
+  }
+
+  if (displayName === "awesome scott" || fullName.includes("scott")) {
+    return -1;
+  }
+
+  if (displayName === "mark" || fullName.includes("mark")) {
+    return 1;
+  }
+
+  return 0;
+}
+
 function renderHeightLeaderboard(entries = []) {
   if (!heightList) {
     return;
@@ -416,7 +435,15 @@ function renderHeightLeaderboard(entries = []) {
 
   const leaders = entries
     .filter((entry) => entry.name && Number.isFinite(Number(entry.heightInches)) && Number(entry.heightInches) > 0)
-    .sort((a, b) => Number(b.heightInches) - Number(a.heightInches))
+    .sort((a, b) => {
+      const heightDiff = Number(b.heightInches) - Number(a.heightInches);
+      if (heightDiff) {
+        return heightDiff;
+      }
+
+      const rankDiff = heightTieRank(a) - heightTieRank(b);
+      return rankDiff || displayShortName(a).localeCompare(displayShortName(b));
+    })
     .slice(0, 8);
 
   if (!leaders.length) {
