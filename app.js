@@ -43,7 +43,9 @@ const formStatus = document.querySelector("#form-status");
 const leaderboardList = document.querySelector("#leaderboard-list");
 const heightList = document.querySelector("#height-list");
 const travelGroupsList = document.querySelector("#travel-groups-list");
+const flightGroupsList = document.querySelector("#flight-groups-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
+const familyClansGrid = document.querySelector("#family-clans-grid");
 const originMap = document.querySelector("#origin-map");
 const originMapCanvas = document.querySelector("#origin-map-canvas");
 const originMapEmpty = document.querySelector("#origin-map-empty");
@@ -141,6 +143,12 @@ let originMapInstance;
 let activeMapStyle = "satellite";
 let latestMapEntries = [];
 let mapMarkers = new Map();
+const FAMILY_CLANS = [
+  { name: "Bevins", inviters: ["Laura", "JCam"] },
+  { name: "Sielings", inviters: ["Toni", "John", "Sandy"] },
+  { name: "Vitangelis", inviters: ["Scott", "Nancy"] },
+  { name: "Schultz", inviters: ["Danny", "Skooter", "Xander", "Zoe", "Mark"] },
+];
 
 function setFormStatus(message) {
   if (formStatus) {
@@ -293,6 +301,112 @@ function renderTravelGroups(entries = []) {
       return `<article><strong>${escapeHtml(label)} area</strong><div>${names}</div></article>`;
     })
     .join("");
+}
+
+function flightDateTime(date, time) {
+  if (!date || !time) {
+    return null;
+  }
+
+  const parsed = new Date(`${date}T${time}`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function formatFlightWindow(date, time) {
+  const parsed = flightDateTime(date, time);
+  if (!parsed) {
+    return "";
+  }
+
+  return parsed.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function collectFlightGroups(entries = [], type) {
+  const dateKey = type === "arrival" ? "arrivalDate" : "departureDate";
+  const timeKey = type === "arrival" ? "arrivalTime" : "departureTime";
+  const candidates = entries
+    .map((entry) => ({ entry, when: flightDateTime(entry[dateKey], entry[timeKey]) }))
+    .filter((item) => item.entry.name && item.when)
+    .sort((a, b) => a.when - b.when);
+  const used = new Set();
+  const groups = [];
+
+  candidates.forEach((item, index) => {
+    const key = entryKey(item.entry);
+    if (used.has(key)) {
+      return;
+    }
+
+    const group = [item];
+    used.add(key);
+
+    candidates.slice(index + 1).forEach((candidate) => {
+      const candidateKey = entryKey(candidate.entry);
+      const sameDay = candidate.when.toDateString() === item.when.toDateString();
+      const hoursApart = Math.abs(candidate.when - item.when) / 36e5;
+      if (!used.has(candidateKey) && sameDay && hoursApart <= 3) {
+        group.push(candidate);
+        used.add(candidateKey);
+      }
+    });
+
+    if (group.length > 1) {
+      groups.push({ type, items: group });
+    }
+  });
+
+  return groups;
+}
+
+function renderFlightGroups(entries = []) {
+  if (!flightGroupsList) {
+    return;
+  }
+
+  const groups = [...collectFlightGroups(entries, "arrival"), ...collectFlightGroups(entries, "departure")]
+    .sort((a, b) => a.items[0].when - b.items[0].when)
+    .slice(0, 8);
+
+  if (!groups.length) {
+    flightGroupsList.innerHTML = "<p>Flight matches will appear when two or more people have PDX times within about three hours.</p>";
+    return;
+  }
+
+  flightGroupsList.innerHTML = groups
+    .map((group) => {
+      const label = group.type === "arrival" ? "Landing at PDX" : "Leaving from PDX";
+      const first = group.items[0].entry;
+      const time = formatFlightWindow(
+        group.type === "arrival" ? first.arrivalDate : first.departureDate,
+        group.type === "arrival" ? first.arrivalTime : first.departureTime
+      );
+      const names = group.items.map(({ entry }) => `<span>${escapeHtml(displayShortName(entry))}</span>`).join("");
+      return `<article><strong>${label}${time ? `: ${escapeHtml(time)}` : ""}</strong><div>${names}</div></article>`;
+    })
+    .join("");
+}
+
+function renderFamilyClans(entries = []) {
+  if (!familyClansGrid) {
+    return;
+  }
+
+  familyClansGrid.innerHTML = FAMILY_CLANS.map((clan) => {
+    const inviterSet = new Set(clan.inviters.map((name) => name.toLowerCase()));
+    const people = entries
+      .filter((entry) => entry.name && inviterSet.has(String(entry.invitedBy || "").toLowerCase()))
+      .sort((a, b) => displayShortName(a).localeCompare(displayShortName(b)));
+    const roster = people.length
+      ? `<ul>${people.map((entry) => `<li>${escapeHtml(displayShortName(entry))}</li>`).join("")}</ul>`
+      : "<p>Waiting for RSVPs.</p>";
+
+    return `<article><h4>${clan.name}</h4><strong>${people.length} checked in</strong>${roster}</article>`;
+  }).join("");
 }
 
 function renderHeightLeaderboard(entries = []) {
@@ -556,6 +670,8 @@ async function loadLeaderboard() {
     renderLeaderboard([]);
     renderHeightLeaderboard([]);
     renderTravelGroups([]);
+    renderFlightGroups([]);
+    renderFamilyClans([]);
     renderBirthdayCalendar([]);
     renderOriginMap([]);
     return;
@@ -568,6 +684,8 @@ async function loadLeaderboard() {
     renderLeaderboard(entries);
     renderHeightLeaderboard(entries);
     renderTravelGroups(entries);
+    renderFlightGroups(entries);
+    renderFamilyClans(entries);
     renderBirthdayCalendar(entries);
     renderOriginMap(entries);
   } catch (error) {
@@ -587,6 +705,16 @@ if (travelForm) {
 
     if (!daysAttending.length) {
       setFormStatus("Pick at least one day you are attending.");
+      return;
+    }
+
+    if (!payload.invitedBy) {
+      setFormStatus("Pick the person who brought you into this beautiful mess.");
+      return;
+    }
+
+    if (!payload.birthMonth || !payload.birthDay) {
+      setFormStatus("Add your birthday month and day for the birthday board.");
       return;
     }
 
@@ -616,7 +744,9 @@ if (travelForm) {
       }
 
       travelForm.reset();
-      if (Number.isFinite(Number(data.entry.miles))) {
+      if (data.updated) {
+        setFormStatus("Updated your RSVP. The boards will catch up in a second.");
+      } else if (Number.isFinite(Number(data.entry.miles))) {
         setFormStatus(`You're in. ${Math.round(data.entry.miles).toLocaleString()} miles on the board.`);
       } else {
         setFormStatus("You're in. We saved the RSVP, and the mileage board will update when the city can be mapped.");

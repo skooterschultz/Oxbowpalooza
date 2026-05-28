@@ -70,6 +70,11 @@ function toEntry(row) {
     originLat: row.origin_lat,
     originLng: row.origin_lng,
     miles: row.miles,
+    arrivalDate: row.flight_arrival_date,
+    arrivalTime: row.flight_arrival_time,
+    departureDate: row.flight_departure_date,
+    departureTime: row.flight_departure_time,
+    flightNotes: row.flight_notes,
   };
 }
 
@@ -79,13 +84,27 @@ function toPublicEntry(row) {
     name: row.name,
     nickname: row.nickname,
     city: row.city,
+    invitedBy: row.invited_by,
     birthMonth: row.birth_month,
     birthDay: row.birth_day,
     heightInches: row.height_inches,
     originLat: row.origin_lat,
     originLng: row.origin_lng,
     miles: row.miles,
+    arrivalDate: row.flight_arrival_date,
+    arrivalTime: row.flight_arrival_time,
+    departureDate: row.flight_departure_date,
+    departureTime: row.flight_departure_time,
   };
+}
+
+async function tableColumns(env) {
+  const table = await env.DB.prepare("PRAGMA table_info(rsvps)").all();
+  return new Set((table.results || []).map((column) => column.name));
+}
+
+function selectColumn(columns, name) {
+  return columns.has(name) ? name : `NULL AS ${name}`;
 }
 
 function distanceInMiles(from, to) {
@@ -167,18 +186,24 @@ async function geocodeCity(city, env) {
 }
 
 async function listEntries(env) {
+  const columns = await tableColumns(env);
   const { results } = await env.DB.prepare(
     `SELECT
       id,
       name,
       nickname,
       city,
+      invited_by,
       birth_month,
       birth_day,
       height_inches,
       origin_lat,
       origin_lng,
-      miles
+      miles,
+      ${selectColumn(columns, "flight_arrival_date")},
+      ${selectColumn(columns, "flight_arrival_time")},
+      ${selectColumn(columns, "flight_departure_date")},
+      ${selectColumn(columns, "flight_departure_time")}
     FROM rsvps
     ORDER BY created_at DESC
     LIMIT 250`
@@ -211,6 +236,7 @@ async function healthCheck(env) {
 async function createEntry(request, env) {
   const body = await request.json();
   const name = clean(body.name);
+  const email = clean(body.email).toLowerCase();
   const city = clean(body.city);
   const address = clean(body.address);
   const originQuery = geocodeQuery(address, city);
@@ -224,12 +250,96 @@ async function createEntry(request, env) {
     return json({ ok: false, error: "Pick at least one day you are attending." }, 400);
   }
 
+  if (!clean(body.invitedBy)) {
+    return json({ ok: false, error: "Pick the person who brought you into this beautiful mess." }, 400);
+  }
+
+  if (!clean(body.birthMonth) || !clean(body.birthDay)) {
+    return json({ ok: false, error: "Birthday month and day are required." }, 400);
+  }
+
   const heightInches = numeric(body.heightInches);
   const birthDay = numeric(body.birthDay);
   const origin = isPartyAddress(address, city) ? DESTINATION : await geocodeCity(originQuery, env);
   const miles = isPartyAddress(address, city) ? 0 : distanceInMiles(origin, DESTINATION);
+  const columns = await tableColumns(env);
+  const hasFlightColumns =
+    columns.has("flight_arrival_date") &&
+    columns.has("flight_arrival_time") &&
+    columns.has("flight_departure_date") &&
+    columns.has("flight_departure_time") &&
+    columns.has("flight_notes");
+  const existing = email
+    ? await env.DB.prepare("SELECT id FROM rsvps WHERE lower(email) = ? ORDER BY created_at DESC LIMIT 1").bind(email).first()
+    : null;
+  const wasUpdated = Boolean(existing?.id);
+  let savedId = existing?.id || null;
 
-  const result = await env.DB.prepare(
+  if (savedId) {
+    const flightSet = hasFlightColumns
+      ? `,
+        flight_arrival_date = ?,
+        flight_arrival_time = ?,
+        flight_departure_date = ?,
+        flight_departure_time = ?,
+        flight_notes = ?`
+      : "";
+    const flightValues = hasFlightColumns
+      ? [clean(body.arrivalDate), clean(body.arrivalTime), clean(body.departureDate), clean(body.departureTime), clean(body.flightNotes)]
+      : [];
+
+    await env.DB.prepare(
+      `UPDATE rsvps
+      SET
+        name = ?,
+        nickname = ?,
+        email = ?,
+        city = ?,
+        address = ?,
+        invited_by = ?,
+        food_notes = ?,
+        days_attending = ?,
+        birth_month = ?,
+        birth_day = ?,
+        height_inches = ?,
+        origin_lat = ?,
+        origin_lng = ?,
+        miles = ?${flightSet}
+      WHERE id = ?`
+    )
+      .bind(
+        name,
+        clean(body.nickname),
+        email,
+        city,
+        address,
+        clean(body.invitedBy),
+        clean(body.foodNotes),
+        daysAttending,
+        clean(body.birthMonth),
+        birthDay,
+        heightInches,
+        origin?.lat || null,
+        origin?.lng || null,
+        miles,
+        ...flightValues,
+        savedId
+      )
+      .run();
+  } else {
+    const flightColumns = hasFlightColumns
+      ? `,
+      flight_arrival_date,
+      flight_arrival_time,
+      flight_departure_date,
+      flight_departure_time,
+      flight_notes`
+      : "";
+    const flightPlaceholders = hasFlightColumns ? ", ?, ?, ?, ?, ?" : "";
+    const flightValues = hasFlightColumns
+      ? [clean(body.arrivalDate), clean(body.arrivalTime), clean(body.departureDate), clean(body.departureTime), clean(body.flightNotes)]
+      : [];
+    const result = await env.DB.prepare(
     `INSERT INTO rsvps (
       name,
       nickname,
@@ -244,13 +354,13 @@ async function createEntry(request, env) {
       height_inches,
       origin_lat,
       origin_lng,
-      miles
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      miles${flightColumns}
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${flightPlaceholders})`
   )
     .bind(
       name,
       clean(body.nickname),
-      clean(body.email),
+      email,
       city,
       address,
       clean(body.invitedBy),
@@ -261,9 +371,12 @@ async function createEntry(request, env) {
       heightInches,
       origin?.lat || null,
       origin?.lng || null,
-      miles
+      miles,
+      ...flightValues
     )
     .run();
+    savedId = result.meta.last_row_id;
+  }
 
   const saved = await env.DB.prepare(
     `SELECT
@@ -282,14 +395,19 @@ async function createEntry(request, env) {
       height_inches,
       origin_lat,
       origin_lng,
-      miles
+      miles,
+      ${selectColumn(columns, "flight_arrival_date")},
+      ${selectColumn(columns, "flight_arrival_time")},
+      ${selectColumn(columns, "flight_departure_date")},
+      ${selectColumn(columns, "flight_departure_time")},
+      ${selectColumn(columns, "flight_notes")}
     FROM rsvps
     WHERE id = ?`
   )
-    .bind(result.meta.last_row_id)
+    .bind(savedId)
     .first();
 
-  return json({ ok: true, entry: toEntry(saved) });
+  return json({ ok: true, updated: wasUpdated, entry: toEntry(saved) });
 }
 
 export async function onRequest(context) {

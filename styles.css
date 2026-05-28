@@ -787,6 +787,14 @@ dt {
   background: rgba(241, 199, 90, 0.42);
 }
 
+.flight-groups article {
+  background: rgba(214, 81, 42, 0.14);
+}
+
+.flight-groups article:nth-child(2n) {
+  background: rgba(49, 135, 166, 0.2);
+}
+
 .travel-groups strong {
   color: var(--rust);
   font-size: 0.94rem;
@@ -840,7 +848,8 @@ dt {
 }
 
 .travel-form label,
-.days-field {
+.days-field,
+.flight-field {
   display: grid;
   gap: 0.35rem;
   color: var(--deep);
@@ -856,13 +865,34 @@ dt {
   border: 0;
 }
 
-.days-field legend {
+.flight-field {
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.85rem;
+  border: 3px solid rgba(21, 17, 13, 0.85);
+  border-radius: 7px;
+  background: rgba(85, 169, 216, 0.18);
+}
+
+.days-field legend,
+.flight-field legend {
   margin-bottom: 0.45rem;
 }
 
-.days-field legend span {
+.days-field legend span,
+.flight-field legend span {
   color: var(--rust);
   font-size: 0.78rem;
+}
+
+.flight-field p {
+  margin: 0;
+  color: rgba(21, 17, 13, 0.72);
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .days-field label {
@@ -949,6 +979,12 @@ dt {
 .height-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.flight-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(110px, 0.9fr);
   gap: 0.6rem;
 }
 
@@ -1224,6 +1260,86 @@ dt {
   box-shadow: 6px 7px 0 rgba(21, 17, 13, 0.14);
 }
 
+.family-clans {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.4rem);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 5% 15%, rgba(214, 81, 42, 0.22), transparent 12rem),
+    #fff1c8;
+  box-shadow: 6px 7px 0 rgba(21, 17, 13, 0.14);
+}
+
+.family-clans h3 {
+  margin: 0;
+  color: var(--deep);
+}
+
+.family-clans p {
+  margin-bottom: 0;
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+  font-weight: 650;
+}
+
+.family-clans__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.family-clans__grid article {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  min-height: 12rem;
+  max-height: 18rem;
+  padding: 0.85rem;
+  overflow-y: auto;
+  border: 3px solid rgba(21, 17, 13, 0.8);
+  border-radius: 7px;
+  background: rgba(85, 169, 216, 0.24);
+}
+
+.family-clans__grid article:nth-child(2n) {
+  background: rgba(241, 199, 90, 0.36);
+}
+
+.family-clans__grid h4 {
+  margin: 0;
+  color: var(--rust);
+  font-family: var(--display);
+  font-size: clamp(1.65rem, 3vw, 2.55rem);
+  font-weight: 400;
+  line-height: 0.9;
+}
+
+.family-clans__grid strong {
+  color: rgba(21, 17, 13, 0.68);
+  font-size: 0.85rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.family-clans__grid ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.family-clans__grid li {
+  padding: 0.42rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 244, 220, 0.72);
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .birthday-calendar h3 {
   margin: 0;
   color: var(--deep);
@@ -1301,9 +1417,7 @@ dt {
   line-height: 1.1;
   text-align: left;
   text-overflow: ellipsis;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.14em;
+  text-decoration: none;
   white-space: nowrap;
 }
 
@@ -1344,6 +1458,7 @@ dt {
   .rsvp-game,
   .travel-map-card,
   .birthday-months,
+  .family-clans__grid,
   .rsvp-section {
     grid-template-columns: 1fr;
   }
@@ -1368,6 +1483,10 @@ dt {
 
   .leaderboard ol {
     max-height: 320px;
+  }
+
+  .family-clans__grid article {
+    max-height: 16rem;
   }
 }
 
@@ -1396,6 +1515,10 @@ dt {
 
   .poster-tabs button {
     min-height: 56px;
+  }
+
+  .flight-fields {
+    grid-template-columns: 1fr;
   }
 
 }

@@ -28,12 +28,18 @@ CREATE TABLE IF NOT EXISTS rsvps (
   height_inches INTEGER,
   origin_lat REAL,
   origin_lng REAL,
-  miles INTEGER
+  miles INTEGER,
+  flight_arrival_date TEXT,
+  flight_arrival_time TEXT,
+  flight_departure_date TEXT,
+  flight_departure_time TEXT,
+  flight_notes TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_rsvps_miles ON rsvps(miles DESC);
 CREATE INDEX IF NOT EXISTS idx_rsvps_height ON rsvps(height_inches DESC);
 CREATE INDEX IF NOT EXISTS idx_rsvps_birthday ON rsvps(birth_month, birth_day);
+CREATE INDEX IF NOT EXISTS idx_rsvps_email ON rsvps(email);
 
 -- Repair section for an existing rsvps table.
 -- Run only the lines for columns that are missing from your table.
@@ -54,6 +60,12 @@ CREATE INDEX IF NOT EXISTS idx_rsvps_birthday ON rsvps(birth_month, birth_day);
 -- ALTER TABLE rsvps ADD COLUMN origin_lat REAL;
 -- ALTER TABLE rsvps ADD COLUMN origin_lng REAL;
 -- ALTER TABLE rsvps ADD COLUMN miles INTEGER;
+-- ALTER TABLE rsvps ADD COLUMN flight_arrival_date TEXT;
+-- ALTER TABLE rsvps ADD COLUMN flight_arrival_time TEXT;
+-- ALTER TABLE rsvps ADD COLUMN flight_departure_date TEXT;
+-- ALTER TABLE rsvps ADD COLUMN flight_departure_time TEXT;
+-- ALTER TABLE rsvps ADD COLUMN flight_notes TEXT;
+-- CREATE INDEX IF NOT EXISTS idx_rsvps_email ON rsvps(email);
 
 -- Useful checks:
 -- PRAGMA table_info(rsvps);

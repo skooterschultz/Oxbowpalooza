@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2026-05-26-birthday-map-links" />
+    <link rel="stylesheet" href="./styles.css?v=2026-05-27-flight-clans" />
   </head>
   <body>
     <main>
@@ -392,12 +392,18 @@
                 <p>Once out-of-state RSVPs come in, nearby travelers will gather here.</p>
               </div>
             </div>
+            <div class="travel-groups flight-groups" aria-labelledby="flight-groups-title">
+              <h4 id="flight-groups-title">Flight matches</h4>
+              <div id="flight-groups-list">
+                <p>Optional PDX arrivals and departures will group here when times line up.</p>
+              </div>
+            </div>
           </div>
 
           <form class="travel-form" id="travel-form">
             <label>
               Name
-              <input name="name" autocomplete="name" />
+              <input name="name" autocomplete="name" required />
             </label>
             <label>
               Nickname
@@ -416,9 +422,9 @@
               <input name="address" autocomplete="street-address" placeholder="Optional street address" />
             </label>
             <label>
-              Who invited you?
-              <select name="invitedBy">
-                <option value="">Choose your inviter</option>
+              Who brought you into this beautiful mess?
+              <select name="invitedBy" required>
+                <option value="">Pick your responsible adult</option>
                 <option>Nancy</option>
                 <option>Scott</option>
                 <option>Laura</option>
@@ -434,10 +440,11 @@
               </select>
             </label>
             <label>
-              Food notes
+              Dietary restrictions?
               <select name="foodNotes">
-                <option value="">Choose one if helpful</option>
+                <option value="">Choose one if your stomach has notes</option>
                 <option>Eats everything</option>
+                <option>Vegan</option>
                 <option>Vegetarian</option>
                 <option>Gluten-free</option>
                 <option>Dairy intolerant</option>
@@ -455,7 +462,7 @@
             <label>
               Birthday
               <div class="birthday-fields">
-                <select name="birthMonth" aria-label="Birth month">
+                <select name="birthMonth" aria-label="Birth month" required>
                   <option value="">Month</option>
                   <option>January</option>
                   <option>February</option>
@@ -470,7 +477,7 @@
                   <option>November</option>
                   <option>December</option>
                 </select>
-                <select name="birthDay" aria-label="Birth day">
+                <select name="birthDay" aria-label="Birth day" required>
                   <option value="">Day</option>
                   <option>1</option><option>2</option><option>3</option><option>4</option>
                   <option>5</option><option>6</option><option>7</option><option>8</option>
@@ -496,6 +503,28 @@
               <label>
                 <input name="daysAttending" type="checkbox" value="Sunday" />
                 <span>Sunday</span>
+              </label>
+            </fieldset>
+            <fieldset class="flight-field">
+              <legend>Flight info <span>Optional</span></legend>
+              <p>Flying through PDX? Add timing if you want help lining up rides.</p>
+              <label>
+                Landing at PDX
+                <div class="flight-fields">
+                  <input name="arrivalDate" type="date" aria-label="Arrival date" />
+                  <input name="arrivalTime" type="time" aria-label="Arrival time" />
+                </div>
+              </label>
+              <label>
+                Taking off from PDX
+                <div class="flight-fields">
+                  <input name="departureDate" type="date" aria-label="Departure date" />
+                  <input name="departureTime" type="time" aria-label="Departure time" />
+                </div>
+              </label>
+              <label>
+                Flight notes
+                <input name="flightNotes" placeholder="Airline, flight number, or ride notes" />
               </label>
             </fieldset>
             <button class="button button--primary" type="submit">Enter the mileage game</button>
@@ -559,10 +588,23 @@
             <article><h4>December</h4><p>Waiting for birthdays.</p></article>
           </div>
         </div>
+        <div class="family-clans" aria-labelledby="family-clans-title">
+          <div>
+            <p class="eyebrow">Family friendly feud</p>
+            <h3 id="family-clans-title">Households of harmless chaos</h3>
+            <p>No trophies, no grudges, just a very official-looking way to see the branches fill in.</p>
+          </div>
+          <div class="family-clans__grid" id="family-clans-grid">
+            <article><h4>Bevins</h4><p>Waiting for RSVPs.</p></article>
+            <article><h4>Sielings</h4><p>Waiting for RSVPs.</p></article>
+            <article><h4>Vitangelis</h4><p>Waiting for RSVPs.</p></article>
+            <article><h4>Schultz</h4><p>Waiting for RSVPs.</p></article>
+          </div>
+        </div>
       </section>
     </main>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2026-05-26-birthday-map-links"></script>
+    <script src="./app.js?v=2026-05-27-flight-clans"></script>
   </body>
 </html>
