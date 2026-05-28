@@ -144,9 +144,9 @@ let activeMapStyle = "satellite";
 let latestMapEntries = [];
 let mapMarkers = new Map();
 const FAMILY_CLANS = [
-  { name: "Bevings", inviters: ["Laura", "JCam"] },
-  { name: "Sielings", inviters: ["Toni", "John", "Sandy"] },
-  { name: "Vitangelis", inviters: ["Scott", "Nancy"] },
+  { name: "Beving", inviters: ["Laura", "JCam"] },
+  { name: "Sieling", inviters: ["Toni", "John", "Sandy"] },
+  { name: "Vitangeli", inviters: ["Scott", "Nancy"] },
   { name: "Schultz", inviters: ["Danny", "Skooter", "Xander", "Zoe", "Mark"] },
 ];
 
