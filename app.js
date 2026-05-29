@@ -145,8 +145,8 @@ let latestMapEntries = [];
 let mapMarkers = new Map();
 const FAMILY_CLANS = [
   { name: "Beving", inviters: ["Laura", "JCam"] },
-  { name: "Sieling", inviters: ["Toni", "John", "Sanford"] },
-  { name: "Vitangeli", inviters: ["Scott", "Nancy"] },
+  { name: "Sieling", inviters: ["Toni", "John", "Sanford", "Katie"] },
+  { name: "Vitangeli", inviters: ["Scott", "Nancy", "Jeff"] },
   { name: "Schultz", inviters: ["Danny", "Skooter", "Xander", "Zoe", "Mark"] },
 ];
 
