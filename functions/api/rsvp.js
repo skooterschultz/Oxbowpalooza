@@ -3,6 +3,14 @@ const DESTINATION = {
   lng: -122.3071819,
 };
 
+const KNOWN_ORIGINS = [
+  {
+    matches: ["honokaa hi", "honokaa hawaii"],
+    lat: 20.0755626,
+    lng: -155.4638819,
+  },
+];
+
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -107,6 +115,31 @@ function selectColumn(columns, name) {
   return columns.has(name) ? name : `NULL AS ${name}`;
 }
 
+async function repairKnownOrigins(env, rows) {
+  for (const row of rows) {
+    if (row.origin_lat !== null && row.origin_lng !== null) {
+      continue;
+    }
+
+    const city = normalizedLocation(row.city);
+    const knownOrigin = KNOWN_ORIGINS.find((origin) => origin.matches.includes(city));
+    if (!knownOrigin) {
+      continue;
+    }
+
+    const miles = distanceInMiles(knownOrigin, DESTINATION);
+    await env.DB.prepare(
+      "UPDATE rsvps SET origin_lat = ?, origin_lng = ?, miles = ? WHERE id = ?"
+    )
+      .bind(knownOrigin.lat, knownOrigin.lng, miles, row.id)
+      .run();
+
+    row.origin_lat = knownOrigin.lat;
+    row.origin_lng = knownOrigin.lng;
+    row.miles = miles;
+  }
+}
+
 function distanceInMiles(from, to) {
   if (!from) {
     return null;
@@ -209,6 +242,7 @@ async function listEntries(env) {
     LIMIT 250`
   ).all();
 
+  await repairKnownOrigins(env, results);
   return results.map(toPublicEntry);
 }
 
