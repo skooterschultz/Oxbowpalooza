@@ -344,6 +344,7 @@ dt {
 }
 
 .experience-card {
+  min-width: 0;
   min-height: 390px;
   display: flex;
   flex-direction: column;
@@ -395,8 +396,9 @@ dt {
 
 .experience-card h3 {
   color: var(--cream);
-  font-size: clamp(2rem, 3.4vw, 3.35rem);
+  font-size: 2.45rem;
   line-height: 1;
+  overflow-wrap: break-word;
   text-shadow: 0 3px 0 rgba(21, 17, 13, 0.45);
 }
 
@@ -1277,6 +1279,27 @@ dt {
   color: var(--deep);
 }
 
+.family-clans__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.family-clans__total {
+  flex: 0 0 auto;
+  padding: 0.65rem 0.8rem;
+  border: 3px solid var(--ink);
+  border-radius: 7px;
+  background: var(--sun);
+  color: var(--ink);
+  font-size: 0.95rem;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 rgba(21, 17, 13, 0.18);
+}
+
 .family-clans p {
   margin-bottom: 0;
   font-size: clamp(1rem, 1.7vw, 1.25rem);
@@ -1286,17 +1309,17 @@ dt {
 .family-clans__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
   gap: 0.75rem;
 }
 
 .family-clans__grid article {
   display: grid;
   align-content: start;
+  align-self: end;
   gap: 0.55rem;
-  min-height: 12rem;
-  max-height: 18rem;
+  min-height: 9rem;
   padding: 0.85rem;
-  overflow-y: auto;
   border: 3px solid rgba(21, 17, 13, 0.8);
   border-radius: 7px;
   background: rgba(85, 169, 216, 0.24);
@@ -1332,12 +1355,12 @@ dt {
 
 .family-clans__grid li {
   padding: 0.42rem 0.55rem;
-  border-radius: 999px;
+  border-radius: 6px;
   background: rgba(255, 244, 220, 0.72);
   color: var(--ink);
   font-size: 0.92rem;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.15;
 }
 
 .birthday-calendar h3 {
@@ -1447,6 +1470,12 @@ dt {
   }
 }
 
+@media (max-width: 1100px) and (min-width: 821px) {
+  .experience-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 820px) {
   .hero {
     min-height: 94svh;
@@ -1485,9 +1514,6 @@ dt {
     max-height: 320px;
   }
 
-  .family-clans__grid article {
-    max-height: 16rem;
-  }
 }
 
 @media (max-width: 620px) {
@@ -1498,6 +1524,14 @@ dt {
 
   .hero {
     padding: 0.75rem;
+  }
+
+  .family-clans__header {
+    display: grid;
+  }
+
+  .family-clans__total {
+    justify-self: start;
   }
 
   .hero__paper {

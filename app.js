@@ -46,6 +46,7 @@ const travelGroupsList = document.querySelector("#travel-groups-list");
 const flightGroupsList = document.querySelector("#flight-groups-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
 const familyClansGrid = document.querySelector("#family-clans-grid");
+const familyClansTotal = document.querySelector("#family-clans-total");
 const originMap = document.querySelector("#origin-map");
 const originMapCanvas = document.querySelector("#origin-map-canvas");
 const originMapEmpty = document.querySelector("#origin-map-empty");
@@ -396,17 +397,35 @@ function renderFamilyClans(entries = []) {
     return;
   }
 
+  const allInviters = new Set(FAMILY_CLANS.flatMap((clan) => clan.inviters.map((name) => name.toLowerCase())));
+  const assignedPeople = entries.filter(
+    (entry) => entry.name && allInviters.has(String(entry.invitedBy || "").toLowerCase())
+  );
+
+  if (familyClansTotal) {
+    familyClansTotal.textContent = `${assignedPeople.length} total RSVP${assignedPeople.length === 1 ? "" : "s"}`;
+  }
+
   familyClansGrid.innerHTML = FAMILY_CLANS.map((clan) => {
     const inviterSet = new Set(clan.inviters.map((name) => name.toLowerCase()));
     const people = entries
       .filter((entry) => entry.name && inviterSet.has(String(entry.invitedBy || "").toLowerCase()))
-      .sort((a, b) => displayShortName(a).localeCompare(displayShortName(b)));
+      .sort((a, b) => familyRosterName(a).localeCompare(familyRosterName(b)));
     const roster = people.length
-      ? `<ul>${people.map((entry) => `<li>${escapeHtml(displayShortName(entry))}</li>`).join("")}</ul>`
+      ? `<ul>${people.map((entry) => `<li>${escapeHtml(familyRosterName(entry))}</li>`).join("")}</ul>`
       : "<p>Waiting for RSVPs.</p>";
 
     return `<article><h4>${clan.name}</h4><strong>${people.length} checked in</strong>${roster}</article>`;
   }).join("");
+}
+
+function familyRosterName(entry) {
+  const firstName = titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
+  const nickname = titleCase(entry.nickname);
+
+  return nickname && nickname.toLowerCase() !== firstName.toLowerCase()
+    ? `${nickname} · ${firstName}`
+    : firstName;
 }
 
 function heightTieRank(entry) {
