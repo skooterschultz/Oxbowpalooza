@@ -304,6 +304,7 @@ dt {
 
 .intro-section,
 .board-section,
+.photo-dump-section,
 .rsvp-section {
   width: min(1180px, calc(100% - 2rem));
   margin: 0 auto;
@@ -690,6 +691,84 @@ dt {
 
 .hotel-grid article:nth-child(3) .hotel-link {
   background: #73a94d;
+}
+
+.photo-dump-section {
+  display: grid;
+  gap: 0.9rem;
+  padding-top: clamp(1rem, 4vw, 3rem);
+}
+
+.photo-dump-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(1rem, 4vw, 2rem);
+  align-items: center;
+  padding: clamp(1.15rem, 3vw, 2rem);
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 88% 16%, rgba(244, 154, 37, 0.34), transparent 10rem),
+    linear-gradient(135deg, rgba(255, 244, 220, 0.92), rgba(241, 199, 90, 0.88));
+  box-shadow: 10px 12px 0 rgba(21, 17, 13, 0.18);
+}
+
+.photo-dump-card h2 {
+  max-width: 780px;
+  margin-bottom: 0.65rem;
+  color: var(--deep);
+  font-size: clamp(2rem, 4.4vw, 3.8rem);
+}
+
+.photo-dump-card p {
+  max-width: 760px;
+  margin: 0;
+  font-size: clamp(1.12rem, 2vw, 1.38rem);
+  font-weight: 800;
+}
+
+.photo-dump-card__button {
+  min-width: min(230px, 100%);
+  background: #d35b2f;
+  color: var(--cream);
+  font-size: 1.16rem;
+  text-shadow: 0 2px 0 rgba(21, 17, 13, 0.3);
+}
+
+.photo-dump-notes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.photo-dump-notes span {
+  min-height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem;
+  border: 3px solid rgba(21, 17, 13, 0.88);
+  border-radius: 7px;
+  background: #117bb3;
+  color: var(--cream);
+  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  font-weight: 950;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 0 2px 0 rgba(21, 17, 13, 0.24);
+  box-shadow: 5px 6px 0 rgba(21, 17, 13, 0.13);
+}
+
+.photo-dump-notes span:nth-child(2) {
+  background: #5f9b4b;
+}
+
+.photo-dump-notes span:nth-child(3) {
+  background: #7a568f;
+}
+
+.photo-dump-notes span:nth-child(4) {
+  background: #c94d21;
 }
 
 .rsvp-section {
@@ -1490,6 +1569,18 @@ dt {
   .family-clans__grid,
   .rsvp-section {
     grid-template-columns: 1fr;
+  }
+
+  .photo-dump-card {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-dump-card__button {
+    width: 100%;
+  }
+
+  .photo-dump-notes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .info-strip {
