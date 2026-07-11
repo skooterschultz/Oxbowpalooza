@@ -30,9 +30,8 @@ function Convert-ToSlug {
 function Convert-ToCaption {
   param([string]$Value)
 
-  $caption = $Value -replace "[-_]+", " "
-  $caption = $caption -replace "\s+", " "
-  return $caption.Trim()
+  $submitter = ($Value -split "[-_ ]+")[0]
+  return $submitter.Trim()
 }
 
 $photos = Get-ChildItem -LiteralPath $sourcePath -File |
