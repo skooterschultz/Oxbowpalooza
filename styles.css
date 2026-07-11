@@ -735,40 +735,50 @@ dt {
   text-shadow: 0 2px 0 rgba(21, 17, 13, 0.3);
 }
 
-.photo-dump-notes {
+.photo-gallery {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.55rem;
+  gap: 0.75rem;
 }
 
-.photo-dump-notes span {
-  min-height: 54px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.65rem;
-  border: 3px solid rgba(21, 17, 13, 0.88);
-  border-radius: 7px;
-  background: #117bb3;
-  color: var(--cream);
-  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
-  font-weight: 950;
+.photo-gallery p {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 1rem;
+  border: 3px dashed rgba(21, 17, 13, 0.5);
+  border-radius: 8px;
+  background: rgba(255, 244, 220, 0.72);
+  color: rgba(21, 17, 13, 0.72);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-weight: 800;
   text-align: center;
-  text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(21, 17, 13, 0.24);
-  box-shadow: 5px 6px 0 rgba(21, 17, 13, 0.13);
 }
 
-.photo-dump-notes span:nth-child(2) {
-  background: #5f9b4b;
+.photo-gallery figure {
+  position: relative;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background: var(--cream);
+  box-shadow: 6px 7px 0 rgba(21, 17, 13, 0.14);
 }
 
-.photo-dump-notes span:nth-child(3) {
-  background: #7a568f;
+.photo-gallery img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  object-fit: cover;
 }
 
-.photo-dump-notes span:nth-child(4) {
-  background: #c94d21;
+.photo-gallery figcaption {
+  padding: 0.55rem 0.65rem;
+  background: rgba(255, 244, 220, 0.94);
+  color: var(--deep);
+  font-size: 0.92rem;
+  font-weight: 900;
+  line-height: 1.2;
 }
 
 .rsvp-section {
@@ -1579,7 +1589,7 @@ dt {
     width: 100%;
   }
 
-  .photo-dump-notes {
+  .photo-gallery {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

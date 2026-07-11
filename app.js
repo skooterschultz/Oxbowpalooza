@@ -47,6 +47,7 @@ const flightGroupsList = document.querySelector("#flight-groups-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
 const familyClansGrid = document.querySelector("#family-clans-grid");
 const familyClansTotal = document.querySelector("#family-clans-total");
+const photoGallery = document.querySelector("#photo-gallery");
 const originMap = document.querySelector("#origin-map");
 const originMapCanvas = document.querySelector("#origin-map-canvas");
 const originMapEmpty = document.querySelector("#origin-map-empty");
@@ -59,6 +60,8 @@ const MAPBOX_STYLES = {
   night: "mapbox://styles/mapbox/dark-v11",
 };
 const MAP_PIN_COLORS = ["#d6512a", "#3187a6", "#5f9b4b", "#c65f80", "#e58a2e", "#7a568f", "#0f6f78", "#f1c75a"];
+const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json";
+const PHOTO_GALLERY_REFRESH_MS = 180000;
 const OREGON_WASHINGTON_CITIES = new Set([
   "albany",
   "aloha",
@@ -168,6 +171,54 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function renderPhotoGallery(photos = []) {
+  if (!photoGallery) {
+    return;
+  }
+
+  if (!photos.length) {
+    photoGallery.innerHTML = "<p>No photos in the pile yet. Be the first brave documentarian.</p>";
+    return;
+  }
+
+  photoGallery.innerHTML = photos
+    .map((photo) => {
+      const src = escapeHtml(photo.src);
+      const alt = escapeHtml(photo.alt || photo.caption || "Oxbowpalooza photo");
+      const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+      return `<figure><img src="${src}" alt="${alt}" loading="lazy" decoding="async" />${caption}</figure>`;
+    })
+    .join("");
+}
+
+async function loadPhotoGallery() {
+  if (!photoGallery) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`${PHOTO_GALLERY_ENDPOINT}?v=${Date.now()}`, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gallery returned ${response.status}`);
+    }
+
+    const photos = await response.json();
+    renderPhotoGallery(Array.isArray(photos) ? photos : []);
+  } catch (error) {
+    console.warn("Could not load photo gallery", error);
+    photoGallery.innerHTML = "<p>The photo pile is taking a minute. Try refreshing in a bit.</p>";
+  }
+}
+
+loadPhotoGallery();
+
+if (photoGallery) {
+  window.setInterval(loadPhotoGallery, PHOTO_GALLERY_REFRESH_MS);
 }
 
 function titleCase(value) {
