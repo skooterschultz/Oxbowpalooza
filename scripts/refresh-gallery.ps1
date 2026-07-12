@@ -33,6 +33,10 @@ function Convert-ToCaption {
   param([string]$Value)
 
   $submitter = ($Value -split "[-_ ]+")[0]
+  if ($submitter -eq "Photo") {
+    return "Oxbow Staff"
+  }
+
   return $submitter.Trim()
 }
 
