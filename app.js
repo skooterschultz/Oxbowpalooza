@@ -64,6 +64,8 @@ const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json?v=2026-07-11-featured-galle
 const PHOTO_GALLERY_REFRESH_MS = 180000;
 let galleryPhotos = [];
 let activeGalleryIndex = 0;
+let thumbnailDrag = null;
+let suppressNextThumbnailClick = false;
 const OREGON_WASHINGTON_CITIES = new Set([
   "albany",
   "aloha",
@@ -188,6 +190,14 @@ function galleryMedia(photo, options = {}) {
   return `<img src="${src}" alt="${alt}" loading="${options.featured ? "eager" : "lazy"}" decoding="async" />`;
 }
 
+function scrollActiveThumbnailIntoView() {
+  const activeThumb = photoGallery?.querySelector(".photo-gallery__thumb.is-active");
+
+  if (activeThumb) {
+    activeThumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+}
+
 function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGalleryIndex) {
   if (!photoGallery) {
     return;
@@ -220,6 +230,7 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
     </figure>
     <div class="photo-gallery__thumbs" aria-label="Choose a photo">${thumbnails}</div>
   `;
+  window.setTimeout(scrollActiveThumbnailIntoView, 0);
 }
 
 function openGalleryLightbox(index = activeGalleryIndex) {
@@ -229,19 +240,43 @@ function openGalleryLightbox(index = activeGalleryIndex) {
     return;
   }
 
+  activeGalleryIndex = Math.min(Math.max(index, 0), galleryPhotos.length - 1);
   const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
   const lightbox = document.createElement("div");
   lightbox.className = "photo-lightbox";
+  lightbox.dataset.galleryLightbox = "true";
+  lightbox.dataset.galleryIndex = String(activeGalleryIndex);
   lightbox.innerHTML = `
     <button type="button" class="photo-lightbox__close" aria-label="Close larger gallery view">Close</button>
+    <button type="button" class="photo-lightbox__nav photo-lightbox__nav--prev" data-lightbox-step="-1" aria-label="Previous photo">‹</button>
     <figure>
       ${galleryMedia(photo, { featured: true, controls: photo.type === "video" })}
       ${caption}
     </figure>
+    <button type="button" class="photo-lightbox__nav photo-lightbox__nav--next" data-lightbox-step="1" aria-label="Next photo">›</button>
   `;
   document.body.append(lightbox);
   document.body.classList.add("has-photo-lightbox");
   lightbox.querySelector(".photo-lightbox__close").focus();
+}
+
+function showLightboxPhoto(step) {
+  const lightbox = document.querySelector("[data-gallery-lightbox]");
+
+  if (!lightbox || !galleryPhotos.length) {
+    return;
+  }
+
+  const currentIndex = Number(lightbox.dataset.galleryIndex || activeGalleryIndex);
+  const nextIndex = (currentIndex + step + galleryPhotos.length) % galleryPhotos.length;
+  const photo = galleryPhotos[nextIndex];
+  const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+  const figure = lightbox.querySelector("figure");
+
+  activeGalleryIndex = nextIndex;
+  lightbox.dataset.galleryIndex = String(nextIndex);
+  figure.innerHTML = `${galleryMedia(photo, { featured: true, controls: photo.type === "video" })}${caption}`;
+  renderPhotoGallery(galleryPhotos, nextIndex);
 }
 
 async function loadPhotoGallery() {
@@ -279,15 +314,26 @@ document.addEventListener("click", (event) => {
   const thumb = event.target.closest("[data-gallery-index]");
   const openButton = event.target.closest("[data-gallery-open]");
   const closeButton = event.target.closest(".photo-lightbox__close");
+  const lightboxStep = event.target.closest("[data-lightbox-step]");
   const lightbox = event.target.closest(".photo-lightbox");
 
   if (thumb && photoGallery.contains(thumb)) {
+    if (suppressNextThumbnailClick) {
+      suppressNextThumbnailClick = false;
+      return;
+    }
+
     renderPhotoGallery(galleryPhotos, Number(thumb.dataset.galleryIndex));
     return;
   }
 
   if (openButton && photoGallery.contains(openButton)) {
     openGalleryLightbox(activeGalleryIndex);
+    return;
+  }
+
+  if (lightboxStep) {
+    showLightboxPhoto(Number(lightboxStep.dataset.lightboxStep));
     return;
   }
 
@@ -298,17 +344,69 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key !== "Escape") {
+  const lightbox = document.querySelector(".photo-lightbox");
+
+  if (!lightbox) {
     return;
   }
 
-  const lightbox = document.querySelector(".photo-lightbox");
-
-  if (lightbox) {
+  if (event.key === "Escape") {
     lightbox.remove();
     document.body.classList.remove("has-photo-lightbox");
   }
+
+  if (event.key === "ArrowLeft") {
+    showLightboxPhoto(-1);
+  }
+
+  if (event.key === "ArrowRight") {
+    showLightboxPhoto(1);
+  }
 });
+
+document.addEventListener("pointerdown", (event) => {
+  const thumbs = event.target.closest(".photo-gallery__thumbs");
+
+  if (!thumbs) {
+    return;
+  }
+
+  thumbnailDrag = {
+    element: thumbs,
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    scrollLeft: thumbs.scrollLeft,
+    moved: false,
+  };
+  thumbs.setPointerCapture(event.pointerId);
+});
+
+document.addEventListener("pointermove", (event) => {
+  if (!thumbnailDrag) {
+    return;
+  }
+
+  const deltaX = event.clientX - thumbnailDrag.startX;
+
+  if (Math.abs(deltaX) > 4) {
+    thumbnailDrag.moved = true;
+    event.preventDefault();
+  }
+
+  thumbnailDrag.element.scrollLeft = thumbnailDrag.scrollLeft - deltaX;
+});
+
+function endThumbnailDrag() {
+  if (!thumbnailDrag) {
+    return;
+  }
+
+  suppressNextThumbnailClick = thumbnailDrag.moved;
+  thumbnailDrag = null;
+}
+
+document.addEventListener("pointerup", endThumbnailDrag);
+document.addEventListener("pointercancel", endThumbnailDrag);
 
 function titleCase(value) {
   return String(value || "")
