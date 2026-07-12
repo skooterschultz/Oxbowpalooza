@@ -34,5 +34,11 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: LaDonna",
         "caption":  "LaDonna"
+    },
+    {
+        "src":  "./assets/gallery/becka-img-7870.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Becka",
+        "caption":  "Becka"
     }
 ]
