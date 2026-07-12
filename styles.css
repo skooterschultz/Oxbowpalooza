@@ -765,10 +765,12 @@ dt {
   box-shadow: 6px 7px 0 rgba(21, 17, 13, 0.14);
 }
 
-.photo-gallery img {
+.photo-gallery img,
+.photo-gallery video {
   width: 100%;
   aspect-ratio: 1 / 1;
   display: block;
+  background: var(--deep);
   object-fit: cover;
 }
 
@@ -779,6 +781,7 @@ dt {
   font-size: 0.92rem;
   font-weight: 900;
   line-height: 1.2;
+  text-align: center;
 }
 
 .rsvp-section {

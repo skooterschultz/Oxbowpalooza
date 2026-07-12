@@ -188,7 +188,11 @@ function renderPhotoGallery(photos = []) {
       const src = escapeHtml(photo.src);
       const alt = escapeHtml(photo.alt || photo.caption || "Oxbowpalooza photo");
       const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
-      return `<figure><img src="${src}" alt="${alt}" loading="lazy" decoding="async" />${caption}</figure>`;
+      const media =
+        photo.type === "video"
+          ? `<video controls preload="metadata"><source src="${src}" />Your browser cannot play this video.</video>`
+          : `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" />`;
+      return `<figure>${media}${caption}</figure>`;
     })
     .join("");
 }

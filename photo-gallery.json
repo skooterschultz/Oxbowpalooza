@@ -1,16 +1,19 @@
 ﻿[
     {
         "src":  "./assets/gallery/ladonna-img-2926.jpeg",
+        "type":  "image",
         "alt":  "Oxbowpalooza photo: LaDonna",
         "caption":  "LaDonna"
     },
     {
         "src":  "./assets/gallery/sofia-img-6339.jpeg",
+        "type":  "image",
         "alt":  "Oxbowpalooza photo: Sofia",
         "caption":  "Sofia"
     },
     {
         "src":  "./assets/gallery/sofia-img-6338.jpeg",
+        "type":  "image",
         "alt":  "Oxbowpalooza photo: Sofia",
         "caption":  "Sofia"
     }

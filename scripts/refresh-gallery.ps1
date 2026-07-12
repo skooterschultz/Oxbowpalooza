@@ -10,7 +10,9 @@ $projectRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
 $sourcePath = (Resolve-Path -LiteralPath $Source).Path
 $galleryPath = Join-Path $projectRoot $GalleryDir
 $manifestPath = Join-Path $projectRoot $Manifest
-$supportedExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif")
+$imageExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif")
+$videoExtensions = @(".mp4", ".mov", ".m4v", ".webm")
+$supportedExtensions = $imageExtensions + $videoExtensions
 
 New-Item -ItemType Directory -Force -Path $galleryPath | Out-Null
 
@@ -58,6 +60,7 @@ foreach ($photo in $photos) {
 
   $manifestItems += [ordered]@{
     src = "./$($GalleryDir -replace "\\", "/")/$fileName"
+    type = $(if ($videoExtensions -contains $extension) { "video" } else { "image" })
     alt = "Oxbowpalooza photo: $(Convert-ToCaption -Value $photo.BaseName)"
     caption = Convert-ToCaption -Value $photo.BaseName
   }
