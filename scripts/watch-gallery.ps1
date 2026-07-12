@@ -9,7 +9,7 @@ $ErrorActionPreference = "Stop"
 
 $sourcePath = (Resolve-Path -LiteralPath $Source).Path
 $publishScript = Join-Path $PSScriptRoot "publish-gallery.ps1"
-$supportedExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif", ".mp4", ".mov", ".m4v", ".webm")
+$supportedExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif")
 $lastChange = Get-Date
 $pending = $true
 $isPublishing = $false

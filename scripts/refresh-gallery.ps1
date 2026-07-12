@@ -11,8 +11,7 @@ $sourcePath = (Resolve-Path -LiteralPath $Source).Path
 $galleryPath = Join-Path $projectRoot $GalleryDir
 $manifestPath = Join-Path $projectRoot $Manifest
 $imageExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif")
-$videoExtensions = @(".mp4", ".mov", ".m4v", ".webm")
-$supportedExtensions = $imageExtensions + $videoExtensions
+$supportedExtensions = $imageExtensions
 $maxDeployableBytes = 24000000
 
 New-Item -ItemType Directory -Force -Path $galleryPath | Out-Null
@@ -77,7 +76,7 @@ foreach ($photo in $photos) {
 
   $manifestItems += [ordered]@{
     src = "./$($GalleryDir -replace "\\", "/")/$fileName"
-    type = $(if ($videoExtensions -contains $extension) { "video" } else { "image" })
+    type = "image"
     alt = "Oxbowpalooza photo: $(Convert-ToCaption -Value $photo.BaseName)"
     caption = Convert-ToCaption -Value $photo.BaseName
   }
