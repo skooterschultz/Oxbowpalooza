@@ -42,8 +42,17 @@ $photos = Get-ChildItem -LiteralPath $sourcePath -File |
 
 $manifestItems = @()
 $usedNames = @{}
+$seenHashes = @{}
 
 foreach ($photo in $photos) {
+  $hash = (Get-FileHash -LiteralPath $photo.FullName -Algorithm SHA256).Hash
+
+  if ($seenHashes.ContainsKey($hash)) {
+    Write-Output "Skipping duplicate: $($photo.Name) matches $($seenHashes[$hash])"
+    continue
+  }
+
+  $seenHashes[$hash] = $photo.Name
   $baseName = Convert-ToSlug -Value $photo.BaseName
   $extension = $photo.Extension.ToLowerInvariant()
   $fileName = "$baseName$extension"
