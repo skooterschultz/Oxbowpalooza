@@ -268,5 +268,35 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: Photo",
         "caption":  "Photo"
+    },
+    {
+        "src":  "./assets/gallery/fabulous-gina-img-0623.png",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Fabulous",
+        "caption":  "Fabulous"
+    },
+    {
+        "src":  "./assets/gallery/fabulous-gina-img-0622.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Fabulous",
+        "caption":  "Fabulous"
+    },
+    {
+        "src":  "./assets/gallery/fabulous-gina-img-0619.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Fabulous",
+        "caption":  "Fabulous"
+    },
+    {
+        "src":  "./assets/gallery/fabulous-gina-img-0612.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Fabulous",
+        "caption":  "Fabulous"
+    },
+    {
+        "src":  "./assets/gallery/fabulous-gina-img-0607.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Fabulous",
+        "caption":  "Fabulous"
     }
 ]
