@@ -62,6 +62,8 @@ const MAPBOX_STYLES = {
 const MAP_PIN_COLORS = ["#d6512a", "#3187a6", "#5f9b4b", "#c65f80", "#e58a2e", "#7a568f", "#0f6f78", "#f1c75a"];
 const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json";
 const PHOTO_GALLERY_REFRESH_MS = 180000;
+let galleryPhotos = [];
+let activeGalleryIndex = 0;
 const OREGON_WASHINGTON_CITIES = new Set([
   "albany",
   "aloha",
@@ -173,7 +175,20 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function renderPhotoGallery(photos = []) {
+function galleryMedia(photo, options = {}) {
+  const src = escapeHtml(photo.src);
+  const alt = escapeHtml(photo.alt || photo.caption || "Oxbowpalooza photo");
+
+  if (photo.type === "video") {
+    const controls = options.controls ? " controls" : "";
+    const muted = options.thumbnail ? " muted playsinline" : "";
+    return `<video${controls}${muted} preload="metadata"><source src="${src}" />Your browser cannot play this video.</video>`;
+  }
+
+  return `<img src="${src}" alt="${alt}" loading="${options.featured ? "eager" : "lazy"}" decoding="async" />`;
+}
+
+function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGalleryIndex) {
   if (!photoGallery) {
     return;
   }
@@ -183,18 +198,50 @@ function renderPhotoGallery(photos = []) {
     return;
   }
 
-  photoGallery.innerHTML = photos
-    .map((photo) => {
-      const src = escapeHtml(photo.src);
-      const alt = escapeHtml(photo.alt || photo.caption || "Oxbowpalooza photo");
-      const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
-      const media =
-        photo.type === "video"
-          ? `<video controls preload="metadata"><source src="${src}" />Your browser cannot play this video.</video>`
-          : `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" />`;
-      return `<figure>${media}${caption}</figure>`;
+  galleryPhotos = photos;
+  activeGalleryIndex = Math.min(Math.max(selectedIndex, 0), photos.length - 1);
+
+  const featured = photos[activeGalleryIndex];
+  const featuredCaption = featured.caption ? `<figcaption>${escapeHtml(featured.caption)}</figcaption>` : "";
+  const thumbnails = photos
+    .map((photo, index) => {
+      const caption = photo.caption ? `<span>${escapeHtml(photo.caption)}</span>` : "";
+      const current = index === activeGalleryIndex ? " is-active" : "";
+      return `<button class="photo-gallery__thumb${current}" type="button" data-gallery-index="${index}" aria-label="Show ${escapeHtml(photo.caption || "gallery item")}">${galleryMedia(photo, { thumbnail: true })}${caption}</button>`;
     })
     .join("");
+
+  photoGallery.innerHTML = `
+    <figure class="photo-gallery__featured">
+      <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(featured.caption || "gallery item")} larger">
+        ${galleryMedia(featured, { featured: true })}
+      </button>
+      ${featuredCaption}
+    </figure>
+    <div class="photo-gallery__thumbs" aria-label="Choose a photo">${thumbnails}</div>
+  `;
+}
+
+function openGalleryLightbox(index = activeGalleryIndex) {
+  const photo = galleryPhotos[index];
+
+  if (!photo) {
+    return;
+  }
+
+  const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+  const lightbox = document.createElement("div");
+  lightbox.className = "photo-lightbox";
+  lightbox.innerHTML = `
+    <button type="button" class="photo-lightbox__close" aria-label="Close larger gallery view">Close</button>
+    <figure>
+      ${galleryMedia(photo, { featured: true, controls: photo.type === "video" })}
+      ${caption}
+    </figure>
+  `;
+  document.body.append(lightbox);
+  document.body.classList.add("has-photo-lightbox");
+  lightbox.querySelector(".photo-lightbox__close").focus();
 }
 
 async function loadPhotoGallery() {
@@ -212,7 +259,10 @@ async function loadPhotoGallery() {
     }
 
     const photos = await response.json();
-    renderPhotoGallery(Array.isArray(photos) ? photos : []);
+    const galleryItems = Array.isArray(photos) ? photos : [];
+    const currentSrc = galleryPhotos[activeGalleryIndex]?.src;
+    const nextIndex = currentSrc ? galleryItems.findIndex((photo) => photo.src === currentSrc) : -1;
+    renderPhotoGallery(galleryItems, nextIndex >= 0 ? nextIndex : galleryItems.length - 1);
   } catch (error) {
     console.warn("Could not load photo gallery", error);
     photoGallery.innerHTML = "<p>The photo pile is taking a minute. Try refreshing in a bit.</p>";
@@ -224,6 +274,41 @@ loadPhotoGallery();
 if (photoGallery) {
   window.setInterval(loadPhotoGallery, PHOTO_GALLERY_REFRESH_MS);
 }
+
+document.addEventListener("click", (event) => {
+  const thumb = event.target.closest("[data-gallery-index]");
+  const openButton = event.target.closest("[data-gallery-open]");
+  const closeButton = event.target.closest(".photo-lightbox__close");
+  const lightbox = event.target.closest(".photo-lightbox");
+
+  if (thumb && photoGallery.contains(thumb)) {
+    renderPhotoGallery(galleryPhotos, Number(thumb.dataset.galleryIndex));
+    return;
+  }
+
+  if (openButton && photoGallery.contains(openButton)) {
+    openGalleryLightbox(activeGalleryIndex);
+    return;
+  }
+
+  if (closeButton || (lightbox && event.target === lightbox)) {
+    lightbox.remove();
+    document.body.classList.remove("has-photo-lightbox");
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") {
+    return;
+  }
+
+  const lightbox = document.querySelector(".photo-lightbox");
+
+  if (lightbox) {
+    lightbox.remove();
+    document.body.classList.remove("has-photo-lightbox");
+  }
+});
 
 function titleCase(value) {
   return String(value || "")

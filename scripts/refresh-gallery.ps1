@@ -43,6 +43,7 @@ $photos = Get-ChildItem -LiteralPath $sourcePath -File |
 $manifestItems = @()
 $usedNames = @{}
 $seenHashes = @{}
+$selectedFileNames = @{}
 
 foreach ($photo in $photos) {
   $hash = (Get-FileHash -LiteralPath $photo.FullName -Algorithm SHA256).Hash
@@ -66,6 +67,7 @@ foreach ($photo in $photos) {
 
   $destinationPath = Join-Path $galleryPath $fileName
   Copy-Item -LiteralPath $photo.FullName -Destination $destinationPath -Force
+  $selectedFileNames[$fileName] = $true
 
   $manifestItems += [ordered]@{
     src = "./$($GalleryDir -replace "\\", "/")/$fileName"
@@ -74,6 +76,13 @@ foreach ($photo in $photos) {
     caption = Convert-ToCaption -Value $photo.BaseName
   }
 }
+
+Get-ChildItem -LiteralPath $galleryPath -File |
+  Where-Object { -not $selectedFileNames.ContainsKey($_.Name) } |
+  ForEach-Object {
+    Remove-Item -LiteralPath $_.FullName -Force
+    Write-Output "Removed stale gallery asset: $($_.Name)"
+  }
 
 ConvertTo-Json -InputObject @($manifestItems) -Depth 4 |
   Set-Content -LiteralPath $manifestPath -Encoding utf8
