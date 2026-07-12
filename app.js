@@ -60,7 +60,7 @@ const MAPBOX_STYLES = {
   night: "mapbox://styles/mapbox/dark-v11",
 };
 const MAP_PIN_COLORS = ["#d6512a", "#3187a6", "#5f9b4b", "#c65f80", "#e58a2e", "#7a568f", "#0f6f78", "#f1c75a"];
-const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json";
+const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json?v=2026-07-11-featured-gallery";
 const PHOTO_GALLERY_REFRESH_MS = 180000;
 let galleryPhotos = [];
 let activeGalleryIndex = 0;
@@ -250,7 +250,7 @@ async function loadPhotoGallery() {
   }
 
   try {
-    const response = await fetch(`${PHOTO_GALLERY_ENDPOINT}?v=${Date.now()}`, {
+    const response = await fetch(`${PHOTO_GALLERY_ENDPOINT}&t=${Date.now()}`, {
       cache: "no-store",
     });
 
