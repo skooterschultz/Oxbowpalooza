@@ -40,5 +40,35 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: Becka",
         "caption":  "Becka"
+    },
+    {
+        "src":  "./assets/gallery/photo-jul-11-2026-10-40-27-pm.jpg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Photo",
+        "caption":  "Photo"
+    },
+    {
+        "src":  "./assets/gallery/photo-jul-12-2026-11-08-16-am.png",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Photo",
+        "caption":  "Photo"
+    },
+    {
+        "src":  "./assets/gallery/photo-jul-11-2026-11-11-14-pm.jpg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Photo",
+        "caption":  "Photo"
+    },
+    {
+        "src":  "./assets/gallery/photo-jul-11-2026-8-46-21-pm.jpg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Photo",
+        "caption":  "Photo"
+    },
+    {
+        "src":  "./assets/gallery/photo-jul-11-2026-6-59-36-pm.jpg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Photo",
+        "caption":  "Photo"
     }
 ]
