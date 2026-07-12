@@ -13,6 +13,7 @@ $manifestPath = Join-Path $projectRoot $Manifest
 $imageExtensions = @(".jpg", ".jpeg", ".png", ".webp", ".gif")
 $videoExtensions = @(".mp4", ".mov", ".m4v", ".webm")
 $supportedExtensions = $imageExtensions + $videoExtensions
+$maxDeployableBytes = 24000000
 
 New-Item -ItemType Directory -Force -Path $galleryPath | Out-Null
 
@@ -46,6 +47,11 @@ $seenHashes = @{}
 $selectedFileNames = @{}
 
 foreach ($photo in $photos) {
+  if ($photo.Length -gt $maxDeployableBytes) {
+    Write-Output "Skipping oversized gallery file: $($photo.Name)"
+    continue
+  }
+
   $hash = (Get-FileHash -LiteralPath $photo.FullName -Algorithm SHA256).Hash
 
   if ($seenHashes.ContainsKey($hash)) {

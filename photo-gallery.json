@@ -34,11 +34,5 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: LaDonna",
         "caption":  "LaDonna"
-    },
-    {
-        "src":  "./assets/gallery/danny-schultz-img-4175.mov",
-        "type":  "video",
-        "alt":  "Oxbowpalooza photo: Danny",
-        "caption":  "Danny"
     }
 ]
