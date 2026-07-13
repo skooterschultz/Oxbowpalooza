@@ -298,5 +298,11 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: Fabulous",
         "caption":  "Fabulous"
+    },
+    {
+        "src":  "./assets/gallery/john-sieling-img-4572.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: John",
+        "caption":  "John"
     }
 ]
