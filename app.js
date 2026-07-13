@@ -367,7 +367,7 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("pointerdown", (event) => {
   const thumbs = event.target.closest(".photo-gallery__thumbs");
 
-  if (!thumbs) {
+  if (!thumbs || event.button !== 0) {
     return;
   }
 
@@ -401,8 +401,18 @@ function endThumbnailDrag() {
     return;
   }
 
+  if (thumbnailDrag.element.hasPointerCapture?.(thumbnailDrag.pointerId)) {
+    thumbnailDrag.element.releasePointerCapture(thumbnailDrag.pointerId);
+  }
+
   suppressNextThumbnailClick = thumbnailDrag.moved;
   thumbnailDrag = null;
+
+  if (suppressNextThumbnailClick) {
+    window.setTimeout(() => {
+      suppressNextThumbnailClick = false;
+    }, 120);
+  }
 }
 
 document.addEventListener("pointerup", endThumbnailDrag);
