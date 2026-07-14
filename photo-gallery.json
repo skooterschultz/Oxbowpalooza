@@ -304,5 +304,17 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: John",
         "caption":  "John"
+    },
+    {
+        "src":  "./assets/gallery/nancy-schultz-vitangeli-fullsizerender.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Nancy",
+        "caption":  "Nancy"
+    },
+    {
+        "src":  "./assets/gallery/nancy-schultz-vitangeli-img-0380.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Nancy",
+        "caption":  "Nancy"
     }
 ]
