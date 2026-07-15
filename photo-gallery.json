@@ -316,5 +316,65 @@
         "type":  "image",
         "alt":  "Oxbowpalooza photo: Nancy",
         "caption":  "Nancy"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7458.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7459.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7455.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7454.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7446.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7442.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7445.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7443.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7444.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
+    },
+    {
+        "src":  "./assets/gallery/jim-p-img-7439.jpeg",
+        "type":  "image",
+        "alt":  "Oxbowpalooza photo: Jim",
+        "caption":  "Jim"
     }
 ]
