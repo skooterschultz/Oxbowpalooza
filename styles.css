@@ -414,6 +414,80 @@ dt {
   line-height: 1.35;
 }
 
+.contact-intro {
+  max-width: 680px;
+  font-size: clamp(1rem, 1.7vw, 1.2rem);
+  line-height: 1.55;
+}
+
+.reunion-contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 760px;
+  margin-top: 1.4rem;
+}
+
+.reunion-contact-grid a {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 160px;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  border: 3px solid var(--deep);
+  background: #fff6de;
+  color: var(--deep);
+  text-decoration: none;
+  box-shadow: 7px 7px 0 var(--gold);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.reunion-contact-grid a:hover,
+.reunion-contact-grid a:focus-visible {
+  transform: translate(-2px, -2px);
+  box-shadow: 10px 10px 0 var(--gold);
+}
+
+.reunion-contact-grid span {
+  color: var(--rust);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.reunion-contact-grid strong {
+  font-family: "Rye", Georgia, serif;
+  font-size: clamp(1.35rem, 2.8vw, 2rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.reunion-contact-grid small {
+  align-self: end;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 800;
+}
+
+.site-footer {
+  padding: 1rem clamp(1rem, 4vw, 3rem) 1.35rem;
+  border-top: 1px solid rgba(16, 43, 77, 0.28);
+  background: var(--deep);
+  color: rgba(255, 250, 231, 0.78);
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.site-footer a {
+  color: var(--cream);
+  font-weight: 700;
+}
+
 .poster-tabs {
   display: grid;
   gap: 0;
@@ -2190,5 +2264,9 @@ h3 {
     justify-content: center;
     padding: 0.55rem 0.25rem;
     font-size: 0.72rem;
+  }
+
+  .reunion-contact-grid {
+    grid-template-columns: 1fr;
   }
 }
