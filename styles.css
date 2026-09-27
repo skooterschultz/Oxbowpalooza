@@ -778,6 +778,74 @@ dt {
   text-shadow: 0 2px 0 rgba(21, 17, 13, 0.3);
 }
 
+.photo-upload-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.65rem;
+  width: min(520px, 100%);
+}
+
+.photo-upload-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--deep);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.photo-upload-form input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.65rem;
+  border: 2px solid var(--deep);
+  border-radius: 2px;
+  background: #fffaf0;
+  color: var(--deep);
+  font: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.photo-upload-form input[type="file"] {
+  padding: 0.55rem;
+  font-size: 0.82rem;
+}
+
+.photo-upload-form__trap {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+}
+
+.photo-upload-form .photo-dump-card__button {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+}
+
+.photo-upload-form__note,
+.photo-upload-form__status {
+  grid-column: 1 / -1;
+  max-width: none !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  line-height: 1.4;
+}
+
+.photo-upload-form__status {
+  min-height: 1.2em;
+  color: var(--deep);
+}
+
+.photo-upload-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .photo-gallery {
   display: grid;
   gap: 0.8rem;
@@ -2268,5 +2336,15 @@ h3 {
 
   .reunion-contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .photo-upload-form {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-upload-form .photo-dump-card__button,
+  .photo-upload-form__note,
+  .photo-upload-form__status {
+    grid-column: 1;
   }
 }

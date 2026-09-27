@@ -99,18 +99,34 @@
             <p class="eyebrow">The family memory pile</p>
             <h2 id="photo-dump-title">Bring the old stories. Add the new ones.</h2>
             <p>
-              The reunion gallery is getting a fresh start for Hudson and Hubbard family
-              photos. A new upload link will appear here when the shared album is ready.
+              Add family photos straight from your phone or computer. New memories appear
+              in the gallery as soon as the upload finishes. Photos only, please; videos stay with you.
             </p>
           </div>
-          <a
-            class="button button--primary photo-dump-card__button"
-            href="#rsvp"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Reunion Details
-          </a>
+          <form class="photo-upload-form" id="photo-upload-form">
+            <label>
+              <span>Your name</span>
+              <input id="photo-submitter" name="submitter" type="text" maxlength="60" autocomplete="name" required />
+            </label>
+            <label class="photo-upload-form__picker">
+              <span>Choose photos</span>
+              <input
+                id="photo-files"
+                name="photos"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+                multiple
+                required
+              />
+            </label>
+            <label class="photo-upload-form__trap" aria-hidden="true">
+              Website
+              <input name="website" type="text" tabindex="-1" autocomplete="off" />
+            </label>
+            <button class="button button--primary photo-dump-card__button" type="submit">Add to the Gallery</button>
+            <p class="photo-upload-form__note">JPEG, PNG, WebP, GIF, or AVIF. Up to 12 MB per photo.</p>
+            <p class="photo-upload-form__status" id="photo-upload-status" role="status" aria-live="polite"></p>
+          </form>
         </div>
         <div class="photo-gallery" id="photo-gallery" aria-live="polite">
           <p>Photo pile loading.</p>

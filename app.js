@@ -49,6 +49,8 @@ const birthdayCalendar = document.querySelector("#birthday-calendar");
 const familyClansGrid = document.querySelector("#family-clans-grid");
 const familyClansTotal = document.querySelector("#family-clans-total");
 const photoGallery = document.querySelector("#photo-gallery");
+const photoUploadForm = document.querySelector("#photo-upload-form");
+const photoUploadStatus = document.querySelector("#photo-upload-status");
 const originMap = document.querySelector("#origin-map");
 const originMapCanvas = document.querySelector("#origin-map-canvas");
 const originMapEmpty = document.querySelector("#origin-map-empty");
@@ -65,7 +67,7 @@ const BIRTHDAY_MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
-const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json?v=2027-reunion-gallery";
+const PHOTO_GALLERY_ENDPOINT = "/api/photos?v=2027-reunion-gallery";
 const PHOTO_GALLERY_REFRESH_MS = 180000;
 let galleryPhotos = [];
 let activeGalleryIndex = 0;
@@ -228,7 +230,7 @@ async function loadPhotoGallery() {
     }
 
     const photos = await response.json();
-    const galleryItems = Array.isArray(photos) ? photos : [];
+    const galleryItems = Array.isArray(photos) ? photos : photos.items || [];
     const currentSrc = galleryPhotos[activeGalleryIndex]?.src;
     const nextIndex = currentSrc ? galleryItems.findIndex((photo) => photo.src === currentSrc) : -1;
     renderPhotoGallery(galleryItems, nextIndex >= 0 ? nextIndex : galleryItems.length - 1);
@@ -242,6 +244,60 @@ loadPhotoGallery();
 
 if (photoGallery) {
   window.setInterval(loadPhotoGallery, PHOTO_GALLERY_REFRESH_MS);
+}
+
+if (photoUploadForm) {
+  photoUploadForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = photoUploadForm.querySelector("button[type='submit']");
+    const submitter = photoUploadForm.elements.submitter.value.trim();
+    const website = photoUploadForm.elements.website.value;
+    const files = Array.from(photoUploadForm.elements.photos.files || []);
+
+    if (!submitter || !files.length) {
+      photoUploadStatus.textContent = "Add your name and choose at least one photo.";
+      return;
+    }
+
+    if (files.length > 12) {
+      photoUploadStatus.textContent = "Please upload 12 photos or fewer at a time.";
+      return;
+    }
+
+    submitButton.disabled = true;
+
+    try {
+      for (let index = 0; index < files.length; index += 1) {
+        photoUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}...`;
+        const formData = new FormData();
+        formData.append("submitter", submitter);
+        formData.append("website", website);
+        formData.append("photo", files[index]);
+
+        const response = await fetch("/api/photos", {
+          method: "POST",
+          body: formData,
+        });
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(result.error || `Upload returned ${response.status}`);
+        }
+      }
+
+      photoUploadForm.reset();
+      photoUploadStatus.textContent = files.length === 1
+        ? "Your photo is in the family gallery."
+        : `${files.length} photos are in the family gallery.`;
+      await loadPhotoGallery();
+    } catch (error) {
+      console.warn("Could not upload photo", error);
+      photoUploadStatus.textContent = error.message || "That photo did not upload. Please try again.";
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
 }
 
 document.addEventListener("click", (event) => {
