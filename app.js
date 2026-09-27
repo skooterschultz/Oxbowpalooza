@@ -42,6 +42,7 @@ const travelForm = document.querySelector("#travel-form");
 const formStatus = document.querySelector("#form-status");
 const leaderboardList = document.querySelector("#leaderboard-list");
 const heightList = document.querySelector("#height-list");
+const ageList = document.querySelector("#age-list");
 const travelGroupsList = document.querySelector("#travel-groups-list");
 const flightGroupsList = document.querySelector("#flight-groups-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
@@ -54,108 +55,41 @@ const originMapEmpty = document.querySelector("#origin-map-empty");
 const mapStyleButtons = Array.from(document.querySelectorAll("[data-map-style]"));
 const mapActionButtons = Array.from(document.querySelectorAll("[data-map-action]"));
 let mapboxAccessToken = "";
-const OXBOW_POSITION = { lat: 45.4859628, lng: -122.3071819, label: "Oxbow" };
+const REUNION_POSITION = { lat: 36.58271, lng: -93.83739, label: "Roaring River" };
 const MAPBOX_STYLES = {
   satellite: "mapbox://styles/mapbox/standard-satellite",
   night: "mapbox://styles/mapbox/dark-v11",
 };
-const MAP_PIN_COLORS = ["#d6512a", "#3187a6", "#5f9b4b", "#c65f80", "#e58a2e", "#7a568f", "#0f6f78", "#f1c75a"];
-const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json?v=2026-07-11-featured-gallery";
+const MAP_PIN_COLORS = ["#17385f", "#426f7f", "#31543a", "#66804b", "#9a6b22", "#b58c35", "#456f68", "#7e4d2b"];
+const BIRTHDAY_MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+const PHOTO_GALLERY_ENDPOINT = "./photo-gallery.json?v=2027-reunion-gallery";
 const PHOTO_GALLERY_REFRESH_MS = 180000;
 let galleryPhotos = [];
 let activeGalleryIndex = 0;
 let thumbnailDrag = null;
 let suppressNextThumbnailClick = false;
-const OREGON_WASHINGTON_CITIES = new Set([
-  "albany",
-  "aloha",
-  "ashland",
-  "astoria",
-  "beaverton",
-  "bend",
-  "canby",
-  "central point",
-  "clackamas",
-  "coos bay",
-  "corvallis",
-  "eagle creek",
-  "eugene",
-  "fairview",
-  "forest grove",
-  "gladstone",
-  "grants pass",
-  "gresham",
-  "happy valley",
-  "hermiston",
-  "hillsboro",
-  "hood river",
-  "keizer",
-  "klamath falls",
-  "lake oswego",
-  "lebanon",
-  "mcminnville",
-  "medford",
-  "milwaukie",
-  "molalla",
-  "newberg",
-  "oregon city",
-  "pendleton",
-  "portland",
-  "redmond",
-  "roseburg",
-  "salem",
-  "sandy",
-  "sherwood",
+const MISSOURI_CITIES = new Set([
+  "cassville",
+  "monett",
   "springfield",
-  "the dalles",
-  "tigard",
-  "troutdale",
-  "tualatin",
-  "vancouver",
-  "west linn",
-  "wilsonville",
-  "wood village",
-  "woodburn",
-  "auburn",
-  "bellingham",
-  "bellevue",
-  "bothell",
-  "bremerton",
-  "camas",
-  "centralia",
-  "everett",
-  "federal way",
-  "kennewick",
-  "kent",
-  "kirkland",
-  "lacey",
-  "longview",
-  "marysville",
-  "olympia",
-  "pasco",
-  "pullman",
-  "puyallup",
-  "redmond",
-  "renton",
-  "richland",
-  "seattle",
-  "shoreline",
-  "spokane",
-  "tacoma",
-  "vancouver",
-  "walla walla",
-  "wenatchee",
-  "yakima",
+  "branson",
+  "joplin",
+  "aurora",
+  "exeter",
+  "shell knob",
+  "washburn",
 ]);
 let originMapInstance;
 let activeMapStyle = "satellite";
 let latestMapEntries = [];
 let mapMarkers = new Map();
 const FAMILY_CLANS = [
-  { name: "Beving", inviters: ["Laura", "JCam"] },
-  { name: "Sieling", inviters: ["Toni", "John", "Sanford", "Katie"] },
-  { name: "Vitangeli", inviters: ["Scott", "Nancy", "Jeff"] },
-  { name: "Schultz", inviters: ["Danny", "Skooter", "Xander", "Zoe", "Mark"] },
+  { name: "Hudson", inviters: ["Hudson"] },
+  { name: "Hubbard", inviters: ["Hubbard"] },
+  { name: "Family Friends", inviters: ["Family Friend"] },
 ];
 
 function setFormStatus(message) {
@@ -179,7 +113,7 @@ function escapeHtml(value) {
 
 function galleryMedia(photo, options = {}) {
   const src = escapeHtml(photo.src);
-  const alt = escapeHtml(photo.alt || photo.caption || "Oxbowpalooza photo");
+  const alt = escapeHtml(photo.alt || photo.caption || "Hudson Hubbard family photo");
 
   if (photo.type === "video") {
     const controls = options.controls ? " controls" : "";
@@ -204,7 +138,7 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
   }
 
   if (!photos.length) {
-    photoGallery.innerHTML = "<p>No photos in the pile yet. Be the first brave documentarian.</p>";
+    photoGallery.innerHTML = "<p>The reunion gallery is ready for its first family memory.</p>";
     return;
   }
 
@@ -441,18 +375,16 @@ function hasUsableCoordinates(entry) {
   return entry.originLat !== null && entry.originLng !== null && Number.isFinite(Number(entry.originLat)) && Number.isFinite(Number(entry.originLng));
 }
 
-function isOregonOrWashington(entry) {
+function isMissouriLocal(entry) {
   const location = String(entry.city || entry.address || "").toLowerCase();
   const town = String(entry.city || "").split(",")[0].trim().toLowerCase();
   const lat = Number(entry.originLat);
   const lng = Number(entry.originLng);
-  const looksLikeOregon = /\b(oregon|or)\b/.test(location);
-  const looksLikeWashington = /\b(washington|wa)\b/.test(location);
-  const cityIsLocal = OREGON_WASHINGTON_CITIES.has(town);
-  const insideOregon = hasUsableCoordinates(entry) && lat >= 42 && lat <= 46.35 && lng >= -124.8 && lng <= -116.3;
-  const insideWashington = hasUsableCoordinates(entry) && lat >= 45.45 && lat <= 49.05 && lng >= -124.85 && lng <= -116.75;
+  const looksLikeMissouri = /\b(missouri|mo)\b/.test(location);
+  const cityIsLocal = MISSOURI_CITIES.has(town);
+  const insideMissouri = hasUsableCoordinates(entry) && lat >= 35.9 && lat <= 40.62 && lng >= -95.78 && lng <= -89.1;
 
-  return looksLikeOregon || looksLikeWashington || cityIsLocal || insideOregon || insideWashington;
+  return looksLikeMissouri || cityIsLocal || insideMissouri;
 }
 
 function distanceMiles(a, b) {
@@ -484,17 +416,17 @@ function renderLeaderboard(entries = []) {
     return;
   }
 
-  const leaders = entries
+  const attendees = entries
     .filter((entry) => entry.name && Number.isFinite(Number(entry.miles)))
     .sort((a, b) => Number(b.miles) - Number(a.miles))
     .slice(0, 8);
 
-  if (!leaders.length) {
-    leaderboardList.innerHTML = "<li><span>Leaderboard warms up after the first RSVP.</span><strong>0 mi</strong></li>";
+  if (!attendees.length) {
+    leaderboardList.innerHTML = "<li><span>Travel details will appear after the first RSVP.</span><strong>0 mi</strong></li>";
     return;
   }
 
-  leaderboardList.innerHTML = leaders
+  leaderboardList.innerHTML = attendees
     .map((entry) => {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
       const town = cityTown(entry.city);
@@ -511,7 +443,7 @@ function renderTravelGroups(entries = []) {
 
   const candidates = entries
     .filter((entry) => entry.name && hasUsableCoordinates(entry))
-    .filter((entry) => !isOregonOrWashington(entry));
+    .filter((entry) => !isMissouriLocal(entry));
   const used = new Set();
   const groups = [];
 
@@ -598,7 +530,10 @@ function collectFlightGroups(entries = [], type) {
       const candidateKey = entryKey(candidate.entry);
       const sameDay = candidate.when.toDateString() === item.when.toDateString();
       const hoursApart = Math.abs(candidate.when - item.when) / 36e5;
-      if (!used.has(candidateKey) && sameDay && hoursApart <= 3) {
+      const airport = String(item.entry.arrivalAirport || "").trim().toLowerCase();
+      const candidateAirport = String(candidate.entry.arrivalAirport || "").trim().toLowerCase();
+      const compatibleAirport = type !== "arrival" || !airport || !candidateAirport || airport === candidateAirport;
+      if (!used.has(candidateKey) && sameDay && hoursApart <= 3 && compatibleAirport) {
         group.push(candidate);
         used.add(candidateKey);
       }
@@ -622,14 +557,17 @@ function renderFlightGroups(entries = []) {
     .slice(0, 8);
 
   if (!groups.length) {
-    flightGroupsList.innerHTML = "<p>Flight matches will appear when two or more people have PDX times within about three hours.</p>";
+    flightGroupsList.innerHTML = "<p>Flight matches will appear when two or more people have arrival or departure times within about three hours.</p>";
     return;
   }
 
   flightGroupsList.innerHTML = groups
     .map((group) => {
-      const label = group.type === "arrival" ? "Landing at PDX" : "Leaving from PDX";
       const first = group.items[0].entry;
+      const airport = group.type === "arrival" ? titleCase(first.arrivalAirport) : "";
+      const label = group.type === "arrival"
+        ? airport ? `Arriving at ${airport}` : "Arriving nearby"
+        : "Departing nearby";
       const time = formatFlightWindow(
         group.type === "arrival" ? first.arrivalDate : first.departureDate,
         group.type === "arrival" ? first.arrivalTime : first.departureTime
@@ -676,31 +614,12 @@ function familyRosterName(entry) {
     : firstName;
 }
 
-function heightTieRank(entry) {
-  const displayName = displayShortName(entry).toLowerCase();
-  const fullName = String(entry.name || "").toLowerCase();
-
-  if (displayName === "skooter" || fullName.includes("skooter")) {
-    return -2;
-  }
-
-  if (displayName === "awesome scott" || fullName.includes("scott")) {
-    return -1;
-  }
-
-  if (displayName === "mark" || fullName.includes("mark")) {
-    return 1;
-  }
-
-  return 0;
-}
-
 function renderHeightLeaderboard(entries = []) {
   if (!heightList) {
     return;
   }
 
-  const leaders = entries
+  const attendees = entries
     .filter((entry) => entry.name && Number.isFinite(Number(entry.heightInches)) && Number(entry.heightInches) > 0)
     .sort((a, b) => {
       const heightDiff = Number(b.heightInches) - Number(a.heightInches);
@@ -708,17 +627,16 @@ function renderHeightLeaderboard(entries = []) {
         return heightDiff;
       }
 
-      const rankDiff = heightTieRank(a) - heightTieRank(b);
-      return rankDiff || displayShortName(a).localeCompare(displayShortName(b));
+      return displayShortName(a).localeCompare(displayShortName(b));
     })
     .slice(0, 8);
 
-  if (!leaders.length) {
-    heightList.innerHTML = "<li><span>Awaiting tall tales.</span><strong>0 ft</strong></li>";
+  if (!attendees.length) {
+    heightList.innerHTML = "<li><span>Height details will appear here.</span><strong>0 ft</strong></li>";
     return;
   }
 
-  heightList.innerHTML = leaders
+  heightList.innerHTML = attendees
     .map((entry) => {
       const total = Number(entry.heightInches);
       const feet = Math.floor(total / 12);
@@ -729,25 +647,49 @@ function renderHeightLeaderboard(entries = []) {
     .join("");
 }
 
+function ageAtReunion(entry) {
+  const birthYear = Number(entry.birthYear);
+  const birthMonth = BIRTHDAY_MONTHS.indexOf(entry.birthMonth);
+  const birthDay = Number(entry.birthDay);
+
+  if (!Number.isInteger(birthYear) || birthYear < 1900 || birthYear > 2027 || birthMonth < 0 || !birthDay) {
+    return null;
+  }
+
+  let age = 2027 - birthYear;
+  if (birthMonth > 5 || (birthMonth === 5 && birthDay > 9)) {
+    age -= 1;
+  }
+  return age;
+}
+
+function renderAgeSummary(entries = []) {
+  if (!ageList) {
+    return;
+  }
+
+  const attendees = entries
+    .map((entry) => ({ entry, age: ageAtReunion(entry) }))
+    .filter(({ entry, age }) => entry.name && Number.isInteger(age) && age >= 0)
+    .sort((a, b) => b.age - a.age || displayShortName(a.entry).localeCompare(displayShortName(b.entry)))
+    .slice(0, 8);
+
+  if (!attendees.length) {
+    ageList.innerHTML = "<li><span>Age details will appear here.</span><strong>0 yrs</strong></li>";
+    return;
+  }
+
+  ageList.innerHTML = attendees
+    .map(({ entry, age }) => `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${age} yrs</strong></li>`)
+    .join("");
+}
+
 function renderBirthdayCalendar(entries = []) {
   if (!birthdayCalendar) {
     return;
   }
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const months = BIRTHDAY_MONTHS;
 
   const birthdayEntries = entries
     .filter((entry) => entry.name && entry.birthMonth && entry.birthDay)
@@ -816,16 +758,16 @@ function fitMapToEntries(entries = latestMapEntries) {
     return;
   }
 
-  const bounds = new mapboxgl.LngLatBounds([OXBOW_POSITION.lng, OXBOW_POSITION.lat], [OXBOW_POSITION.lng, OXBOW_POSITION.lat]);
+  const bounds = new mapboxgl.LngLatBounds([REUNION_POSITION.lng, REUNION_POSITION.lat], [REUNION_POSITION.lng, REUNION_POSITION.lat]);
   entries.forEach((entry) => {
     bounds.extend([Number(entry.originLng), Number(entry.originLat)]);
   });
   originMapInstance.fitBounds(bounds, { padding: 72, duration: 900, maxZoom: 7, pitch: 0, bearing: 0 });
 }
 
-function flyToOxbow() {
+function flyToReunion() {
   if (originMapInstance) {
-    originMapInstance.flyTo({ center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat], zoom: 11, pitch: 0, bearing: 0 });
+    originMapInstance.flyTo({ center: [REUNION_POSITION.lng, REUNION_POSITION.lat], zoom: 11, pitch: 0, bearing: 0 });
   }
 }
 
@@ -848,7 +790,7 @@ function highlightMapEntry(entryId) {
     marker.getPopup().addTo(originMapInstance);
   }
 
-  const bounds = new mapboxgl.LngLatBounds([OXBOW_POSITION.lng, OXBOW_POSITION.lat], [OXBOW_POSITION.lng, OXBOW_POSITION.lat]);
+  const bounds = new mapboxgl.LngLatBounds([REUNION_POSITION.lng, REUNION_POSITION.lat], [REUNION_POSITION.lng, REUNION_POSITION.lat]);
   bounds.extend([Number(entry.originLng), Number(entry.originLat)]);
   originMapInstance.fitBounds(bounds, { padding: 90, duration: 900, maxZoom: 7, pitch: 0, bearing: 0 });
 }
@@ -872,7 +814,7 @@ function renderOriginMap(entries = []) {
     .slice(0, 80);
 
   if (originMapEmpty) {
-    originMapEmpty.hidden = hasMapboxToken() && Boolean(latestMapEntries.length);
+    originMapEmpty.hidden = hasMapboxToken();
   }
 
   if (!originMapInstance) {
@@ -914,7 +856,7 @@ async function startOriginMap() {
   originMapInstance = new mapboxgl.Map({
     container: originMapCanvas,
     style: MAPBOX_STYLES[activeMapStyle],
-    center: [OXBOW_POSITION.lng, OXBOW_POSITION.lat],
+    center: [REUNION_POSITION.lng, REUNION_POSITION.lat],
     zoom: 11,
     pitch: 0,
     bearing: 0,
@@ -924,11 +866,11 @@ async function startOriginMap() {
   originMapInstance.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), "bottom-right");
 
   const homeMarker = new mapboxgl.Marker({ element: makeMarker("origin-marker origin-marker--home"), anchor: "bottom" })
-    .setLngLat([OXBOW_POSITION.lng, OXBOW_POSITION.lat])
-    .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML("<strong>Oxbowpalooza</strong><span>Over by Oxbow Park</span>"))
+    .setLngLat([REUNION_POSITION.lng, REUNION_POSITION.lat])
+    .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML("<strong>Hudson Hubbard Family Reunion</strong><span>Roaring River State Park</span>"))
     .addTo(originMapInstance);
 
-  homeMarker.getElement().setAttribute("aria-label", "Oxbowpalooza near Oxbow Park");
+  homeMarker.getElement().setAttribute("aria-label", "Hudson Hubbard Family Reunion at Roaring River State Park");
   originMapInstance.on("load", () => {
     renderOriginMap(latestMapEntries);
   });
@@ -950,7 +892,7 @@ mapStyleButtons.forEach((button) => {
 mapActionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     if (button.dataset.mapAction === "home") {
-      flyToOxbow();
+      flyToReunion();
     } else {
       fitMapToEntries();
     }
@@ -963,6 +905,7 @@ async function loadLeaderboard() {
   if (!RSVP_ENDPOINT) {
     renderLeaderboard([]);
     renderHeightLeaderboard([]);
+    renderAgeSummary([]);
     renderTravelGroups([]);
     renderFlightGroups([]);
     renderFamilyClans([]);
@@ -972,18 +915,19 @@ async function loadLeaderboard() {
   }
 
   try {
-    const response = await fetch(`${RSVP_ENDPOINT}?view=leaderboards`);
+    const response = await fetch(`${RSVP_ENDPOINT}?view=rsvps`);
     const data = await response.json();
     const entries = data.entries || [];
     renderLeaderboard(entries);
     renderHeightLeaderboard(entries);
+    renderAgeSummary(entries);
     renderTravelGroups(entries);
     renderFlightGroups(entries);
     renderFamilyClans(entries);
     renderBirthdayCalendar(entries);
     renderOriginMap(entries);
   } catch (error) {
-    setFormStatus("Leaderboard is being shy. Try refreshing in a minute.");
+    setFormStatus("RSVP details are taking a minute. Try refreshing shortly.");
   }
 }
 
@@ -1007,8 +951,8 @@ if (travelForm) {
       return;
     }
 
-    if (!payload.birthMonth || !payload.birthDay) {
-      setFormStatus("Add your birthday month and day for the birthday board.");
+    if (!payload.birthMonth || !payload.birthDay || !payload.birthYear) {
+      setFormStatus("Add your complete birthday for the family calendar.");
       return;
     }
 
@@ -1018,7 +962,7 @@ if (travelForm) {
     }
 
     submitButton.disabled = true;
-    setFormStatus("Sending you to the starting line...");
+    setFormStatus("Saving your RSVP...");
 
     try {
       const response = await fetch(RSVP_ENDPOINT, {
@@ -1039,11 +983,11 @@ if (travelForm) {
 
       travelForm.reset();
       if (data.updated) {
-        setFormStatus("Updated your RSVP. The boards will catch up in a second.");
+        setFormStatus("Updated your RSVP. The family boards will catch up in a second.");
       } else if (Number.isFinite(Number(data.entry.miles))) {
-        setFormStatus(`You're in. ${Math.round(data.entry.miles).toLocaleString()} miles on the board.`);
+        setFormStatus(`You're in. We mapped your ${Math.round(data.entry.miles).toLocaleString()}-mile journey to the reunion.`);
       } else {
-        setFormStatus("You're in. We saved the RSVP, and the mileage board will update when the city can be mapped.");
+        setFormStatus("You're in. We saved the RSVP, and your travel details will appear when the city can be mapped.");
       }
       await loadLeaderboard();
     } catch (error) {

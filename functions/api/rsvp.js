@@ -1,6 +1,6 @@
 const DESTINATION = {
-  lat: 45.4859628,
-  lng: -122.3071819,
+  lat: 36.58271,
+  lng: -93.83739,
 };
 
 const KNOWN_ORIGINS = [
@@ -32,6 +32,55 @@ function clean(value) {
   return String(value || "").trim();
 }
 
+function emailSet(value) {
+  return new Set(
+    clean(value)
+      .split(/[;,]+/)
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+function normalizeEmails(value) {
+  return [...emailSet(value)].join(", ");
+}
+
+async function syncToGoogleSheet(env, entry) {
+  if (!env.GOOGLE_SHEET_WEB_APP_URL || !env.SHEET_SYNC_SECRET) {
+    return { configured: false, synced: false };
+  }
+
+  try {
+    const response = await fetch(env.GOOGLE_SHEET_WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "upsert",
+        secret: env.SHEET_SYNC_SECRET,
+        entry,
+      }),
+    });
+
+    return { configured: true, synced: response.ok };
+  } catch (error) {
+    console.error("Google Sheet sync failed", error);
+    return { configured: true, synced: false };
+  }
+}
+
+async function findExistingByEmail(env, email) {
+  const incoming = emailSet(email);
+  if (!incoming.size) {
+    return null;
+  }
+
+  const { results } = await env.DB.prepare(
+    "SELECT id, email FROM rsvps WHERE email IS NOT NULL AND trim(email) <> '' ORDER BY created_at DESC LIMIT 500"
+  ).all();
+
+  return (results || []).find((row) => [...emailSet(row.email)].some((item) => incoming.has(item))) || null;
+}
+
 function geocodeQuery(address, city) {
   const query = address ? `${address}, ${city}` : city;
 
@@ -54,10 +103,11 @@ function normalizedLocation(value) {
 
 function isPartyAddress(address, city) {
   const location = normalizedLocation(`${address} ${city}`);
-  const hasAddress = location.includes("5238") && location.includes("oxbow") && (location.includes("pkwy") || location.includes("park"));
-  const hasGresham = location.includes("gresham") || location.includes("97080");
+  const hasAddress = location.includes("12716") && location.includes("2239");
+  const hasPark = location.includes("roaring river") || location.includes("state park");
+  const hasCassville = location.includes("cassville") || location.includes("65625");
 
-  return hasAddress && hasGresham;
+  return hasAddress || (hasPark && hasCassville);
 }
 
 function toEntry(row) {
@@ -74,12 +124,14 @@ function toEntry(row) {
     daysAttending: row.days_attending,
     birthMonth: row.birth_month,
     birthDay: row.birth_day,
+    birthYear: row.birth_year,
     heightInches: row.height_inches,
     originLat: row.origin_lat,
     originLng: row.origin_lng,
     miles: row.miles,
     arrivalDate: row.flight_arrival_date,
     arrivalTime: row.flight_arrival_time,
+    arrivalAirport: row.arrival_airport,
     departureDate: row.flight_departure_date,
     departureTime: row.flight_departure_time,
     flightNotes: row.flight_notes,
@@ -95,12 +147,14 @@ function toPublicEntry(row) {
     invitedBy: row.invited_by,
     birthMonth: row.birth_month,
     birthDay: row.birth_day,
+    birthYear: row.birth_year,
     heightInches: row.height_inches,
     originLat: row.origin_lat,
     originLng: row.origin_lng,
     miles: row.miles,
     arrivalDate: row.flight_arrival_date,
     arrivalTime: row.flight_arrival_time,
+    arrivalAirport: row.arrival_airport,
     departureDate: row.flight_departure_date,
     departureTime: row.flight_departure_time,
   };
@@ -187,7 +241,7 @@ async function geocodeWithOpenStreetMap(city) {
   const response = await fetch(url.toString(), {
     headers: {
       "Accept": "application/json",
-      "User-Agent": "Oxbowpalooza RSVP site",
+      "User-Agent": "Hudson Hubbard Family Reunion RSVP site",
     },
   });
 
@@ -229,12 +283,14 @@ async function listEntries(env) {
       invited_by,
       birth_month,
       birth_day,
+      ${selectColumn(columns, "birth_year")},
       height_inches,
       origin_lat,
       origin_lng,
       miles,
       ${selectColumn(columns, "flight_arrival_date")},
       ${selectColumn(columns, "flight_arrival_time")},
+      ${selectColumn(columns, "arrival_airport")},
       ${selectColumn(columns, "flight_departure_date")},
       ${selectColumn(columns, "flight_departure_time")}
     FROM rsvps
@@ -270,7 +326,7 @@ async function healthCheck(env) {
 async function createEntry(request, env) {
   const body = await request.json();
   const name = clean(body.name);
-  const email = clean(body.email).toLowerCase();
+  const email = normalizeEmails(body.email);
   const city = clean(body.city);
   const address = clean(body.address);
   const originQuery = geocodeQuery(address, city);
@@ -288,38 +344,45 @@ async function createEntry(request, env) {
     return json({ ok: false, error: "Pick the person who brought you into this beautiful mess." }, 400);
   }
 
-  if (!clean(body.birthMonth) || !clean(body.birthDay)) {
-    return json({ ok: false, error: "Birthday month and day are required." }, 400);
+  if (!clean(body.birthMonth) || !clean(body.birthDay) || !clean(body.birthYear)) {
+    return json({ ok: false, error: "A complete birthday is required." }, 400);
   }
 
   const heightInches = numeric(body.heightInches);
   const birthDay = numeric(body.birthDay);
+  const birthYear = numeric(body.birthYear);
+  if (!Number.isInteger(birthYear) || birthYear < 1900 || birthYear > 2027) {
+    return json({ ok: false, error: "Enter a valid four-digit birth year." }, 400);
+  }
   const origin = isPartyAddress(address, city) ? DESTINATION : await geocodeCity(originQuery, env);
   const miles = isPartyAddress(address, city) ? 0 : distanceInMiles(origin, DESTINATION);
   const columns = await tableColumns(env);
+  const hasBirthYear = columns.has("birth_year");
   const hasFlightColumns =
     columns.has("flight_arrival_date") &&
     columns.has("flight_arrival_time") &&
     columns.has("flight_departure_date") &&
     columns.has("flight_departure_time") &&
-    columns.has("flight_notes");
-  const existing = email
-    ? await env.DB.prepare("SELECT id FROM rsvps WHERE lower(email) = ? ORDER BY created_at DESC LIMIT 1").bind(email).first()
-    : null;
+    columns.has("flight_notes") &&
+    columns.has("arrival_airport");
+  const existing = await findExistingByEmail(env, email);
   const wasUpdated = Boolean(existing?.id);
   let savedId = existing?.id || null;
 
   if (savedId) {
+    const birthYearSet = hasBirthYear ? ",\n        birth_year = ?" : "";
+    const birthYearValues = hasBirthYear ? [birthYear] : [];
     const flightSet = hasFlightColumns
       ? `,
         flight_arrival_date = ?,
         flight_arrival_time = ?,
+        arrival_airport = ?,
         flight_departure_date = ?,
         flight_departure_time = ?,
         flight_notes = ?`
       : "";
     const flightValues = hasFlightColumns
-      ? [clean(body.arrivalDate), clean(body.arrivalTime), clean(body.departureDate), clean(body.departureTime), clean(body.flightNotes)]
+      ? [clean(body.arrivalDate), clean(body.arrivalTime), clean(body.arrivalAirport), clean(body.departureDate), clean(body.departureTime), clean(body.flightNotes)]
       : [];
 
     await env.DB.prepare(
@@ -334,7 +397,7 @@ async function createEntry(request, env) {
         food_notes = ?,
         days_attending = ?,
         birth_month = ?,
-        birth_day = ?,
+        birth_day = ?${birthYearSet},
         height_inches = ?,
         origin_lat = ?,
         origin_lng = ?,
@@ -352,6 +415,7 @@ async function createEntry(request, env) {
         daysAttending,
         clean(body.birthMonth),
         birthDay,
+        ...birthYearValues,
         heightInches,
         origin?.lat || null,
         origin?.lng || null,
@@ -361,17 +425,21 @@ async function createEntry(request, env) {
       )
       .run();
   } else {
+    const birthYearColumn = hasBirthYear ? ",\n      birth_year" : "";
+    const birthYearPlaceholder = hasBirthYear ? ", ?" : "";
+    const birthYearValues = hasBirthYear ? [birthYear] : [];
     const flightColumns = hasFlightColumns
       ? `,
       flight_arrival_date,
       flight_arrival_time,
+      arrival_airport,
       flight_departure_date,
       flight_departure_time,
       flight_notes`
       : "";
-    const flightPlaceholders = hasFlightColumns ? ", ?, ?, ?, ?, ?" : "";
+    const flightPlaceholders = hasFlightColumns ? ", ?, ?, ?, ?, ?, ?" : "";
     const flightValues = hasFlightColumns
-      ? [clean(body.arrivalDate), clean(body.arrivalTime), clean(body.departureDate), clean(body.departureTime), clean(body.flightNotes)]
+      ? [clean(body.arrivalDate), clean(body.arrivalTime), clean(body.arrivalAirport), clean(body.departureDate), clean(body.departureTime), clean(body.flightNotes)]
       : [];
     const result = await env.DB.prepare(
     `INSERT INTO rsvps (
@@ -384,12 +452,12 @@ async function createEntry(request, env) {
       food_notes,
       days_attending,
       birth_month,
-      birth_day,
+      birth_day${birthYearColumn},
       height_inches,
       origin_lat,
       origin_lng,
       miles${flightColumns}
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${flightPlaceholders})`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?${birthYearPlaceholder}, ?, ?, ?, ?${flightPlaceholders})`
   )
     .bind(
       name,
@@ -402,6 +470,7 @@ async function createEntry(request, env) {
       daysAttending,
       clean(body.birthMonth),
       birthDay,
+      ...birthYearValues,
       heightInches,
       origin?.lat || null,
       origin?.lng || null,
@@ -426,12 +495,14 @@ async function createEntry(request, env) {
       days_attending,
       birth_month,
       birth_day,
+      ${selectColumn(columns, "birth_year")},
       height_inches,
       origin_lat,
       origin_lng,
       miles,
       ${selectColumn(columns, "flight_arrival_date")},
       ${selectColumn(columns, "flight_arrival_time")},
+      ${selectColumn(columns, "arrival_airport")},
       ${selectColumn(columns, "flight_departure_date")},
       ${selectColumn(columns, "flight_departure_time")},
       ${selectColumn(columns, "flight_notes")}
@@ -441,7 +512,9 @@ async function createEntry(request, env) {
     .bind(savedId)
     .first();
 
-  return json({ ok: true, updated: wasUpdated, entry: toEntry(saved) });
+  const entry = toEntry(saved);
+  const sheetSync = await syncToGoogleSheet(env, entry);
+  return json({ ok: true, updated: wasUpdated, entry, sheetSync });
 }
 
 export async function onRequest(context) {

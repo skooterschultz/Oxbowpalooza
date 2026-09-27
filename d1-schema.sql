@@ -1,4 +1,4 @@
--- Oxbowpalooza RSVP D1 schema
+-- Hudson Hubbard Family Reunion RSVP D1 schema
 --
 -- For a brand-new D1 database:
 --   Run this whole file in the D1 query console.
@@ -25,12 +25,14 @@ CREATE TABLE IF NOT EXISTS rsvps (
   days_attending TEXT,
   birth_month TEXT,
   birth_day INTEGER,
+  birth_year INTEGER,
   height_inches INTEGER,
   origin_lat REAL,
   origin_lng REAL,
   miles INTEGER,
   flight_arrival_date TEXT,
   flight_arrival_time TEXT,
+  arrival_airport TEXT,
   flight_departure_date TEXT,
   flight_departure_time TEXT,
   flight_notes TEXT
@@ -56,12 +58,14 @@ CREATE INDEX IF NOT EXISTS idx_rsvps_email ON rsvps(email);
 -- ALTER TABLE rsvps ADD COLUMN days_attending TEXT;
 -- ALTER TABLE rsvps ADD COLUMN birth_month TEXT;
 -- ALTER TABLE rsvps ADD COLUMN birth_day INTEGER;
+-- ALTER TABLE rsvps ADD COLUMN birth_year INTEGER;
 -- ALTER TABLE rsvps ADD COLUMN height_inches INTEGER;
 -- ALTER TABLE rsvps ADD COLUMN origin_lat REAL;
 -- ALTER TABLE rsvps ADD COLUMN origin_lng REAL;
 -- ALTER TABLE rsvps ADD COLUMN miles INTEGER;
 -- ALTER TABLE rsvps ADD COLUMN flight_arrival_date TEXT;
 -- ALTER TABLE rsvps ADD COLUMN flight_arrival_time TEXT;
+-- ALTER TABLE rsvps ADD COLUMN arrival_airport TEXT;
 -- ALTER TABLE rsvps ADD COLUMN flight_departure_date TEXT;
 -- ALTER TABLE rsvps ADD COLUMN flight_departure_time TEXT;
 -- ALTER TABLE rsvps ADD COLUMN flight_notes TEXT;

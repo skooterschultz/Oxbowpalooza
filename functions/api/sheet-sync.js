@@ -1,0 +1,163 @@
+const DESTINATION = { lat: 36.58271, lng: -93.83739 };
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization, Content-Type",
+};
+
+function json(data, status = 200) {
+  return Response.json(data, { status, headers: CORS_HEADERS });
+}
+
+function clean(value) {
+  return String(value ?? "").trim();
+}
+
+function numeric(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function normalizeEmails(value) {
+  return [...new Set(
+    clean(value)
+      .split(/[;,]+/)
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean)
+  )].join(", ");
+}
+
+function distanceInMiles(origin, destination) {
+  if (!origin) {
+    return null;
+  }
+
+  const toRadians = (degrees) => degrees * Math.PI / 180;
+  const earthRadiusMiles = 3958.8;
+  const latDistance = toRadians(destination.lat - origin.lat);
+  const lngDistance = toRadians(destination.lng - origin.lng);
+  const a = Math.sin(latDistance / 2) ** 2
+    + Math.cos(toRadians(origin.lat)) * Math.cos(toRadians(destination.lat))
+    * Math.sin(lngDistance / 2) ** 2;
+  return Math.round(earthRadiusMiles * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+async function geocode(city, address, env) {
+  const query = clean(address) ? `${clean(address)}, ${clean(city)}` : clean(city);
+  if (!query || !env.MAPBOX_PUBLIC_TOKEN) {
+    return null;
+  }
+
+  const url = new URL("https://api.mapbox.com/search/geocode/v6/forward");
+  url.searchParams.set("q", `${query}, USA`);
+  url.searchParams.set("country", "us");
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("access_token", env.MAPBOX_PUBLIC_TOKEN);
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = await response.json();
+  const coordinates = data.features?.[0]?.geometry?.coordinates;
+  return Array.isArray(coordinates) ? { lng: coordinates[0], lat: coordinates[1] } : null;
+}
+
+async function updateFromSheet(env, entry) {
+  const id = numeric(entry.id);
+  if (!Number.isInteger(id) || id < 1) {
+    return json({ ok: false, error: "A valid RSVP ID is required." }, 400);
+  }
+
+  const city = clean(entry.city);
+  const address = clean(entry.address);
+  const origin = await geocode(city, address, env);
+  const miles = distanceInMiles(origin, DESTINATION);
+
+  const result = await env.DB.prepare(
+    `UPDATE rsvps SET
+      name = ?,
+      nickname = ?,
+      email = ?,
+      city = ?,
+      address = ?,
+      invited_by = ?,
+      food_notes = ?,
+      days_attending = ?,
+      birth_month = ?,
+      birth_day = ?,
+      birth_year = ?,
+      height_inches = ?,
+      origin_lat = ?,
+      origin_lng = ?,
+      miles = ?,
+      flight_arrival_date = ?,
+      flight_arrival_time = ?,
+      arrival_airport = ?,
+      flight_departure_date = ?,
+      flight_departure_time = ?,
+      flight_notes = ?
+    WHERE id = ?`
+  ).bind(
+    clean(entry.name),
+    clean(entry.nickname),
+    normalizeEmails(entry.email),
+    city,
+    address,
+    clean(entry.invitedBy),
+    clean(entry.foodNotes),
+    clean(entry.daysAttending),
+    clean(entry.birthMonth),
+    numeric(entry.birthDay),
+    numeric(entry.birthYear),
+    numeric(entry.heightInches),
+    origin?.lat ?? null,
+    origin?.lng ?? null,
+    miles,
+    clean(entry.arrivalDate),
+    clean(entry.arrivalTime),
+    clean(entry.arrivalAirport),
+    clean(entry.departureDate),
+    clean(entry.departureTime),
+    clean(entry.flightNotes),
+    id
+  ).run();
+
+  if (!result.meta?.changes) {
+    return json({ ok: false, error: "RSVP was not found." }, 404);
+  }
+
+  return json({ ok: true, id, miles });
+}
+
+export async function onRequest({ request, env }) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: CORS_HEADERS });
+  }
+
+  if (request.method !== "POST") {
+    return json({ ok: false, error: "Method not allowed." }, 405);
+  }
+
+  if (!env.DB) {
+    return json({ ok: false, error: "D1 binding DB is not configured." }, 500);
+  }
+
+  if (!env.SHEET_SYNC_SECRET) {
+    return json({ ok: false, error: "Sheet sync secret is not configured." }, 500);
+  }
+
+  const authorization = request.headers.get("Authorization") || "";
+  if (authorization !== `Bearer ${env.SHEET_SYNC_SECRET}`) {
+    return json({ ok: false, error: "Unauthorized." }, 401);
+  }
+
+  try {
+    const body = await request.json();
+    return updateFromSheet(env, body.entry || body);
+  } catch (error) {
+    return json({ ok: false, error: error instanceof Error ? error.message : "Unable to update RSVP." }, 500);
+  }
+}

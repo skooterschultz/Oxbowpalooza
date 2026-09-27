@@ -1,5 +1,5 @@
 param(
-  [string]$Source = "K:\Dropbox\Pictures\2026\Oxbowpalooza 2026",
+  [string]$Source = "K:\Dropbox\Pictures\2027\Hudson Hubbard Family Reunion",
   [string]$GalleryDir = "assets\gallery",
   [string]$Manifest = "photo-gallery.json"
 )
@@ -34,7 +34,7 @@ function Convert-ToCaption {
 
   $submitter = ($Value -split "[-_ ]+")[0]
   if ($submitter -eq "Photo") {
-    return "Oxbow Staff"
+    return "Reunion Family"
   }
 
   return $submitter.Trim()
@@ -81,7 +81,7 @@ foreach ($photo in $photos) {
   $manifestItems += [ordered]@{
     src = "./$($GalleryDir -replace "\\", "/")/$fileName"
     type = "image"
-    alt = "Oxbowpalooza photo: $(Convert-ToCaption -Value $photo.BaseName)"
+    alt = "Hudson Hubbard family photo: $(Convert-ToCaption -Value $photo.BaseName)"
     caption = Convert-ToCaption -Value $photo.BaseName
   }
 }

@@ -1,4 +1,4 @@
-# Oxbowpalooza RSVP: Cloudflare D1 Setup
+# Hudson Hubbard Family Reunion RSVP: Cloudflare D1 Setup
 
 This replaces the Google Sheet / Apps Script flow with a Cloudflare Pages Function and a D1 database.
 
@@ -17,7 +17,7 @@ In Cloudflare:
 1. Go to **Workers & Pages**.
 2. Open **D1 SQL Database**.
 3. Click **Create database**.
-4. Name it something like `oxbowpalooza-rsvps`.
+4. Name it something like `hudson-hubbard-rsvps`.
 
 ## Step 2: Create The Table
 
@@ -30,13 +30,13 @@ This creates the `rsvps` table and the indexes used by the leaderboards and birt
 In Cloudflare:
 
 1. Go to **Workers & Pages**.
-2. Open your Oxbowpalooza Pages project.
+2. Open your Hudson Hubbard Family Reunion Pages project.
 3. Go to **Settings**.
 4. Open **Functions**.
 5. Find **D1 database bindings**.
 6. Add a binding:
    - Variable name: `DB`
-   - D1 database: your `oxbowpalooza-rsvps` database
+   - D1 database: your `hudson-hubbard-rsvps` database
 7. Save.
 
 The variable name must be exactly `DB`, because the Function reads `env.DB`.
@@ -78,7 +78,7 @@ You should see the test entry.
 
 ## Optional: Better Mileage
 
-By default, the Function geocodes the city and calculates straight-line mileage to Oxbow. That is lightweight and good enough for the travel leaderboard game.
+By default, the Function geocodes the city and calculates straight-line mileage to Roaring River State Park. That is lightweight and good enough for the travel leaderboard game.
 
 If you want Google geocoding instead, add a Cloudflare Pages secret/environment variable:
 

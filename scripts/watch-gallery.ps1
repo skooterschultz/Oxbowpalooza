@@ -1,5 +1,5 @@
 param(
-  [string]$Source = "K:\Dropbox\Pictures\2026\Oxbowpalooza 2026",
+  [string]$Source = "K:\Dropbox\Pictures\2027\Hudson Hubbard Family Reunion",
   [int]$QuietSeconds = 45,
   [int]$StableChecks = 3,
   [int]$StableDelaySeconds = 5
@@ -51,7 +51,7 @@ function Publish-Gallery {
     Write-Output "Dropbox gallery changed. Waiting for uploads to finish..."
     Wait-ForStableFolder
     & powershell.exe -ExecutionPolicy Bypass -File $publishScript -CommitMessage "Auto refresh photo gallery"
-    Write-Output "Watching for more Oxbowpalooza uploads."
+    Write-Output "Watching for more Hudson Hubbard reunion uploads."
   } catch {
     Write-Warning "Gallery publish failed: $($_.Exception.Message)"
   } finally {
