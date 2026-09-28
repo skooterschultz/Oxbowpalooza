@@ -2,9 +2,52 @@ const DESTINATION = { lat: 36.58271, lng: -93.83739 };
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
 };
+
+function toEntry(row) {
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    name: row.name,
+    nickname: row.nickname,
+    email: row.email,
+    city: row.city,
+    address: row.address,
+    invitedBy: row.invited_by,
+    foodNotes: row.food_notes,
+    daysAttending: row.days_attending,
+    birthMonth: row.birth_month,
+    birthDay: row.birth_day,
+    birthYear: row.birth_year,
+    heightInches: row.height_inches,
+    originLat: row.origin_lat,
+    originLng: row.origin_lng,
+    miles: row.miles,
+    arrivalDate: row.flight_arrival_date,
+    arrivalTime: row.flight_arrival_time,
+    arrivalAirport: row.arrival_airport,
+    departureDate: row.flight_departure_date,
+    departureTime: row.flight_departure_time,
+    flightNotes: row.flight_notes,
+  };
+}
+
+async function listEntriesForSheet(env) {
+  const { results } = await env.DB.prepare(
+    `SELECT
+      id, created_at, name, nickname, email, city, address, invited_by,
+      food_notes, days_attending, birth_month, birth_day, birth_year,
+      height_inches, origin_lat, origin_lng, miles, flight_arrival_date,
+      flight_arrival_time, arrival_airport, flight_departure_date,
+      flight_departure_time, flight_notes
+    FROM rsvps
+    ORDER BY created_at ASC, id ASC`
+  ).all();
+
+  return (results || []).map(toEntry);
+}
 
 function json(data, status = 200) {
   return Response.json(data, { status, headers: CORS_HEADERS });
@@ -137,10 +180,6 @@ export async function onRequest({ request, env }) {
     return new Response(null, { headers: CORS_HEADERS });
   }
 
-  if (request.method !== "POST") {
-    return json({ ok: false, error: "Method not allowed." }, 405);
-  }
-
   if (!env.DB) {
     return json({ ok: false, error: "D1 binding DB is not configured." }, 500);
   }
@@ -155,6 +194,14 @@ export async function onRequest({ request, env }) {
   }
 
   try {
+    if (request.method === "GET") {
+      return json({ ok: true, entries: await listEntriesForSheet(env) });
+    }
+
+    if (request.method !== "POST") {
+      return json({ ok: false, error: "Method not allowed." }, 405);
+    }
+
     const body = await request.json();
     return updateFromSheet(env, body.entry || body);
   } catch (error) {

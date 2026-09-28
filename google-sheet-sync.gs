@@ -1,4 +1,5 @@
 const SHEET_NAME = "RSVPs";
+const SPREADSHEET_ID = "1vQhFgNNiJ9hHuWRdCsYaBzBBKAUDwdsVk1qKnDp54sY";
 const HEADERS = [
   "RSVP ID",
   "Submitted At",
@@ -53,12 +54,36 @@ const FIELD_BY_HEADER = {
 };
 
 function getRsvpSheet_() {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
   let sheet = spreadsheet.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = spreadsheet.insertSheet(SHEET_NAME);
   }
   return sheet;
+}
+
+function syncAllFromD1() {
+  const properties = PropertiesService.getScriptProperties();
+  const endpoint = properties.getProperty("CLOUDFLARE_SYNC_URL");
+  const secret = properties.getProperty("SYNC_SECRET");
+  if (!endpoint || !secret) {
+    throw new Error("Set CLOUDFLARE_SYNC_URL and SYNC_SECRET in Script Properties.");
+  }
+
+  const response = UrlFetchApp.fetch(endpoint, {
+    method: "get",
+    headers: { Authorization: `Bearer ${secret}` },
+    muteHttpExceptions: true
+  });
+  const status = response.getResponseCode();
+  const payload = JSON.parse(response.getContentText() || "{}");
+  if (status < 200 || status >= 300 || payload.ok !== true || !Array.isArray(payload.entries)) {
+    throw new Error(`D1 export failed: ${response.getContentText()}`);
+  }
+
+  setupRsvpSheet();
+  payload.entries.forEach(upsertEntry_);
+  return `${payload.entries.length} RSVP${payload.entries.length === 1 ? "" : "s"} synced.`;
 }
 
 function setupRsvpSheet() {
@@ -163,7 +188,7 @@ function installSheetEditTrigger() {
     .forEach((trigger) => ScriptApp.deleteTrigger(trigger));
 
   ScriptApp.newTrigger("syncEditedRowToD1")
-    .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
+    .forSpreadsheet(SpreadsheetApp.openById(SPREADSHEET_ID))
     .onEdit()
     .create();
 }

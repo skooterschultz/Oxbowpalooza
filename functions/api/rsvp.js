@@ -61,7 +61,24 @@ async function syncToGoogleSheet(env, entry) {
       }),
     });
 
-    return { configured: true, synced: response.ok };
+    const responseText = await response.text();
+    let payload = null;
+    try {
+      payload = JSON.parse(responseText);
+    } catch (error) {
+      console.error("Google Sheet sync returned a non-JSON response", response.status);
+    }
+
+    const synced = response.ok && payload?.ok === true;
+    if (!synced) {
+      console.error("Google Sheet sync was rejected", response.status, payload?.error || "Invalid response");
+    }
+
+    return {
+      configured: true,
+      synced,
+      error: synced ? undefined : payload?.error || `Google returned ${response.status}.`,
+    };
   } catch (error) {
     console.error("Google Sheet sync failed", error);
     return { configured: true, synced: false };
