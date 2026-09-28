@@ -3,6 +3,19 @@ const panelButtons = Array.from(document.querySelectorAll("[data-panel]"));
 const carouselSlides = Array.from(document.querySelectorAll(".hero-carousel__slide"));
 const RSVP_ENDPOINT = "/api/rsvp";
 
+document.querySelectorAll('.site-nav a[href^="#"]').forEach((link) => {
+  link.addEventListener("click", (event) => {
+    const target = document.querySelector(link.getAttribute("href"));
+    if (!target) {
+      return;
+    }
+
+    event.preventDefault();
+    window.history.replaceState(null, "", link.getAttribute("href"));
+    target.scrollIntoView({ behavior: "auto", block: "start" });
+  });
+});
+
 function startHeroCarousel() {
   if (carouselSlides.length < 2) {
     return;
@@ -48,6 +61,8 @@ const flightGroupsList = document.querySelector("#flight-groups-list");
 const birthdayCalendar = document.querySelector("#birthday-calendar");
 const familyClansGrid = document.querySelector("#family-clans-grid");
 const familyClansTotal = document.querySelector("#family-clans-total");
+const familyTreeBranches = document.querySelector("#family-tree-branches");
+const familyTreeCount = document.querySelector("#family-tree-count");
 const photoGallery = document.querySelector("#photo-gallery");
 const photoUploadForm = document.querySelector("#photo-upload-form");
 const photoUploadStatus = document.querySelector("#photo-upload-status");
@@ -661,6 +676,46 @@ function renderFamilyClans(entries = []) {
   }).join("");
 }
 
+function renderFamilyTree(entries = []) {
+  if (!familyTreeBranches) {
+    return;
+  }
+
+  const branches = ["Hudson", "Hubbard"];
+  const connected = entries.filter((entry) =>
+    branches.includes(entry.invitedBy) && (entry.familyConnection || entry.familyRelationship)
+  );
+
+  if (familyTreeCount) {
+    familyTreeCount.textContent = connected.length
+      ? `${connected.length} connection${connected.length === 1 ? "" : "s"} shared`
+      : "The story is just beginning";
+  }
+
+  familyTreeBranches.innerHTML = branches.map((branch) => {
+    const people = entries
+      .filter((entry) => entry.invitedBy === branch)
+      .sort((a, b) => displayShortName(a).localeCompare(displayShortName(b)));
+    const nodes = people.length
+      ? people.map((entry) => {
+          const connection = titleCase(entry.familyConnection);
+          const relationship = String(entry.familyRelationship || "").trim();
+          const details = [
+            connection ? `Connected through ${connection}` : "",
+            relationship,
+          ].filter(Boolean).join(" · ");
+
+          return `<div class="family-tree__person"><strong>${escapeHtml(displayShortName(entry))}</strong><span>${escapeHtml(details || "Relationship details coming soon")}</span></div>`;
+        }).join("")
+      : `<p class="family-tree__empty">${branch} connections will take root here as the family shares them.</p>`;
+
+    return `<article class="family-tree__branch family-tree__branch--${branch.toLowerCase()}">
+      <div class="family-tree__branch-heading"><span>${branch} family</span><h4>If you know one of these people, you might be a ${branch}.</h4></div>
+      <div class="family-tree__people">${nodes}</div>
+    </article>`;
+  }).join("");
+}
+
 function familyRosterName(entry) {
   const firstName = titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
   const nickname = titleCase(entry.nickname);
@@ -965,6 +1020,7 @@ async function loadLeaderboard() {
     renderTravelGroups([]);
     renderFlightGroups([]);
     renderFamilyClans([]);
+    renderFamilyTree([]);
     renderBirthdayCalendar([]);
     renderOriginMap([]);
     return;
@@ -980,6 +1036,7 @@ async function loadLeaderboard() {
     renderTravelGroups(entries);
     renderFlightGroups(entries);
     renderFamilyClans(entries);
+    renderFamilyTree(entries);
     renderBirthdayCalendar(entries);
     renderOriginMap(entries);
   } catch (error) {

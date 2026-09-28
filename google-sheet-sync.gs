@@ -24,7 +24,9 @@ const HEADERS = [
   "Flight Notes",
   "Origin Latitude",
   "Origin Longitude",
-  "Last Synced"
+  "Last Synced",
+  "Family Connection",
+  "Family Relationship"
 ];
 
 const FIELD_BY_HEADER = {
@@ -36,6 +38,8 @@ const FIELD_BY_HEADER = {
   "City Traveling From": "city",
   "Address": "address",
   "Family Branch": "invitedBy",
+  "Family Connection": "familyConnection",
+  "Family Relationship": "familyRelationship",
   "Dietary Restrictions": "foodNotes",
   "Days Attending": "daysAttending",
   "Birth Month": "birthMonth",

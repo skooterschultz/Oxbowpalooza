@@ -137,6 +137,8 @@ function toEntry(row) {
     city: row.city,
     address: row.address,
     invitedBy: row.invited_by,
+    familyConnection: row.family_connection,
+    familyRelationship: row.family_relationship,
     foodNotes: row.food_notes,
     daysAttending: row.days_attending,
     birthMonth: row.birth_month,
@@ -162,6 +164,8 @@ function toPublicEntry(row) {
     nickname: row.nickname,
     city: row.city,
     invitedBy: row.invited_by,
+    familyConnection: row.family_connection,
+    familyRelationship: row.family_relationship,
     birthMonth: row.birth_month,
     birthDay: row.birth_day,
     birthYear: row.birth_year,
@@ -180,6 +184,29 @@ function toPublicEntry(row) {
 async function tableColumns(env) {
   const table = await env.DB.prepare("PRAGMA table_info(rsvps)").all();
   return new Set((table.results || []).map((column) => column.name));
+}
+
+async function ensureFamilyColumns(env) {
+  let columns = await tableColumns(env);
+  const additions = [
+    ["family_connection", "ALTER TABLE rsvps ADD COLUMN family_connection TEXT"],
+    ["family_relationship", "ALTER TABLE rsvps ADD COLUMN family_relationship TEXT"],
+  ];
+
+  for (const [name, statement] of additions) {
+    if (!columns.has(name)) {
+      try {
+        await env.DB.prepare(statement).run();
+      } catch (error) {
+        if (!/duplicate column/i.test(errorMessage(error))) {
+          throw error;
+        }
+      }
+    }
+  }
+
+  columns = await tableColumns(env);
+  return columns;
 }
 
 function selectColumn(columns, name) {
@@ -290,7 +317,7 @@ async function geocodeCity(city, env) {
 }
 
 async function listEntries(env) {
-  const columns = await tableColumns(env);
+  const columns = await ensureFamilyColumns(env);
   const { results } = await env.DB.prepare(
     `SELECT
       id,
@@ -298,6 +325,8 @@ async function listEntries(env) {
       nickname,
       city,
       invited_by,
+      ${selectColumn(columns, "family_connection")},
+      ${selectColumn(columns, "family_relationship")},
       birth_month,
       birth_day,
       ${selectColumn(columns, "birth_year")},
@@ -373,7 +402,7 @@ async function createEntry(request, env) {
   }
   const origin = isPartyAddress(address, city) ? DESTINATION : await geocodeCity(originQuery, env);
   const miles = isPartyAddress(address, city) ? 0 : distanceInMiles(origin, DESTINATION);
-  const columns = await tableColumns(env);
+  const columns = await ensureFamilyColumns(env);
   const hasBirthYear = columns.has("birth_year");
   const hasFlightColumns =
     columns.has("flight_arrival_date") &&
@@ -411,6 +440,8 @@ async function createEntry(request, env) {
         city = ?,
         address = ?,
         invited_by = ?,
+        family_connection = ?,
+        family_relationship = ?,
         food_notes = ?,
         days_attending = ?,
         birth_month = ?,
@@ -428,6 +459,8 @@ async function createEntry(request, env) {
         city,
         address,
         clean(body.invitedBy),
+        clean(body.familyConnection),
+        clean(body.familyRelationship),
         clean(body.foodNotes),
         daysAttending,
         clean(body.birthMonth),
@@ -466,6 +499,8 @@ async function createEntry(request, env) {
       city,
       address,
       invited_by,
+      family_connection,
+      family_relationship,
       food_notes,
       days_attending,
       birth_month,
@@ -474,7 +509,7 @@ async function createEntry(request, env) {
       origin_lat,
       origin_lng,
       miles${flightColumns}
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?${birthYearPlaceholder}, ?, ?, ?, ?${flightPlaceholders})`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${birthYearPlaceholder}, ?, ?, ?, ?${flightPlaceholders})`
   )
     .bind(
       name,
@@ -483,6 +518,8 @@ async function createEntry(request, env) {
       city,
       address,
       clean(body.invitedBy),
+      clean(body.familyConnection),
+      clean(body.familyRelationship),
       clean(body.foodNotes),
       daysAttending,
       clean(body.birthMonth),
@@ -508,6 +545,8 @@ async function createEntry(request, env) {
       city,
       address,
       invited_by,
+      family_connection,
+      family_relationship,
       food_notes,
       days_attending,
       birth_month,

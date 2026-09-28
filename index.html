@@ -48,7 +48,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r2-photos" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r3-family-tree-2" />
   </head>
   <body>
     <main>
@@ -58,6 +58,7 @@
         <a href="#experience">Experience</a>
         <a href="#photos">Photos</a>
         <a href="#rsvp">RSVP</a>
+        <a href="#family-tree">Family Tree</a>
       </header>
 
       <section class="hero" id="home" aria-labelledby="page-title">
@@ -500,6 +501,16 @@
               </select>
             </label>
             <label>
+              Who connects you to the family?
+              <input name="familyConnection" placeholder="A parent, grandparent, cousin, or familiar name" />
+              <small>Optional. This helps us begin placing your branch on the family tree.</small>
+            </label>
+            <label>
+              How are you connected?
+              <input name="familyRelationship" placeholder="For example: Brenda's cousin or David's granddaughter" />
+              <small>Use whatever description feels natural. We can sort out the branches together.</small>
+            </label>
+            <label>
               Dietary restrictions?
               <select name="foodNotes">
                 <option value="">Choose one if your stomach has notes</option>
@@ -647,6 +658,41 @@
             <article><h4>December</h4><p>Waiting for birthdays.</p></article>
           </div>
         </div>
+        <div class="family-tree" id="family-tree" aria-labelledby="family-tree-title">
+          <header class="family-tree__header">
+            <div>
+              <h3 id="family-tree-title">Our Family Connections</h3>
+              <p>
+                Tell us who you know and how you are connected. As stories and relationships
+                come in, we will keep filling in the branches together.
+              </p>
+            </div>
+            <span class="family-tree__count" id="family-tree-count">The story is just beginning</span>
+          </header>
+          <div class="family-tree__branches" id="family-tree-branches">
+            <article class="family-tree__branch family-tree__branch--hudson">
+              <div class="family-tree__branch-heading">
+                <span>Hudson family</span>
+                <h4>If you know one of these people, you might be a Hudson.</h4>
+              </div>
+              <div class="family-tree__people">
+                <p class="family-tree__empty">Hudson connections will take root here as the family shares them.</p>
+              </div>
+            </article>
+            <article class="family-tree__branch family-tree__branch--hubbard">
+              <div class="family-tree__branch-heading">
+                <span>Hubbard family</span>
+                <h4>If you know one of these people, you might be a Hubbard.</h4>
+              </div>
+              <div class="family-tree__people">
+                <p class="family-tree__empty">Hubbard connections will take root here as the family shares them.</p>
+              </div>
+            </article>
+          </div>
+          <p class="family-tree__note">
+            Family trees are living histories. If something looks incomplete, add what you know in your RSVP and we will keep growing it.
+          </p>
+        </div>
         <div class="family-clans" aria-labelledby="family-clans-title">
           <div class="family-clans__header">
             <div>
@@ -673,6 +719,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r2-photos"></script>
+    <script src="./app.js?v=2027-reunion-r3-family-tree-2"></script>
   </body>
 </html>

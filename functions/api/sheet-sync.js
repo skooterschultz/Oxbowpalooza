@@ -16,6 +16,8 @@ function toEntry(row) {
     city: row.city,
     address: row.address,
     invitedBy: row.invited_by,
+    familyConnection: row.family_connection,
+    familyRelationship: row.family_relationship,
     foodNotes: row.food_notes,
     daysAttending: row.days_attending,
     birthMonth: row.birth_month,
@@ -34,10 +36,33 @@ function toEntry(row) {
   };
 }
 
+async function ensureFamilyColumns(env) {
+  const table = await env.DB.prepare("PRAGMA table_info(rsvps)").all();
+  const columns = new Set((table.results || []).map((column) => column.name));
+  const additions = [
+    ["family_connection", "ALTER TABLE rsvps ADD COLUMN family_connection TEXT"],
+    ["family_relationship", "ALTER TABLE rsvps ADD COLUMN family_relationship TEXT"],
+  ];
+
+  for (const [name, statement] of additions) {
+    if (!columns.has(name)) {
+      try {
+        await env.DB.prepare(statement).run();
+      } catch (error) {
+        if (!/duplicate column/i.test(String(error))) {
+          throw error;
+        }
+      }
+    }
+  }
+}
+
 async function listEntriesForSheet(env) {
+  await ensureFamilyColumns(env);
   const { results } = await env.DB.prepare(
     `SELECT
       id, created_at, name, nickname, email, city, address, invited_by,
+      family_connection, family_relationship,
       food_notes, days_attending, birth_month, birth_day, birth_year,
       height_inches, origin_lat, origin_lng, miles, flight_arrival_date,
       flight_arrival_time, arrival_airport, flight_departure_date,
@@ -109,6 +134,7 @@ async function geocode(city, address, env) {
 }
 
 async function updateFromSheet(env, entry) {
+  await ensureFamilyColumns(env);
   const id = numeric(entry.id);
   if (!Number.isInteger(id) || id < 1) {
     return json({ ok: false, error: "A valid RSVP ID is required." }, 400);
@@ -127,6 +153,8 @@ async function updateFromSheet(env, entry) {
       city = ?,
       address = ?,
       invited_by = ?,
+      family_connection = ?,
+      family_relationship = ?,
       food_notes = ?,
       days_attending = ?,
       birth_month = ?,
@@ -150,6 +178,8 @@ async function updateFromSheet(env, entry) {
     city,
     address,
     clean(entry.invitedBy),
+    clean(entry.familyConnection),
+    clean(entry.familyRelationship),
     clean(entry.foodNotes),
     clean(entry.daysAttending),
     clean(entry.birthMonth),

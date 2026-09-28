@@ -17,6 +17,10 @@
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+[id] {
+  scroll-margin-top: 6rem;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1664,6 +1668,141 @@ dt {
   box-shadow: 6px 7px 0 rgba(21, 17, 13, 0.14);
 }
 
+.family-tree {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1.15rem, 4vw, 2.4rem);
+  border: 4px double var(--deep);
+  border-radius: 2px;
+  background:
+    linear-gradient(135deg, rgba(246, 236, 205, 0.97), rgba(234, 220, 175, 0.94)),
+    var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.family-tree__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.family-tree__header h3 {
+  max-width: 16ch;
+  margin: 0 0 0.55rem;
+  color: var(--deep);
+  font-family: "Rye", Georgia, serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 400;
+  line-height: 0.98;
+}
+
+.family-tree .family-tree__header p {
+  max-width: 68ch;
+  margin: 0;
+  color: rgba(22, 34, 56, 0.82);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-weight: 600;
+}
+
+.family-tree__count {
+  flex: 0 0 auto;
+  max-width: 15rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(16, 43, 77, 0.45);
+  background: var(--deep);
+  color: var(--cream);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.family-tree__branches {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+}
+
+.family-tree__branches::before {
+  position: absolute;
+  top: -1.25rem;
+  left: 50%;
+  width: 1px;
+  height: calc(100% + 2.5rem);
+  background: rgba(16, 43, 77, 0.3);
+  content: "";
+}
+
+.family-tree__branch {
+  position: relative;
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid rgba(16, 43, 77, 0.48);
+  background: rgba(255, 250, 231, 0.76);
+}
+
+.family-tree__branch--hubbard {
+  background: rgba(157, 185, 180, 0.24);
+}
+
+.family-tree__branch-heading span {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--pine);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.family-tree__branch-heading h4 {
+  margin: 0;
+  color: var(--deep);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.85rem);
+  line-height: 1.16;
+}
+
+.family-tree__people {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+
+.family-tree__person {
+  display: grid;
+  gap: 0.18rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(16, 43, 77, 0.24);
+}
+
+.family-tree__person strong {
+  color: var(--deep);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 1.05rem;
+}
+
+.family-tree .family-tree__person span,
+.family-tree .family-tree__empty,
+.family-tree .family-tree__note {
+  color: rgba(22, 34, 56, 0.72);
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.family-tree__empty {
+  margin: 0;
+  font-style: italic;
+}
+
+.family-tree__note {
+  max-width: 72ch;
+  margin: 0;
+}
+
 .family-clans h3 {
   margin: 0;
   color: var(--deep);
@@ -1878,6 +2017,7 @@ dt {
   .travel-map-card,
   .birthday-months,
   .family-clans__grid,
+  .family-tree__branches,
   .rsvp-section {
     grid-template-columns: 1fr;
   }
@@ -1950,6 +2090,20 @@ dt {
 
   .family-clans__header {
     display: grid;
+  }
+
+  .family-tree__header {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .family-tree__count {
+    max-width: none;
+    justify-self: start;
+  }
+
+  .family-tree__branches::before {
+    display: none;
   }
 
   .family-clans__total {

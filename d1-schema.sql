@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS rsvps (
   city TEXT,
   address TEXT,
   invited_by TEXT,
+  family_connection TEXT,
+  family_relationship TEXT,
   food_notes TEXT,
   days_attending TEXT,
   birth_month TEXT,
@@ -54,6 +56,8 @@ CREATE INDEX IF NOT EXISTS idx_rsvps_email ON rsvps(email);
 -- ALTER TABLE rsvps ADD COLUMN city TEXT;
 -- ALTER TABLE rsvps ADD COLUMN address TEXT;
 -- ALTER TABLE rsvps ADD COLUMN invited_by TEXT;
+-- ALTER TABLE rsvps ADD COLUMN family_connection TEXT;
+-- ALTER TABLE rsvps ADD COLUMN family_relationship TEXT;
 -- ALTER TABLE rsvps ADD COLUMN food_notes TEXT;
 -- ALTER TABLE rsvps ADD COLUMN days_attending TEXT;
 -- ALTER TABLE rsvps ADD COLUMN birth_month TEXT;
