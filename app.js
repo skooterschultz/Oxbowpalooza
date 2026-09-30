@@ -138,7 +138,42 @@ function galleryMedia(photo, options = {}) {
     return `<video${controls}${muted} preload="metadata"><source src="${src}" />Your browser cannot play this video.</video>`;
   }
 
-  return `<img src="${src}" alt="${alt}" loading="${options.featured ? "eager" : "lazy"}" decoding="async" />`;
+  const image = `<img src="${src}" alt="${alt}" loading="${options.featured ? "eager" : "lazy"}" decoding="async" />`;
+
+  if (Number(photo.rotation) === 90) {
+    return `<span class="photo-media-rotation" data-photo-rotation="90">${image}</span>`;
+  }
+
+  return image;
+}
+
+function fitRotatedGalleryMedia(scope = document) {
+  scope.querySelectorAll("[data-photo-rotation='90']").forEach((frame) => {
+    const image = frame.querySelector("img");
+
+    if (!image) {
+      return;
+    }
+
+    const fitImage = () => {
+      const frameWidth = frame.clientWidth;
+      const frameHeight = frame.clientHeight;
+
+      if (!frameWidth || !frameHeight || !image.naturalWidth || !image.naturalHeight) {
+        return;
+      }
+
+      const scale = Math.min(frameWidth / image.naturalHeight, frameHeight / image.naturalWidth);
+      image.style.width = `${Math.max(1, image.naturalWidth * scale)}px`;
+      image.style.height = `${Math.max(1, image.naturalHeight * scale)}px`;
+    };
+
+    if (image.complete) {
+      fitImage();
+    } else {
+      image.addEventListener("load", fitImage, { once: true });
+    }
+  });
 }
 
 function scrollActiveThumbnailIntoView() {
@@ -181,6 +216,7 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
     </figure>
     <div class="photo-gallery__thumbs" aria-label="Choose a photo">${thumbnails}</div>
   `;
+  window.requestAnimationFrame(() => fitRotatedGalleryMedia(photoGallery));
   window.setTimeout(scrollActiveThumbnailIntoView, 0);
 }
 
@@ -207,6 +243,7 @@ function openGalleryLightbox(index = activeGalleryIndex) {
     <button type="button" class="photo-lightbox__nav photo-lightbox__nav--next" data-lightbox-step="1" aria-label="Next photo">›</button>
   `;
   document.body.append(lightbox);
+  window.requestAnimationFrame(() => fitRotatedGalleryMedia(lightbox));
   document.body.classList.add("has-photo-lightbox");
   lightbox.querySelector(".photo-lightbox__close").focus();
 }
@@ -227,8 +264,11 @@ function showLightboxPhoto(step) {
   activeGalleryIndex = nextIndex;
   lightbox.dataset.galleryIndex = String(nextIndex);
   figure.innerHTML = `${galleryMedia(photo, { featured: true, controls: photo.type === "video" })}${caption}`;
+  window.requestAnimationFrame(() => fitRotatedGalleryMedia(figure));
   renderPhotoGallery(galleryPhotos, nextIndex);
 }
+
+window.addEventListener("resize", () => fitRotatedGalleryMedia());
 
 async function loadPhotoGallery() {
   if (!photoGallery) {

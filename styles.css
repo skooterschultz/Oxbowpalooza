@@ -976,6 +976,40 @@ dt {
   aspect-ratio: 16 / 10;
 }
 
+.photo-media-rotation {
+  position: relative;
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  background: var(--deep);
+}
+
+.photo-gallery__featured .photo-media-rotation {
+  aspect-ratio: 16 / 10;
+}
+
+.photo-gallery__thumb .photo-media-rotation {
+  aspect-ratio: 1;
+}
+
+.photo-lightbox .photo-media-rotation {
+  height: min(82svh, 75vw);
+}
+
+.photo-media-rotation img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  max-width: none;
+  height: auto;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: fill;
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+}
+
 .photo-gallery figcaption {
   padding: 0.55rem 0.65rem;
   background: rgba(255, 244, 220, 0.94);
