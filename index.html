@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r4-resort" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r5-family-details" />
   </head>
   <body>
     <main>
@@ -152,6 +152,7 @@
           <div class="poster-tabs" role="tablist" aria-label="Weekend information">
             <button class="is-active" type="button" data-panel="schedule">Itinerary</button>
             <button type="button" data-panel="food">Shared Meals</button>
+            <button type="button" data-panel="activities">Things to Do</button>
             <button type="button" data-panel="camping">Park &amp; Lodging</button>
             <button type="button" data-panel="getting">Getting There</button>
             <button type="button" data-panel="lodging">Hotels</button>
@@ -162,6 +163,10 @@
           </div>
 
           <div class="poster-frame">
+            <aside class="reunion-policy" aria-label="Reunion venue policy">
+              <strong>Good times, clear heads.</strong>
+              <span>No alcohol or drugs are allowed at reunion events at Fishers of Men or Roaring River.</span>
+            </aside>
             <article class="poster-panel is-active" data-panel-view="schedule">
               <p class="panel-kicker">July 1-5, 2027</p>
               <h3>Itinerary</h3>
@@ -171,15 +176,19 @@
                   <dd>Arrivals and family welcome</dd>
                 </div>
                 <div>
-                  <dt>Friday-Saturday</dt>
-                  <dd>Fishing and outdoor adventures</dd>
-                  <dd>Family gatherings and shared meals</dd>
-                  <dd>Games, stories, and memory making</dd>
+                  <dt>Friday, July 2</dt>
+                  <dd>Family gathering at the Roaring River pavilion</dd>
+                  <dd>Fishing, trails, and outdoor adventures</dd>
+                </div>
+                <div>
+                  <dt>Saturday, July 3</dt>
+                  <dd>Family time at the Roaring River pavilion</dd>
+                  <dd>Main reunion meal at Fishers of Men Family Resort</dd>
+                  <dd>Games, group photos, stories, and memory making</dd>
                 </div>
                 <div>
                   <dt>Sunday, July 4</dt>
-                  <dd>Main reunion day and family activities</dd>
-                  <dd>Group photos and special events</dd>
+                  <dd>Open family time and outdoor adventures</dd>
                 </div>
                 <div>
                   <dt>Monday, July 5</dt>
@@ -192,11 +201,36 @@
               <p class="panel-kicker">Around the family table</p>
               <h3>Shared Meals</h3>
               <ul>
-                <li>Meal plans and sign-ups are coming soon.</li>
+                <li>The main reunion meal will be Saturday at Fishers of Men Family Resort.</li>
+                <li>Additional meal plans and sign-ups are coming soon.</li>
                 <li>Dietary needs can be shared with your RSVP.</li>
                 <li>Bring a reusable water bottle for park days.</li>
                 <li>Expect plenty of time to eat, visit, and swap stories.</li>
               </ul>
+            </article>
+
+            <article class="poster-panel" data-panel-view="activities">
+              <p class="panel-kicker">Pick your own Ozark adventure</p>
+              <h3>Things to Do</h3>
+              <div class="activity-columns">
+                <div>
+                  <h4>Roaring River</h4>
+                  <ul>
+                    <li>Trout fishing and a visit to the fish hatchery.</li>
+                    <li>Seven hiking trails, picnic areas, playgrounds, and the nature center.</li>
+                    <li>The park lodge has a full-service restaurant.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4>At the Resort</h4>
+                  <ul>
+                    <li>Pool, splash pad, playground, and basketball court.</li>
+                    <li>Horseshoes, cornhole, fire rings, picnic tables, and plenty of visiting space.</li>
+                    <li>Family games and activities are still being planned.</li>
+                  </ul>
+                </div>
+              </div>
+              <a class="park-info-link" href="https://mostateparks.com/park/roaring-river-state-park" target="_blank" rel="noreferrer">Explore Roaring River State Park</a>
             </article>
 
             <article class="poster-panel" data-panel-view="camping">
@@ -204,10 +238,12 @@
               <h3>Park &amp; Lodging</h3>
               <ul>
                 <li>Fishers of Men Family Resort offers cabins, suites, efficiencies, and RV sites.</li>
-                <li>Reservation and reunion lodging details are coming soon.</li>
-                <li>Roaring River State Park is about five miles away for fishing and outdoor adventures.</li>
+                <li>Places are filling up, so reserve lodging as soon as you can.</li>
+                <li>Contact David for information about the family cabins and home already reserved.</li>
+                <li>Roaring River State Park is about three miles away and also offers lodging, camping, RV sites, and a restaurant.</li>
                 <li>Nearby hotel and vacation-rental searches are available in the next tabs.</li>
               </ul>
+              <a class="park-info-link" href="tel:+14178472903">Fishers of Men: (417) 847-2903</a>
             </article>
 
             <article class="poster-panel" data-panel-view="getting">
@@ -350,6 +386,10 @@
                 <li>Fishing gear and any permits you need if you plan to fish.</li>
                 <li>Family photos, stories, recipes, or keepsakes you would enjoy sharing.</li>
               </ul>
+              <p class="fishing-note">
+                Fishing at Roaring River requires a Missouri fishing permit unless exempt, plus a daily trout tag during the summer season. Check current rules and prices before the trip.
+                <a href="https://mdc.mo.gov/fishing/regulations/special-waterbody-regulations/roaring-river-state-park" target="_blank" rel="noreferrer">View official fishing information</a>
+              </p>
             </article>
 
             <article class="poster-panel" data-panel-view="questions">
@@ -364,7 +404,7 @@
                 </a>
                 <a href="tel:+14793772121">
                   <span>Call</span>
-                  <strong>Brenda Sams</strong>
+                  <strong>Brenda Hudson Sams</strong>
                   <small>(479) 377-2121</small>
                 </a>
               </div>
@@ -378,6 +418,8 @@
                 <p><strong>Where:</strong> Fishers of Men Family Resort, Cassville, Missouri</p>
                 <p><strong>Address:</strong> 20243 State Hwy 112, Cassville, MO 65625</p>
                 <p><strong>Plan on:</strong> Family gatherings, fishing, outdoor adventures, games, and shared meals</p>
+                <p><strong>Main meal:</strong> Saturday at Fishers of Men Family Resort</p>
+                <p><strong>Venue policy:</strong> No alcohol or drugs at reunion events</p>
                 <p><strong>Bring:</strong> Comfortable layers, a reusable water bottle, and your best family stories</p>
                 <p><strong>RSVP:</strong> Add your details below so the family can plan well and travel together.</p>
               </div>

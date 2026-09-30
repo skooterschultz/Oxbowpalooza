@@ -584,6 +584,32 @@ dt {
   pointer-events: none;
 }
 
+.reunion-policy {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.2rem;
+  margin: 0 clamp(1rem, 3vw, 2rem);
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--deep);
+  background: var(--deep);
+  color: var(--cream);
+  text-align: center;
+  box-shadow: 5px 5px 0 var(--gold);
+}
+
+.reunion-policy strong {
+  color: var(--gold);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 1rem;
+}
+
+.reunion-policy span {
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .poster-frame::before {
   opacity: 0.2;
   background-image:
@@ -639,6 +665,49 @@ dt {
   height: 0.65rem;
   border-radius: 50%;
   background: var(--rust);
+}
+
+.activity-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.activity-columns > div {
+  padding: 1rem;
+  border: 2px solid rgba(16, 43, 77, 0.72);
+  background: rgba(255, 250, 231, 0.7);
+}
+
+.activity-columns h4 {
+  margin: 0 0 0.9rem;
+  color: var(--pine);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+}
+
+.park-info-link,
+.fishing-note a {
+  color: var(--deep);
+  font-weight: 800;
+}
+
+.park-info-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+}
+
+.fishing-note {
+  margin: 1.25rem 0 0;
+  padding: 1rem;
+  border-left: 6px solid var(--gold);
+  background: rgba(255, 250, 231, 0.72);
+  line-height: 1.55;
+}
+
+.fishing-note a {
+  display: block;
+  margin-top: 0.45rem;
 }
 
 .schedule-list {
@@ -2019,6 +2088,10 @@ dt {
   .family-clans__grid,
   .family-tree__branches,
   .rsvp-section {
+    grid-template-columns: 1fr;
+  }
+
+  .activity-columns {
     grid-template-columns: 1fr;
   }
 
