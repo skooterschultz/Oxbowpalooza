@@ -32,6 +32,21 @@ function clean(value) {
   return String(value || "").trim();
 }
 
+function hasCityAndState(value) {
+  const parts = clean(value)
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2) {
+    return false;
+  }
+
+  const state = parts.pop();
+  const city = parts.join(", ");
+  return city.length >= 2 && /^(?:[a-z]{2}|[a-z][a-z .'-]{2,})$/i.test(state);
+}
+
 function emailSet(value) {
   return new Set(
     clean(value)
@@ -386,6 +401,10 @@ async function createEntry(request, env) {
 
   if (!name) {
     return json({ ok: false, error: "Name is required." }, 400);
+  }
+
+  if (!hasCityAndState(city)) {
+    return json({ ok: false, error: "City and state are required. Use a format like Anderson, Missouri." }, 400);
   }
 
   if (!daysAttending) {

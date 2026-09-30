@@ -506,8 +506,9 @@
               <small>Separate multiple addresses with commas.</small>
             </label>
             <label>
-              City traveling from
-              <input name="city" autocomplete="address-level2" placeholder="City, State" />
+              City and state traveling from
+              <input name="city" autocomplete="address-level2" placeholder="City, State" required />
+              <small>Required for an accurate travel distance. Example: Anderson, Missouri.</small>
             </label>
             <label>
               Address if you want to get real specific
@@ -741,6 +742,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r6-photo-rotation"></script>
+    <script src="./app.js?v=2027-reunion-r7-city-state"></script>
   </body>
 </html>

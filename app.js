@@ -115,6 +115,21 @@ function setFormStatus(message) {
   }
 }
 
+function hasCityAndState(value) {
+  const parts = String(value || "")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2) {
+    return false;
+  }
+
+  const state = parts.pop();
+  const city = parts.join(", ");
+  return city.length >= 2 && /^(?:[a-z]{2}|[a-z][a-z .'-]{2,})$/i.test(state);
+}
+
 function entryKey(entry) {
   return String(entry.id || `${entry.name}-${entry.city || ""}-${entry.nickname || ""}`).replace(/[^a-zA-Z0-9_-]/g, "-");
 }
@@ -1093,6 +1108,12 @@ if (travelForm) {
     const payload = Object.fromEntries(formData.entries());
     payload.daysAttending = daysAttending.join(", ");
     payload.heightInches = (Number(payload.heightFeet) || 0) * 12 + (Number(payload.heightInches) || 0);
+
+    if (!hasCityAndState(payload.city)) {
+      setFormStatus("Add both the city and state in this format: Anderson, Missouri.");
+      travelForm.elements.city?.focus();
+      return;
+    }
 
     if (!daysAttending.length) {
       setFormStatus("Pick at least one day you are attending.");

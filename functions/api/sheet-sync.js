@@ -82,6 +82,21 @@ function clean(value) {
   return String(value ?? "").trim();
 }
 
+function hasCityAndState(value) {
+  const parts = clean(value)
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  if (parts.length < 2) {
+    return false;
+  }
+
+  const state = parts.pop();
+  const city = parts.join(", ");
+  return city.length >= 2 && /^(?:[a-z]{2}|[a-z][a-z .'-]{2,})$/i.test(state);
+}
+
 function normalizedLocation(value) {
   return clean(value)
     .toLowerCase()
@@ -158,6 +173,11 @@ async function updateFromSheet(env, entry) {
 
   const city = clean(entry.city);
   const address = clean(entry.address);
+
+  if (!hasCityAndState(city)) {
+    return json({ ok: false, error: "City and state are required. Use a format like Anderson, Missouri." }, 400);
+  }
+
   const atReunion = isReunionAddress(address, city);
   const origin = atReunion ? DESTINATION : await geocode(city, address, env);
   const miles = atReunion ? 0 : distanceInMiles(origin, DESTINATION);
