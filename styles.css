@@ -2233,6 +2233,75 @@ body::before {
   box-shadow: 14px 16px 0 rgba(16, 43, 77, 0.12), var(--shadow);
 }
 
+.reunion-flyer--date-card {
+  min-height: clamp(460px, 58vw, 700px);
+  padding: clamp(2rem, 5vw, 4.5rem) clamp(1.25rem, 4vw, 3rem);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.65rem;
+  overflow: hidden;
+  color: var(--deep);
+  text-align: center;
+  background:
+    linear-gradient(180deg, transparent 0 18%, rgba(181, 140, 53, 0.16) 18% 19%, transparent 19% 81%, rgba(181, 140, 53, 0.16) 81% 82%, transparent 82%),
+    var(--paper);
+}
+
+.reunion-flyer--date-card::before,
+.reunion-flyer--date-card::after {
+  content: "";
+  width: min(230px, 70%);
+  height: 3px;
+  background: var(--gold);
+  box-shadow: 0 7px 0 var(--pine);
+}
+
+.reunion-flyer--date-card span,
+.reunion-flyer--date-card b,
+.reunion-flyer--date-card small {
+  font-family: "DM Sans", Arial, sans-serif;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reunion-flyer--date-card span {
+  margin-top: 0.8rem;
+  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+  font-weight: 700;
+}
+
+.reunion-flyer--date-card strong {
+  color: var(--pine);
+  font-family: "Rye", Georgia, serif;
+  font-size: clamp(3.4rem, 6vw, 5.2rem);
+  font-weight: 400;
+  line-height: 0.95;
+  white-space: nowrap;
+}
+
+.reunion-flyer--date-card b {
+  color: var(--gold-dark, #8a611d);
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+}
+
+.reunion-flyer--date-card i {
+  margin-top: 0.8rem;
+  color: var(--deep);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: clamp(1.45rem, 3.2vw, 2.45rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.reunion-flyer--date-card small {
+  margin-top: 0.5rem;
+  font-size: clamp(0.76rem, 1.3vw, 0.95rem);
+  font-weight: 700;
+  line-height: 1.55;
+}
+
 .hero h1 {
   grid-area: title;
   display: block;
@@ -2460,6 +2529,10 @@ h3 {
   .reunion-flyer {
     width: min(520px, 100%);
     margin-inline: auto;
+  }
+
+  .reunion-flyer--date-card {
+    min-height: 440px;
   }
 
   .hero h1 {

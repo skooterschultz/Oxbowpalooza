@@ -72,7 +72,7 @@ const originMapEmpty = document.querySelector("#origin-map-empty");
 const mapStyleButtons = Array.from(document.querySelectorAll("[data-map-style]"));
 const mapActionButtons = Array.from(document.querySelectorAll("[data-map-action]"));
 let mapboxAccessToken = "";
-const REUNION_POSITION = { lat: 36.58271, lng: -93.83739, label: "Roaring River" };
+const REUNION_POSITION = { lat: 36.642336, lng: -93.852493, label: "Fishers of Men Family Resort" };
 const MAPBOX_STYLES = {
   satellite: "mapbox://styles/mapbox/standard-satellite",
   night: "mapbox://styles/mapbox/dark-v11",
@@ -768,7 +768,7 @@ function ageAtReunion(entry) {
   }
 
   let age = 2027 - birthYear;
-  if (birthMonth > 5 || (birthMonth === 5 && birthDay > 9)) {
+  if (birthMonth > 6 || (birthMonth === 6 && birthDay > 1)) {
     age -= 1;
   }
   return age;
@@ -978,10 +978,10 @@ async function startOriginMap() {
 
   const homeMarker = new mapboxgl.Marker({ element: makeMarker("origin-marker origin-marker--home"), anchor: "bottom" })
     .setLngLat([REUNION_POSITION.lng, REUNION_POSITION.lat])
-    .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML("<strong>Hudson Hubbard Family Reunion</strong><span>Roaring River State Park</span>"))
+    .setPopup(new mapboxgl.Popup({ offset: 24 }).setHTML("<strong>Hudson Hubbard Family Reunion</strong><span>Fishers of Men Family Resort</span>"))
     .addTo(originMapInstance);
 
-  homeMarker.getElement().setAttribute("aria-label", "Hudson Hubbard Family Reunion at Roaring River State Park");
+  homeMarker.getElement().setAttribute("aria-label", "Hudson Hubbard Family Reunion at Fishers of Men Family Resort");
   originMapInstance.on("load", () => {
     renderOriginMap(latestMapEntries);
   });

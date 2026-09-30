@@ -1,6 +1,6 @@
 const DESTINATION = {
-  lat: 36.58271,
-  lng: -93.83739,
+  lat: 36.642336,
+  lng: -93.852493,
 };
 
 const KNOWN_ORIGINS = [
@@ -120,11 +120,11 @@ function normalizedLocation(value) {
 
 function isPartyAddress(address, city) {
   const location = normalizedLocation(`${address} ${city}`);
-  const hasAddress = location.includes("12716") && location.includes("2239");
-  const hasPark = location.includes("roaring river") || location.includes("state park");
+  const hasAddress = location.includes("20243") && location.includes("112");
+  const hasResort = location.includes("fishers of men") || location.includes("fisher s of men");
   const hasCassville = location.includes("cassville") || location.includes("65625");
 
-  return hasAddress || (hasPark && hasCassville);
+  return hasAddress || (hasResort && hasCassville);
 }
 
 function toEntry(row) {
@@ -216,6 +216,12 @@ function selectColumn(columns, name) {
 async function repairKnownOrigins(env, rows) {
   for (const row of rows) {
     if (row.origin_lat !== null && row.origin_lng !== null) {
+      const origin = { lat: Number(row.origin_lat), lng: Number(row.origin_lng) };
+      const miles = distanceInMiles(origin, DESTINATION);
+      if (Number(row.miles) !== miles) {
+        await env.DB.prepare("UPDATE rsvps SET miles = ? WHERE id = ?").bind(miles, row.id).run();
+        row.miles = miles;
+      }
       continue;
     }
 

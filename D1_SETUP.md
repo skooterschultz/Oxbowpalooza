@@ -78,7 +78,7 @@ You should see the test entry.
 
 ## Optional: Better Mileage
 
-By default, the Function geocodes the city and calculates straight-line mileage to Roaring River State Park. That is lightweight and good enough for the travel leaderboard game.
+By default, the Function geocodes the city and calculates straight-line mileage to Fishers of Men Family Resort. That is lightweight and good enough for the reunion travel display.
 
 If you want Google geocoding instead, add a Cloudflare Pages secret/environment variable:
 

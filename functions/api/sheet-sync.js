@@ -1,4 +1,4 @@
-const DESTINATION = { lat: 36.58271, lng: -93.83739 };
+const DESTINATION = { lat: 36.642336, lng: -93.852493 };
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -82,6 +82,22 @@ function clean(value) {
   return String(value ?? "").trim();
 }
 
+function normalizedLocation(value) {
+  return clean(value)
+    .toLowerCase()
+    .replace(/state highway/g, "state hwy")
+    .replace(/[.,#]/g, " ")
+    .replace(/\s+/g, " ");
+}
+
+function isReunionAddress(address, city) {
+  const location = normalizedLocation(`${address} ${city}`);
+  const hasAddress = location.includes("20243") && location.includes("112");
+  const hasResort = location.includes("fishers of men") || location.includes("fisher s of men");
+  const hasCassville = location.includes("cassville") || location.includes("65625");
+  return hasAddress || (hasResort && hasCassville);
+}
+
 function numeric(value) {
   const number = Number(value);
   return Number.isFinite(number) ? number : null;
@@ -142,8 +158,9 @@ async function updateFromSheet(env, entry) {
 
   const city = clean(entry.city);
   const address = clean(entry.address);
-  const origin = await geocode(city, address, env);
-  const miles = distanceInMiles(origin, DESTINATION);
+  const atReunion = isReunionAddress(address, city);
+  const origin = atReunion ? DESTINATION : await geocode(city, address, env);
+  const miles = atReunion ? 0 : distanceInMiles(origin, DESTINATION);
 
   const result = await env.DB.prepare(
     `UPDATE rsvps SET
