@@ -149,6 +149,8 @@ function toEntry(row) {
     name: row.name,
     nickname: row.nickname,
     email: row.email,
+    phone: row.phone,
+    partyTotal: row.party_total,
     city: row.city,
     address: row.address,
     invitedBy: row.invited_by,
@@ -206,6 +208,8 @@ async function ensureFamilyColumns(env) {
   const additions = [
     ["family_connection", "ALTER TABLE rsvps ADD COLUMN family_connection TEXT"],
     ["family_relationship", "ALTER TABLE rsvps ADD COLUMN family_relationship TEXT"],
+    ["phone", "ALTER TABLE rsvps ADD COLUMN phone TEXT"],
+    ["party_total", "ALTER TABLE rsvps ADD COLUMN party_total INTEGER"],
   ];
 
   for (const [name, statement] of additions) {
@@ -394,6 +398,7 @@ async function createEntry(request, env) {
   const body = await request.json();
   const name = clean(body.name);
   const email = normalizeEmails(body.email);
+  const phone = clean(body.phone);
   const city = clean(body.city);
   const address = clean(body.address);
   const originQuery = geocodeQuery(address, city);
@@ -401,6 +406,14 @@ async function createEntry(request, env) {
 
   if (!name) {
     return json({ ok: false, error: "Name is required." }, 400);
+  }
+
+  if (!email) {
+    return json({ ok: false, error: "At least one email address is required." }, 400);
+  }
+
+  if (!phone) {
+    return json({ ok: false, error: "A phone number is required." }, 400);
   }
 
   if (!hasCityAndState(city)) {
@@ -420,8 +433,12 @@ async function createEntry(request, env) {
   }
 
   const heightInches = numeric(body.heightInches);
+  const partyTotal = numeric(body.partyTotal);
   const birthDay = numeric(body.birthDay);
   const birthYear = numeric(body.birthYear);
+  if (!Number.isInteger(partyTotal) || partyTotal < 1 || partyTotal > 50) {
+    return json({ ok: false, error: "Party total must be a whole number from 1 to 50." }, 400);
+  }
   if (!Number.isInteger(birthYear) || birthYear < 1900 || birthYear > 2027) {
     return json({ ok: false, error: "Enter a valid four-digit birth year." }, 400);
   }
@@ -462,6 +479,8 @@ async function createEntry(request, env) {
         name = ?,
         nickname = ?,
         email = ?,
+        phone = ?,
+        party_total = ?,
         city = ?,
         address = ?,
         invited_by = ?,
@@ -481,6 +500,8 @@ async function createEntry(request, env) {
         name,
         clean(body.nickname),
         email,
+        phone,
+        partyTotal,
         city,
         address,
         clean(body.invitedBy),
@@ -521,6 +542,8 @@ async function createEntry(request, env) {
       name,
       nickname,
       email,
+      phone,
+      party_total,
       city,
       address,
       invited_by,
@@ -534,12 +557,14 @@ async function createEntry(request, env) {
       origin_lat,
       origin_lng,
       miles${flightColumns}
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${birthYearPlaceholder}, ?, ?, ?, ?${flightPlaceholders})`
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?${birthYearPlaceholder}, ?, ?, ?, ?${flightPlaceholders})`
   )
     .bind(
       name,
       clean(body.nickname),
       email,
+      phone,
+      partyTotal,
       city,
       address,
       clean(body.invitedBy),
@@ -567,6 +592,8 @@ async function createEntry(request, env) {
       name,
       nickname,
       email,
+      phone,
+      party_total,
       city,
       address,
       invited_by,

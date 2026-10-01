@@ -17,7 +17,9 @@ CREATE TABLE IF NOT EXISTS rsvps (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   name TEXT NOT NULL,
   nickname TEXT,
-  email TEXT,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  party_total INTEGER NOT NULL DEFAULT 1,
   city TEXT,
   address TEXT,
   invited_by TEXT,
@@ -53,6 +55,8 @@ CREATE INDEX IF NOT EXISTS idx_rsvps_email ON rsvps(email);
 -- UPDATE rsvps SET created_at = datetime('now') WHERE created_at IS NULL;
 -- ALTER TABLE rsvps ADD COLUMN nickname TEXT;
 -- ALTER TABLE rsvps ADD COLUMN email TEXT;
+-- ALTER TABLE rsvps ADD COLUMN phone TEXT;
+-- ALTER TABLE rsvps ADD COLUMN party_total INTEGER DEFAULT 1;
 -- ALTER TABLE rsvps ADD COLUMN city TEXT;
 -- ALTER TABLE rsvps ADD COLUMN address TEXT;
 -- ALTER TABLE rsvps ADD COLUMN invited_by TEXT;

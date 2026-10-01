@@ -493,6 +493,21 @@ function displayShortName(entry) {
   return titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
 }
 
+function displayLeaderboardName(entry) {
+  const fullName = titleCase(entry.name || "Friend");
+  const nameParts = fullName.split(/\s+/).filter(Boolean);
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+  const familiarName = displayShortName(entry);
+
+  if (!lastName) {
+    return familiarName;
+  }
+
+  return familiarName.toLowerCase().endsWith(lastName.toLowerCase())
+    ? familiarName
+    : `${familiarName} ${lastName}`;
+}
+
 function cityTown(value) {
   return titleCase(String(value || "").split(",")[0] || "");
 }
@@ -557,7 +572,7 @@ function renderLeaderboard(entries = []) {
       const miles = Math.round(Number(entry.miles)).toLocaleString();
       const town = cityTown(entry.city);
       const location = town ? `<small>${escapeHtml(town)}</small>` : "";
-      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${location}<span>${miles} mi</span></strong></li>`;
+      return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayLeaderboardName(entry))}</button><strong>${location}<span>${miles} mi</span></strong></li>`;
     })
     .join("");
 }
@@ -794,7 +809,7 @@ function renderHeightLeaderboard(entries = []) {
         return heightDiff;
       }
 
-      return displayShortName(a).localeCompare(displayShortName(b));
+      return displayLeaderboardName(a).localeCompare(displayLeaderboardName(b));
     })
     .slice(0, 8);
 
@@ -808,7 +823,7 @@ function renderHeightLeaderboard(entries = []) {
       const total = Number(entry.heightInches);
       const feet = Math.floor(total / 12);
       const inches = total % 12;
-      const displayName = displayShortName(entry);
+      const displayName = displayLeaderboardName(entry);
       return `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayName)}</button><strong>${feet}' ${inches}\"</strong></li>`;
     })
     .join("");
@@ -838,7 +853,7 @@ function renderAgeSummary(entries = []) {
   const attendees = entries
     .map((entry) => ({ entry, age: ageAtReunion(entry) }))
     .filter(({ entry, age }) => entry.name && Number.isInteger(age) && age >= 0)
-    .sort((a, b) => b.age - a.age || displayShortName(a.entry).localeCompare(displayShortName(b.entry)))
+    .sort((a, b) => b.age - a.age || displayLeaderboardName(a.entry).localeCompare(displayLeaderboardName(b.entry)))
     .slice(0, 8);
 
   if (!attendees.length) {
@@ -847,7 +862,7 @@ function renderAgeSummary(entries = []) {
   }
 
   ageList.innerHTML = attendees
-    .map(({ entry, age }) => `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayShortName(entry))}</button><strong>${age} yrs</strong></li>`)
+    .map(({ entry, age }) => `<li><button type="button" data-map-entry-id="${entryKey(entry)}">${escapeHtml(displayLeaderboardName(entry))}</button><strong>${age} yrs</strong></li>`)
     .join("");
 }
 
@@ -1109,6 +1124,25 @@ if (travelForm) {
     const payload = Object.fromEntries(formData.entries());
     payload.daysAttending = daysAttending.join(", ");
     payload.heightInches = (Number(payload.heightFeet) || 0) * 12 + (Number(payload.heightInches) || 0);
+
+    if (!String(payload.email || "").trim()) {
+      setFormStatus("Add at least one email address so we can save or update your RSVP.");
+      travelForm.elements.email?.focus();
+      return;
+    }
+
+    if (!String(payload.phone || "").trim()) {
+      setFormStatus("Add a phone number for your party.");
+      travelForm.elements.phone?.focus();
+      return;
+    }
+
+    const partyTotal = Number(payload.partyTotal);
+    if (!Number.isInteger(partyTotal) || partyTotal < 1 || partyTotal > 50) {
+      setFormStatus("Enter the total number of people in your party, from 1 to 50.");
+      travelForm.elements.partyTotal?.focus();
+      return;
+    }
 
     if (!hasCityAndState(payload.city)) {
       setFormStatus("Add both the city and state in this format: Anderson, Missouri.");

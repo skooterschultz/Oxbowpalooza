@@ -502,8 +502,17 @@
             </label>
             <label>
               Email address(es)
-              <input name="email" type="email" multiple autocomplete="email" placeholder="name@example.com, another@example.com" />
+              <input name="email" type="email" multiple autocomplete="email" placeholder="name@example.com, another@example.com" required />
               <small>Separate multiple addresses with commas.</small>
+            </label>
+            <label>
+              Phone number
+              <input name="phone" type="tel" autocomplete="tel" placeholder="(417) 555-0123" required />
+            </label>
+            <label>
+              How many people are in your party total?
+              <input name="partyTotal" type="number" inputmode="numeric" min="1" max="50" step="1" value="1" required />
+              <small>Include yourself and everyone covered by this RSVP.</small>
             </label>
             <label>
               City and state traveling from
@@ -743,6 +752,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r8-both-families"></script>
+    <script src="./app.js?v=2027-reunion-r9-party-details"></script>
   </body>
 </html>

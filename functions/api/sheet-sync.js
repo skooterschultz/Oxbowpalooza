@@ -13,6 +13,8 @@ function toEntry(row) {
     name: row.name,
     nickname: row.nickname,
     email: row.email,
+    phone: row.phone,
+    partyTotal: row.party_total,
     city: row.city,
     address: row.address,
     invitedBy: row.invited_by,
@@ -42,6 +44,8 @@ async function ensureFamilyColumns(env) {
   const additions = [
     ["family_connection", "ALTER TABLE rsvps ADD COLUMN family_connection TEXT"],
     ["family_relationship", "ALTER TABLE rsvps ADD COLUMN family_relationship TEXT"],
+    ["phone", "ALTER TABLE rsvps ADD COLUMN phone TEXT"],
+    ["party_total", "ALTER TABLE rsvps ADD COLUMN party_total INTEGER"],
   ];
 
   for (const [name, statement] of additions) {
@@ -61,7 +65,7 @@ async function listEntriesForSheet(env) {
   await ensureFamilyColumns(env);
   const { results } = await env.DB.prepare(
     `SELECT
-      id, created_at, name, nickname, email, city, address, invited_by,
+      id, created_at, name, nickname, email, phone, party_total, city, address, invited_by,
       family_connection, family_relationship,
       food_notes, days_attending, birth_month, birth_day, birth_year,
       height_inches, origin_lat, origin_lng, miles, flight_arrival_date,
@@ -173,6 +177,21 @@ async function updateFromSheet(env, entry) {
 
   const city = clean(entry.city);
   const address = clean(entry.address);
+  const email = normalizeEmails(entry.email);
+  const phone = clean(entry.phone);
+  const partyTotal = numeric(entry.partyTotal);
+
+  if (!email) {
+    return json({ ok: false, error: "At least one email address is required." }, 400);
+  }
+
+  if (!phone) {
+    return json({ ok: false, error: "A phone number is required." }, 400);
+  }
+
+  if (!Number.isInteger(partyTotal) || partyTotal < 1 || partyTotal > 50) {
+    return json({ ok: false, error: "Party total must be a whole number from 1 to 50." }, 400);
+  }
 
   if (!hasCityAndState(city)) {
     return json({ ok: false, error: "City and state are required. Use a format like Anderson, Missouri." }, 400);
@@ -187,6 +206,8 @@ async function updateFromSheet(env, entry) {
       name = ?,
       nickname = ?,
       email = ?,
+      phone = ?,
+      party_total = ?,
       city = ?,
       address = ?,
       invited_by = ?,
@@ -211,7 +232,9 @@ async function updateFromSheet(env, entry) {
   ).bind(
     clean(entry.name),
     clean(entry.nickname),
-    normalizeEmails(entry.email),
+    email,
+    phone,
+    partyTotal,
     city,
     address,
     clean(entry.invitedBy),

@@ -6,6 +6,8 @@ const HEADERS = [
   "Name",
   "Nickname",
   "Email Addresses",
+  "Phone Number",
+  "Party Total",
   "City Traveling From",
   "Address",
   "Family Branch",
@@ -35,6 +37,8 @@ const FIELD_BY_HEADER = {
   "Name": "name",
   "Nickname": "nickname",
   "Email Addresses": "email",
+  "Phone Number": "phone",
+  "Party Total": "partyTotal",
   "City Traveling From": "city",
   "Address": "address",
   "Family Branch": "invitedBy",
@@ -98,6 +102,16 @@ function setupRsvpSheet() {
     .setFontWeight("bold")
     .setBackground("#17385f")
     .setFontColor("#fffaf0");
+
+  const familyBranchColumn = HEADERS.indexOf("Family Branch") + 1;
+  const familyBranchRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(["Hudson", "Hubbard", "Hudson & Hubbard", "Family Friend"], true)
+    .setAllowInvalid(false)
+    .setHelpText("Choose Hudson, Hubbard, both families, or Family Friend.")
+    .build();
+  sheet.getRange(2, familyBranchColumn, Math.max(sheet.getMaxRows() - 1, 1), 1)
+    .setDataValidation(familyBranchRule);
+
   sheet.autoResizeColumns(1, HEADERS.length);
 }
 
