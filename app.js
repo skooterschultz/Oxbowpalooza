@@ -104,8 +104,8 @@ let activeMapStyle = "satellite";
 let latestMapEntries = [];
 let mapMarkers = new Map();
 const FAMILY_CLANS = [
-  { name: "Hudson", inviters: ["Hudson"] },
-  { name: "Hubbard", inviters: ["Hubbard"] },
+  { name: "Hudson", inviters: ["Hudson", "Hudson & Hubbard"] },
+  { name: "Hubbard", inviters: ["Hubbard", "Hudson & Hubbard"] },
   { name: "Family Friends", inviters: ["Family Friend"] },
 ];
 
@@ -738,7 +738,8 @@ function renderFamilyTree(entries = []) {
 
   const branches = ["Hudson", "Hubbard"];
   const connected = entries.filter((entry) =>
-    branches.includes(entry.invitedBy) && (entry.familyConnection || entry.familyRelationship)
+    (branches.includes(entry.invitedBy) || entry.invitedBy === "Hudson & Hubbard")
+      && (entry.familyConnection || entry.familyRelationship)
   );
 
   if (familyTreeCount) {
@@ -749,7 +750,7 @@ function renderFamilyTree(entries = []) {
 
   familyTreeBranches.innerHTML = branches.map((branch) => {
     const people = entries
-      .filter((entry) => entry.invitedBy === branch)
+      .filter((entry) => entry.invitedBy === branch || entry.invitedBy === "Hudson & Hubbard")
       .sort((a, b) => displayShortName(a).localeCompare(displayShortName(b)));
     const nodes = people.length
       ? people.map((entry) => {
