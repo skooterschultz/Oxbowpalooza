@@ -1,9 +1,6 @@
 const PHOTO_PREFIX = "photos/";
 const MAX_PHOTO_BYTES = 12 * 1024 * 1024;
 const MAX_GALLERY_BYTES = 8_000_000_000;
-const DUPLICATE_PHOTO_KEYS = [
-  "photos/565a75b4857a606597f466f05ae2606fe292b39b5fcdab6b212ae3c84ef35adb.jpg",
-];
 const ALLOWED_TYPES = new Map([
   ["image/jpeg", "jpg"],
   ["image/png", "png"],
@@ -55,8 +52,6 @@ export async function onRequestGet({ env }) {
   if (!env.PHOTOS) {
     return json({ ok: false, error: "Photo storage is not configured yet.", items: [] }, 503);
   }
-
-  await Promise.all(DUPLICATE_PHOTO_KEYS.map((key) => env.PHOTOS.delete(key)));
 
   const listing = await env.PHOTOS.list({
     prefix: PHOTO_PREFIX,
