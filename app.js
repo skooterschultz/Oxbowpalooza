@@ -199,6 +199,38 @@ function scrollActiveThumbnailIntoView() {
   }
 }
 
+function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
+  const nextIndex = Math.min(Math.max(Number(index) || 0, 0), galleryPhotos.length - 1);
+  const photo = galleryPhotos[nextIndex];
+  const featured = photoGallery?.querySelector(".photo-gallery__featured");
+
+  if (!photo || !featured) {
+    return;
+  }
+
+  activeGalleryIndex = nextIndex;
+  const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+
+  featured.innerHTML = `
+    <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(photo.caption || "gallery item")} larger">
+      ${galleryMedia(photo, { featured: true })}
+    </button>
+    ${caption}
+  `;
+
+  photoGallery.querySelectorAll("[data-gallery-index]").forEach((thumb) => {
+    const isActive = Number(thumb.dataset.galleryIndex) === nextIndex;
+    thumb.classList.toggle("is-active", isActive);
+    thumb.setAttribute("aria-pressed", String(isActive));
+  });
+
+  window.requestAnimationFrame(() => fitRotatedGalleryMedia(featured));
+
+  if (scrollThumbnail) {
+    scrollActiveThumbnailIntoView();
+  }
+}
+
 function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGalleryIndex) {
   if (!photoGallery) {
     return;
@@ -218,7 +250,7 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
     .map((photo, index) => {
       const caption = photo.caption ? `<span>${escapeHtml(photo.caption)}</span>` : "";
       const current = index === activeGalleryIndex ? " is-active" : "";
-      return `<button class="photo-gallery__thumb${current}" type="button" data-gallery-index="${index}" aria-label="Show ${escapeHtml(photo.caption || "gallery item")}">${galleryMedia(photo, { thumbnail: true })}${caption}</button>`;
+      return `<button class="photo-gallery__thumb${current}" type="button" data-gallery-index="${index}" aria-label="Show ${escapeHtml(photo.caption || "gallery item")}" aria-pressed="${index === activeGalleryIndex}">${galleryMedia(photo, { thumbnail: true })}${caption}</button>`;
     })
     .join("");
 
@@ -383,7 +415,7 @@ document.addEventListener("click", (event) => {
       return;
     }
 
-    renderPhotoGallery(galleryPhotos, Number(thumb.dataset.galleryIndex));
+    selectGalleryPhoto(Number(thumb.dataset.galleryIndex));
     return;
   }
 
@@ -427,7 +459,7 @@ document.addEventListener("keydown", (event) => {
 document.addEventListener("pointerdown", (event) => {
   const thumbs = event.target.closest(".photo-gallery__thumbs");
 
-  if (!thumbs || event.button !== 0) {
+  if (!thumbs || event.button !== 0 || (event.pointerType && event.pointerType !== "mouse")) {
     return;
   }
 
@@ -438,7 +470,6 @@ document.addEventListener("pointerdown", (event) => {
     scrollLeft: thumbs.scrollLeft,
     moved: false,
   };
-  thumbs.setPointerCapture(event.pointerId);
 });
 
 document.addEventListener("pointermove", (event) => {
@@ -448,7 +479,11 @@ document.addEventListener("pointermove", (event) => {
 
   const deltaX = event.clientX - thumbnailDrag.startX;
 
-  if (Math.abs(deltaX) > 4) {
+  if (Math.abs(deltaX) > 10) {
+    if (!thumbnailDrag.moved) {
+      thumbnailDrag.element.setPointerCapture?.(thumbnailDrag.pointerId);
+    }
+
     thumbnailDrag.moved = true;
     event.preventDefault();
   }
@@ -477,6 +512,23 @@ function endThumbnailDrag() {
 
 document.addEventListener("pointerup", endThumbnailDrag);
 document.addEventListener("pointercancel", endThumbnailDrag);
+
+document.addEventListener("wheel", (event) => {
+  const thumbs = event.target.closest(".photo-gallery__thumbs");
+
+  if (!thumbs || thumbs.scrollWidth <= thumbs.clientWidth) {
+    return;
+  }
+
+  const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+
+  if (!delta) {
+    return;
+  }
+
+  event.preventDefault();
+  thumbs.scrollLeft += delta;
+}, { passive: false });
 
 function titleCase(value) {
   return String(value || "")
