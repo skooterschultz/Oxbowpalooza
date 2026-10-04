@@ -35,6 +35,14 @@ function cleanPeople(value) {
     .slice(0, 300);
 }
 
+function cleanApproximateYear(value) {
+  return String(value || "")
+    .replace(/[<>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 40);
+}
+
 function toHex(buffer) {
   return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
@@ -72,6 +80,7 @@ export async function onRequestGet({ env }) {
     .sort((left, right) => new Date(right.uploaded) - new Date(left.uploaded))
     .map((object) => {
       const people = cleanPeople(object.customMetadata?.people);
+      const approximateYear = cleanApproximateYear(object.customMetadata?.approximateYear);
       return {
         id: object.key,
         src: `/api/photo?id=${encodeURIComponent(object.key)}&v=${encodeURIComponent(object.etag)}`,
@@ -79,6 +88,7 @@ export async function onRequestGet({ env }) {
           ? `Hudson Hubbard family photo featuring ${people}`
           : "Hudson Hubbard family photo",
         people,
+        approximateYear,
         uploaded: object.uploaded,
         type: "image",
       };
@@ -163,6 +173,7 @@ export async function onRequestPost({ request, env }) {
       id: key,
       src: `/api/photo?id=${encodeURIComponent(key)}`,
       people: cleanPeople(existing?.customMetadata?.people) || people,
+      approximateYear: cleanApproximateYear(existing?.customMetadata?.approximateYear),
       type: "image",
     },
   });
@@ -187,9 +198,15 @@ export async function onRequestPatch({ request, env }) {
   }
 
   const id = String(payload.id || "");
-  const people = cleanPeople(payload.people);
-  if (!id.startsWith(PHOTO_PREFIX) || id.includes("..") || !people) {
-    return json({ ok: false, error: "Choose a photo and add at least one name." }, 400);
+  const updatesPeople = Object.prototype.hasOwnProperty.call(payload, "people");
+  const updatesYear = Object.prototype.hasOwnProperty.call(payload, "approximateYear");
+  const requestedPeople = cleanPeople(payload.people);
+  const requestedYear = cleanApproximateYear(payload.approximateYear);
+  if (!id.startsWith(PHOTO_PREFIX) || id.includes("..") || (!updatesPeople && !updatesYear)) {
+    return json({ ok: false, error: "Choose a photo and add a detail to update." }, 400);
+  }
+  if ((updatesPeople && !requestedPeople) || (updatesYear && !requestedYear)) {
+    return json({ ok: false, error: "Add a value before saving." }, 400);
   }
 
   const photo = await env.PHOTOS.get(id);
@@ -197,11 +214,17 @@ export async function onRequestPatch({ request, env }) {
     return json({ ok: false, error: "That photo is no longer in the gallery." }, 404);
   }
 
+  const people = updatesPeople ? requestedPeople : cleanPeople(photo.customMetadata?.people);
+  const approximateYear = updatesYear
+    ? requestedYear
+    : cleanApproximateYear(photo.customMetadata?.approximateYear);
+
   await env.PHOTOS.put(id, photo.body, {
     httpMetadata: photo.httpMetadata,
     customMetadata: {
       ...photo.customMetadata,
       people,
+      approximateYear,
     },
   });
 
@@ -210,7 +233,8 @@ export async function onRequestPatch({ request, env }) {
     item: {
       id,
       people,
-      alt: `Hudson Hubbard family photo featuring ${people}`,
+      approximateYear,
+      alt: people ? `Hudson Hubbard family photo featuring ${people}` : "Hudson Hubbard family photo",
     },
   });
 }

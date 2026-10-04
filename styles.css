@@ -1055,6 +1055,7 @@ dt {
 }
 
 .photo-gallery__edit-names,
+.photo-gallery__edit-year,
 .photo-gallery__names-form button {
   min-height: 42px;
   padding: 0.65rem 1rem;
@@ -1065,6 +1066,17 @@ dt {
   font: inherit;
   font-weight: 850;
   cursor: pointer;
+}
+
+.photo-gallery__detail-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.photo-gallery__edit-year {
+  background: var(--rust);
 }
 
 .photo-gallery__names-form {
@@ -1195,6 +1207,12 @@ dt {
   white-space: normal;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.photo-gallery__thumb .photo-gallery__year {
+  color: var(--rust);
+  font-size: 0.67rem;
+  font-weight: 760;
 }
 
 .has-photo-lightbox {

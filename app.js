@@ -250,14 +250,17 @@ function galleryMedia(photo, options = {}) {
 
 function galleryCaption(photo, { thumbnail = false } = {}) {
   const people = String(photo.people || "").trim();
+  const approximateYear = String(photo.approximateYear || "").trim();
 
-  if (!people) {
+  if (!people && !approximateYear) {
     return "";
   }
 
-  return thumbnail
-    ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>`
-    : `<figcaption><strong>${escapeHtml(people)}</strong></figcaption>`;
+  if (thumbnail) {
+    return `${people ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>` : ""}${approximateYear ? `<span class="photo-gallery__year">Approx. ${escapeHtml(approximateYear)}</span>` : ""}`;
+  }
+
+  return `<figcaption>${people ? `<strong>${escapeHtml(people)}</strong>` : ""}${approximateYear ? `<span>Approx. year: ${escapeHtml(approximateYear)}</span>` : ""}</figcaption>`;
 }
 
 function galleryPhotoLabel(photo) {
@@ -267,7 +270,10 @@ function galleryPhotoLabel(photo) {
 function galleryNameEditor(photo) {
   return `
     <div class="photo-gallery__names">
-      <button type="button" class="photo-gallery__edit-names" data-gallery-edit-names>Add or Edit Names</button>
+      <div class="photo-gallery__detail-buttons">
+        <button type="button" class="photo-gallery__edit-names" data-gallery-edit-names>Add or Edit Names</button>
+        <button type="button" class="photo-gallery__edit-year" data-gallery-edit-year>Approx. Year</button>
+      </div>
       <form class="photo-gallery__names-form" data-gallery-names-form hidden>
         <label>
           <span>Everyone in this photo</span>
@@ -278,6 +284,17 @@ function galleryNameEditor(photo) {
           <button type="button" data-gallery-cancel-names>Cancel</button>
         </div>
         <p data-gallery-names-status role="status" aria-live="polite"></p>
+      </form>
+      <form class="photo-gallery__names-form" data-gallery-year-form hidden>
+        <label>
+          <span>About when was this taken?</span>
+          <input name="approximateYear" type="text" maxlength="40" value="${escapeHtml(photo.approximateYear || "")}" placeholder="Example: late 1980s" required />
+        </label>
+        <div>
+          <button type="submit">Save Year</button>
+          <button type="button" data-gallery-cancel-year>Cancel</button>
+        </div>
+        <p data-gallery-year-status role="status" aria-live="polite"></p>
       </form>
     </div>
   `;
@@ -531,14 +548,20 @@ document.addEventListener("click", (event) => {
   const openButton = event.target.closest("[data-gallery-open]");
   const editNamesButton = event.target.closest("[data-gallery-edit-names]");
   const cancelNamesButton = event.target.closest("[data-gallery-cancel-names]");
+  const editYearButton = event.target.closest("[data-gallery-edit-year]");
+  const cancelYearButton = event.target.closest("[data-gallery-cancel-year]");
   const closeButton = event.target.closest(".photo-lightbox__close");
   const lightboxStep = event.target.closest("[data-lightbox-step]");
   const lightbox = event.target.closest(".photo-lightbox");
 
   if (editNamesButton && photoGallery.contains(editNamesButton)) {
-    const form = editNamesButton.parentElement.querySelector("[data-gallery-names-form]");
+    const editor = editNamesButton.closest(".photo-gallery__names");
+    const form = editor.querySelector("[data-gallery-names-form]");
+    editor.querySelector("[data-gallery-year-form]").hidden = true;
     form.hidden = false;
-    editNamesButton.hidden = true;
+    editor.querySelectorAll("[data-gallery-edit-names], [data-gallery-edit-year]").forEach((button) => {
+      button.hidden = true;
+    });
     form.elements.people.focus();
     return;
   }
@@ -546,7 +569,30 @@ document.addEventListener("click", (event) => {
   if (cancelNamesButton && photoGallery.contains(cancelNamesButton)) {
     const form = cancelNamesButton.closest("[data-gallery-names-form]");
     form.hidden = true;
-    form.parentElement.querySelector("[data-gallery-edit-names]").hidden = false;
+    form.closest(".photo-gallery__names").querySelectorAll("[data-gallery-edit-names], [data-gallery-edit-year]").forEach((button) => {
+      button.hidden = false;
+    });
+    return;
+  }
+
+  if (editYearButton && photoGallery.contains(editYearButton)) {
+    const editor = editYearButton.closest(".photo-gallery__names");
+    editor.querySelectorAll("[data-gallery-names-form], [data-gallery-year-form]").forEach((form) => {
+      form.hidden = form.dataset.galleryYearForm === undefined;
+    });
+    editor.querySelectorAll("[data-gallery-edit-names], [data-gallery-edit-year]").forEach((button) => {
+      button.hidden = true;
+    });
+    editor.querySelector("[data-gallery-year-form]").elements.approximateYear.focus();
+    return;
+  }
+
+  if (cancelYearButton && photoGallery.contains(cancelYearButton)) {
+    const form = cancelYearButton.closest("[data-gallery-year-form]");
+    form.hidden = true;
+    form.closest(".photo-gallery__names").querySelectorAll("[data-gallery-edit-names], [data-gallery-edit-year]").forEach((button) => {
+      button.hidden = false;
+    });
     return;
   }
 
@@ -614,6 +660,52 @@ document.addEventListener("submit", async (event) => {
   } catch (error) {
     console.warn("Could not update photo names", error);
     status.textContent = error.message || "Those names could not be saved. Please try again.";
+    submitButton.disabled = false;
+  }
+});
+
+document.addEventListener("submit", async (event) => {
+  const form = event.target.closest("[data-gallery-year-form]");
+
+  if (!form || !photoGallery?.contains(form)) {
+    return;
+  }
+
+  event.preventDefault();
+  const photo = galleryPhotos[activeGalleryIndex];
+  const approximateYear = form.elements.approximateYear.value.trim();
+  const status = form.querySelector("[data-gallery-year-status]");
+  const submitButton = form.querySelector("button[type='submit']");
+
+  if (!photo || !approximateYear) {
+    status.textContent = "Add your best guess for the year.";
+    return;
+  }
+
+  submitButton.disabled = true;
+  status.textContent = "Saving year...";
+
+  try {
+    const response = await fetch("/api/photos", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: photo.id, approximateYear }),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || `Update returned ${response.status}`);
+    }
+
+    galleryPhotos[activeGalleryIndex] = {
+      ...photo,
+      approximateYear: result.item.approximateYear,
+      alt: result.item.alt,
+    };
+    renderPhotoGallery(galleryPhotos, activeGalleryIndex);
+  } catch (error) {
+    console.warn("Could not update approximate photo year", error);
+    status.textContent = error.message || "That year could not be saved. Please try again.";
     submitButton.disabled = false;
   }
 });
