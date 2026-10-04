@@ -1983,6 +1983,103 @@ dt {
   display: grid;
 }
 
+.family-tree__lineage {
+  display: grid;
+  justify-items: center;
+}
+
+.family-tree__generation-label {
+  margin: 0 0 0.65rem;
+  color: var(--pine);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.family-tree__trunk--center {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  display: block;
+  height: 1.9rem;
+  margin: 0.1rem 0 0;
+}
+
+.family-tree__branch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.family-tree__descendant-branch {
+  position: relative;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(16, 43, 77, 0.42);
+  background: rgba(255, 250, 240, 0.58);
+}
+
+.family-tree__node--branch {
+  width: 100%;
+  max-width: none;
+  min-height: 3.9rem;
+  border-color: var(--pine);
+  background: #dbe6c7;
+  text-align: center;
+  box-shadow: 3px 3px 0 rgba(49, 84, 58, 0.28);
+}
+
+.family-tree__branch-line {
+  display: block;
+  width: 2px;
+  height: 0.8rem;
+  margin: 0 auto;
+  background: rgba(49, 84, 58, 0.58);
+}
+
+.family-tree__branch-children {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.75rem, 1fr));
+  align-items: start;
+  gap: 0.5rem;
+}
+
+.family-tree__descendant {
+  display: grid;
+  justify-items: stretch;
+  min-width: 0;
+}
+
+.family-tree__descendant > .family-tree__node,
+.family-tree__great-grandchildren .family-tree__node {
+  width: 100%;
+  max-width: none;
+  min-height: 4rem;
+}
+
+.family-tree__great-grandchildren {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 2px solid rgba(49, 84, 58, 0.45);
+}
+
+.family-tree__node--youngest {
+  min-height: 3.35rem !important;
+  background: #edf1dc;
+  box-shadow: 2px 2px 0 rgba(16, 43, 77, 0.12);
+}
+
+.family-tree__branch-open {
+  margin: 0.65rem 0 0;
+  color: rgba(22, 34, 56, 0.58);
+  font-size: 0.72rem;
+  font-style: italic;
+  text-align: center;
+}
+
 .family-tree__generation {
   position: relative;
   display: grid;
@@ -2077,10 +2174,6 @@ dt {
 
 .family-tree__node--featured.is-selected {
   background: var(--pine);
-}
-
-.family-tree__node--provisional strong::after {
-  color: #a14a22;
 }
 
 .family-tree__trunk {
@@ -3038,5 +3131,13 @@ h3 {
 
   .family-tree__node--featured {
     flex-basis: 100%;
+  }
+
+  .family-tree__branch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .family-tree__branch-children {
+    grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
   }
 }

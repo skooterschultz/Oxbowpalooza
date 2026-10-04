@@ -107,42 +107,42 @@ let activeMapStyle = "satellite";
 let latestMapEntries = [];
 let mapMarkers = new Map();
 const FAMILY_CLANS = [
-  { name: "Hudson", inviters: ["Hudson", "Hudson & Hubbard"] },
-  { name: "Hubbard", inviters: ["Hubbard", "Hudson & Hubbard"] },
-  { name: "Family Friends", inviters: ["Family Friend"] },
+  { name: "Hudson", inviters: ["Hudson"] },
+  { name: "Hubbard", inviters: ["Hubbard"] },
+  { name: "Both", inviters: ["Hudson & Hubbard", "Both Hudson & Hubbard"] },
+  { name: "Family Friends", inviters: ["Family Friend"], hideWhenEmpty: true },
 ];
 const FAMILY_TREE_VIEWS = {
   center: {
     title: "Virgil and Della's branch",
     subtitle: "The marriage that brings the Hudson and Hubbard stories together.",
-    generations: [
-      {
-        label: "The family bridge",
-        people: [
-          { id: "virgil-della", name: "Virgil Hudson + Della Hubbard", meta: "Hudson + Hubbard", detail: "Virgil Hudson (1925-1990) married Della Hubbard. Their six children form the shared branch at the heart of this reunion.", remembered: true, featured: true },
-        ],
-      },
-      {
-        label: "Their children",
-        people: [
-          { id: "diana", name: "Diana", meta: "Child of Virgil + Della", detail: "Children recorded in the notes: Brian, Todd, and Kimberly." },
-          { id: "brenda", name: "Brenda", meta: "Child of Virgil + Della", detail: "Children recorded in the notes: LaDonna, Frank, and Robert \"Joe\"." },
-          { id: "mike", name: "Mike", meta: "Child of Virgil + Della", detail: "Children recorded in the notes: Jeremy and Jessica." },
-          { id: "chris", name: "Chris", meta: "Child of Virgil + Della", detail: "Chris is listed among Virgil and Della's six children." },
-          { id: "david", name: "David", meta: "Child of Virgil + Della", detail: "Bethany and Seth are recorded beneath David's branch." },
-          { id: "laura", name: "Laura", meta: "Child of Virgil + Della", detail: "Christine is recorded beneath Laura's branch." },
-        ],
-      },
-      {
-        label: "Grandchildren recorded in the notes",
-        people: [
-          { id: "diana-children", name: "Brian, Todd + Kimberly", meta: "Diana's branch", detail: "Brian, Todd, and Kimberly are recorded as Diana's children. Trent appears beneath Kimberly." },
-          { id: "brenda-children", name: "LaDonna, Frank + Robert", meta: "Brenda's branch", detail: "LaDonna, Frank, and Robert \"Joe\" are recorded as Brenda's children. The next generation includes Skot, Bella, JW, and Abby J; some placement still needs confirmation.", provisional: true },
-          { id: "mike-children", name: "Jeremy + Jessica", meta: "Mike's branch", detail: "Jeremy and Jessica are recorded beneath Mike. One name in the next generation is difficult to read and still needs confirmation.", provisional: true },
-          { id: "david-children", name: "Bethany + Seth", meta: "David's branch", detail: "Bethany and Seth are recorded beneath David's branch." },
-          { id: "laura-child", name: "Christine", meta: "Laura's branch", detail: "Christine is recorded beneath Laura's branch." },
-        ],
-      },
+    root: { id: "virgil-della", name: "Virgil Hudson + Della Hubbard", meta: "Hudson + Hubbard", detail: "Virgil Hudson (1925-1990) married Della Hubbard. Their six children form the shared branch at the heart of this reunion.", featured: true },
+    branches: [
+      { id: "diana", name: "Diana", meta: "Child of Virgil + Della", detail: "Diana's children are Brian, Todd, and Kimberly.", children: [
+        { id: "brian", name: "Brian", meta: "Diana's son", detail: "Brian is Diana's son." },
+        { id: "todd", name: "Todd", meta: "Diana's son", detail: "Todd is Diana's son." },
+        { id: "kimberly", name: "Kimberly", meta: "Diana's daughter", detail: "Kimberly is Diana's daughter and Trent's mother.", children: [{ id: "trent", name: "Trent", meta: "Kimberly's son", detail: "Trent is Kimberly's son." }] },
+      ] },
+      { id: "brenda", name: "Brenda", meta: "Child of Virgil + Della", detail: "Brenda's children are LaDonna, Frank, and Robert \"Joe\".", children: [
+        { id: "ladonna", name: "LaDonna", meta: "Brenda's daughter", detail: "LaDonna is Brenda's daughter and Skot's mother.", children: [{ id: "skot", name: "Skot", meta: "LaDonna's son", detail: "Skot is LaDonna's son." }] },
+        { id: "frank", name: "Frank", meta: "Brenda's son", detail: "Frank is Brenda's son and Bella's father.", children: [{ id: "bella", name: "Bella", meta: "Frank's daughter", detail: "Bella is Frank's daughter." }] },
+        { id: "robert-joe", name: "Robert \"Joe\"", meta: "Brenda's son", detail: "Robert \"Joe\" is Brenda's son and the father of JW and Abby J.", children: [
+          { id: "jw", name: "JW", meta: "Robert's child", detail: "JW is Robert \"Joe\"'s child." },
+          { id: "abby-j", name: "Abby J", meta: "Robert's child", detail: "Abby J is Robert \"Joe\"'s child." },
+        ] },
+      ] },
+      { id: "mike", name: "Mike", meta: "Child of Virgil + Della", detail: "Mike's children are Jeremy and Jessica.", children: [
+        { id: "jeremy", name: "Jeremy", meta: "Mike's son", detail: "Jeremy is Mike's son." },
+        { id: "jessica", name: "Jessica", meta: "Mike's daughter", detail: "Jessica is Mike's daughter." },
+      ] },
+      { id: "chris", name: "Chris", meta: "Child of Virgil + Della", detail: "Chris is one of Virgil and Della's six children.", children: [] },
+      { id: "david", name: "David", meta: "Child of Virgil + Della", detail: "David's children are Bethany and Seth.", children: [
+        { id: "bethany", name: "Bethany", meta: "David's daughter", detail: "Bethany is David's daughter." },
+        { id: "seth", name: "Seth", meta: "David's son", detail: "Seth is David's son." },
+      ] },
+      { id: "laura", name: "Laura", meta: "Child of Virgil + Della", detail: "Laura's daughter is Christine.", children: [
+        { id: "christine", name: "Christine", meta: "Laura's daughter", detail: "Christine is Laura's daughter." },
+      ] },
     ],
   },
   hudson: {
@@ -152,19 +152,19 @@ const FAMILY_TREE_VIEWS = {
       {
         label: "Earlier generation",
         people: [
-          { id: "harvey-ada", name: "Harvey Hudson + Ada Brown", meta: "Eureka Springs, Arkansas", detail: "Harvey Hudson and Ada \"Brown\" Hudson are shown as the parents of the Hudson siblings in the family notes.", featured: true },
+          { id: "harvey-ada", name: "Harvey Hudson + Ada Brown", meta: "Eureka Springs, Arkansas", detail: "Harvey Hudson and Ada Brown Hudson are the parents of the Hudson siblings shown here.", featured: true },
         ],
       },
       {
         label: "Their children",
         people: [
-          { id: "betty", name: "Betty", meta: "Married Floyd", detail: "Children recorded: Donnie, Elaine, and Sherry. Donnie's spelling needs a family confirmation.", provisional: true },
-          { id: "clarence", name: "Clarence", meta: "1922-2020", detail: "Clarence married Hazel Mae. Charles and Caroline are recorded beneath their branch.", remembered: true },
-          { id: "mary", name: "Mary", meta: "Hudson sibling", detail: "Mary is listed as one of Harvey and Ada's children.", remembered: true },
-          { id: "virgil", name: "Virgil", meta: "1925-1990", detail: "Virgil married Della Hubbard. Their children are Diana, Brenda, Mike, Chris, David, and Laura.", remembered: true },
-          { id: "jane", name: "Jane", meta: "Married Bill", detail: "Billie is recorded beneath Jane and Bill's branch.", remembered: true },
-          { id: "billie-rae", name: "Billie Rae", meta: "Hudson sibling", detail: "Billie Rae is listed as one of Harvey and Ada's children.", remembered: true },
-          { id: "richard", name: "Richard", meta: "1927-2019", detail: "Rick is recorded beneath Richard's branch.", remembered: true },
+          { id: "betty", name: "Betty", meta: "Married Floyd", detail: "Betty and Floyd's children are Donnie, Elaine, and Sherry." },
+          { id: "clarence", name: "Clarence", meta: "1922-2020", detail: "Clarence married Hazel Mae. Their children are Charles and Caroline." },
+          { id: "mary", name: "Mary", meta: "Hudson sibling", detail: "Mary is one of Harvey and Ada's children." },
+          { id: "virgil", name: "Virgil", meta: "1925-1990", detail: "Virgil married Della Hubbard. Their children are Diana, Brenda, Mike, Chris, David, and Laura." },
+          { id: "jane", name: "Jane", meta: "Married Bill", detail: "Jane and Bill's child is Billie." },
+          { id: "billie-rae", name: "Billie Rae", meta: "Hudson sibling", detail: "Billie Rae is one of Harvey and Ada's children." },
+          { id: "richard", name: "Richard", meta: "1927-2019", detail: "Richard's son is Rick." },
         ],
       },
     ],
@@ -176,17 +176,17 @@ const FAMILY_TREE_VIEWS = {
       {
         label: "Earlier generation",
         people: [
-          { id: "sherman-beuna", name: "Sherman L. E. + Beuna Viola Hubbard", meta: "Missouri", detail: "The notes place Sherman L. E. Hubbard (1909-1983) and Beuna Viola Hubbard (1913-2002) at the head of this branch.", remembered: true, featured: true },
+          { id: "sherman-beuna", name: "Sherman L. E. + Beuna Viola Hubbard", meta: "Missouri", detail: "Sherman L. E. Hubbard (1909-1983) and Beuna Viola Hubbard (1913-2002) are at the head of this branch.", featured: true },
         ],
       },
       {
         label: "Their children",
         people: [
-          { id: "kenneth", name: "Kenneth", meta: "Married Ginger", detail: "Children recorded: Gary, Gloria, Sheila, Iris, and possibly Sherman. The final name needs confirmation.", remembered: true, provisional: true },
-          { id: "jackie", name: "Jackie", meta: "Married Bob", detail: "Children recorded: Robbie, Billie, Patty, Linda, and Lou Ann." },
-          { id: "della", name: "Della", meta: "Married Virgil Hudson", detail: "Della and Virgil connect the Hubbard and Hudson branches. Their children are Diana, Brenda, Mike, Chris, David, and Laura.", remembered: true },
-          { id: "freddie", name: "Freddie", meta: "Married Patty", detail: "Tammy is recorded beneath Freddie and Patty's branch.", remembered: true },
-          { id: "claudine", name: "Claudine", meta: "Hubbard sibling", detail: "Margaret and Jeanie are recorded beneath Claudine's branch.", remembered: true },
+          { id: "kenneth", name: "Kenneth", meta: "Married Ginger", detail: "Kenneth and Ginger's children are Gary, Gloria, Sheila, and Iris." },
+          { id: "jackie", name: "Jackie", meta: "Married Bob", detail: "Jackie and Bob's children are Robbie, Billie, Patty, Linda, and Lou Ann." },
+          { id: "della", name: "Della", meta: "Married Virgil Hudson", detail: "Della and Virgil connect the Hubbard and Hudson branches. Their children are Diana, Brenda, Mike, Chris, David, and Laura." },
+          { id: "freddie", name: "Freddie", meta: "Married Patty", detail: "Freddie and Patty's child is Tammy." },
+          { id: "claudine", name: "Claudine", meta: "Hubbard sibling", detail: "Claudine's children are Margaret and Jeanie." },
         ],
       },
     ],
@@ -874,6 +874,9 @@ function renderFamilyClans(entries = []) {
     const people = entries
       .filter((entry) => entry.name && inviterSet.has(String(entry.invitedBy || "").toLowerCase()))
       .sort((a, b) => familyRosterName(a).localeCompare(familyRosterName(b)));
+    if (clan.hideWhenEmpty && !people.length) {
+      return "";
+    }
     const roster = people.length
       ? `<ul>${people.map((entry) => `<li>${escapeHtml(familyRosterName(entry))}</li>`).join("")}</ul>`
       : "<p>Waiting for RSVPs.</p>";
@@ -884,7 +887,26 @@ function renderFamilyClans(entries = []) {
 
 function getFamilyTreePerson(personId) {
   for (const view of Object.values(FAMILY_TREE_VIEWS)) {
-    for (const generation of view.generations) {
+    if (view.root?.id === personId) {
+      return view.root;
+    }
+
+    for (const branch of view.branches || []) {
+      if (branch.id === personId) {
+        return branch;
+      }
+      for (const child of branch.children || []) {
+        if (child.id === personId) {
+          return child;
+        }
+        const grandchild = child.children?.find((entry) => entry.id === personId);
+        if (grandchild) {
+          return grandchild;
+        }
+      }
+    }
+
+    for (const generation of view.generations || []) {
       const person = generation.people.find((entry) => entry.id === personId);
       if (person) {
         return person;
@@ -905,16 +927,10 @@ function showFamilyTreeDetail(personId) {
     return;
   }
 
-  const flags = [
-    person.remembered ? "Remembered in the family notes" : "",
-    person.provisional ? "Please help confirm this reading" : "",
-  ].filter(Boolean);
-
   familyTreeDetail.innerHTML = `
     <span class="family-tree__detail-label">${escapeHtml(person.meta)}</span>
-    <h4>${escapeHtml(person.name)}${person.provisional ? " <sup>?</sup>" : ""}</h4>
+    <h4>${escapeHtml(person.name)}</h4>
     <p>${escapeHtml(person.detail)}</p>
-    ${flags.length ? `<small>${escapeHtml(flags.join(" · "))}</small>` : ""}
   `;
 
   familyTreeGraphic?.querySelectorAll(".family-tree__node").forEach((node) => {
@@ -928,38 +944,60 @@ function renderFamilyTreeGraphic(viewName = "center") {
   }
 
   const view = FAMILY_TREE_VIEWS[viewName] || FAMILY_TREE_VIEWS.center;
+  const treeBody = view.branches
+    ? `<div class="family-tree__lineage">
+        <p class="family-tree__generation-label">The family bridge</p>
+        ${familyTreeNode(view.root, " family-tree__node--featured")}
+        <span class="family-tree__trunk family-tree__trunk--center" aria-hidden="true"></span>
+        <p class="family-tree__generation-label">Their children and branches</p>
+        <div class="family-tree__branch-grid">
+          ${view.branches.map((branch) => `
+            <section class="family-tree__descendant-branch" aria-label="${escapeHtml(branch.name)}'s family branch">
+              ${familyTreeNode(branch, " family-tree__node--branch")}
+              ${branch.children.length ? `<span class="family-tree__branch-line" aria-hidden="true"></span><div class="family-tree__branch-children">
+                ${branch.children.map((child) => `<div class="family-tree__descendant">
+                  ${familyTreeNode(child)}
+                  ${child.children?.length ? `<div class="family-tree__great-grandchildren">${child.children.map((grandchild) => familyTreeNode(grandchild, " family-tree__node--youngest")).join("")}</div>` : ""}
+                </div>`).join("")}
+              </div>` : '<p class="family-tree__branch-open">More family grows from here.</p>'}
+            </section>
+          `).join("")}
+        </div>
+      </div>`
+    : `<div class="family-tree__generations">
+        ${view.generations.map((generation, generationIndex) => `
+          <section class="family-tree__generation" aria-label="${escapeHtml(generation.label)}">
+            <p>${escapeHtml(generation.label)}</p>
+            <div class="family-tree__nodes">${generation.people.map((person) => familyTreeNode(person)).join("")}</div>
+            ${generationIndex < view.generations.length - 1 ? '<span class="family-tree__trunk" aria-hidden="true"></span>' : ""}
+          </section>
+        `).join("")}
+      </div>`;
+
   familyTreeGraphic.innerHTML = `
     <header class="family-tree__graphic-heading">
       <span>${escapeHtml(view.subtitle)}</span>
       <h4>${escapeHtml(view.title)}</h4>
     </header>
-    <div class="family-tree__generations">
-      ${view.generations.map((generation, generationIndex) => `
-        <section class="family-tree__generation" aria-label="${escapeHtml(generation.label)}">
-          <p>${escapeHtml(generation.label)}</p>
-          <div class="family-tree__nodes">
-            ${generation.people.map((person) => `
-              <button
-                class="family-tree__node${person.featured ? " family-tree__node--featured" : ""}${person.provisional ? " family-tree__node--provisional" : ""}"
-                type="button"
-                data-person-id="${escapeHtml(person.id)}"
-                aria-label="Learn about ${escapeHtml(person.name)}"
-              >
-                <strong>${escapeHtml(person.name)}${person.provisional ? " ?" : ""}</strong>
-                <span>${escapeHtml(person.meta)}</span>
-              </button>
-            `).join("")}
-          </div>
-          ${generationIndex < view.generations.length - 1 ? '<span class="family-tree__trunk" aria-hidden="true"></span>' : ""}
-        </section>
-      `).join("")}
-    </div>
+    ${treeBody}
   `;
 
-  const firstPerson = view.generations[0]?.people[0];
+  const firstPerson = view.root || view.generations?.[0]?.people[0];
   if (firstPerson) {
     showFamilyTreeDetail(firstPerson.id);
   }
+}
+
+function familyTreeNode(person, className = "") {
+  return `<button
+    class="family-tree__node${person.featured ? " family-tree__node--featured" : ""}${className}"
+    type="button"
+    data-person-id="${escapeHtml(person.id)}"
+    aria-label="Learn about ${escapeHtml(person.name)}"
+  >
+    <strong>${escapeHtml(person.name)}</strong>
+    <span>${escapeHtml(person.meta)}</span>
+  </button>`;
 }
 
 familyTreeTabs.forEach((tab) => {
@@ -993,8 +1031,8 @@ function renderFamilyTree(entries = []) {
 
   if (familyTreeCount) {
     familyTreeCount.textContent = connected.length
-      ? `Family notes + ${connected.length} RSVP clue${connected.length === 1 ? "" : "s"}`
-      : "Built from family notes";
+      ? `${connected.length} RSVP connection${connected.length === 1 ? "" : "s"} shared`
+      : "Our shared family history";
   }
 
   familyTreeBranches.innerHTML = connected.length
