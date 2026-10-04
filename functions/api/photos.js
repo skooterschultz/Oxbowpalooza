@@ -71,15 +71,13 @@ export async function onRequestGet({ env }) {
     .filter((object) => ALLOWED_TYPES.has(object.httpMetadata?.contentType || ""))
     .sort((left, right) => new Date(right.uploaded) - new Date(left.uploaded))
     .map((object) => {
-      const caption = cleanSubmitter(object.customMetadata?.submitter) || "Hudson Hubbard family";
       const people = cleanPeople(object.customMetadata?.people);
       return {
         id: object.key,
         src: `/api/photo?id=${encodeURIComponent(object.key)}&v=${encodeURIComponent(object.etag)}`,
         alt: people
-          ? `Hudson Hubbard family photo featuring ${people}, shared by ${caption}`
-          : `Hudson Hubbard family photo shared by ${caption}`,
-        caption,
+          ? `Hudson Hubbard family photo featuring ${people}`
+          : "Hudson Hubbard family photo",
         people,
         uploaded: object.uploaded,
         type: "image",
@@ -164,7 +162,6 @@ export async function onRequestPost({ request, env }) {
     item: {
       id: key,
       src: `/api/photo?id=${encodeURIComponent(key)}`,
-      caption: existing?.customMetadata?.submitter || submitter,
       people: cleanPeople(existing?.customMetadata?.people) || people,
       type: "image",
     },

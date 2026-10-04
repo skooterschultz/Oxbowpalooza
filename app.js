@@ -110,6 +110,7 @@ const FAMILY_CLANS = [
   { name: "Both", inviters: ["Hudson & Hubbard", "Both Hudson & Hubbard"] },
   { name: "Family Friends", inviters: ["Family Friend"], hideWhenEmpty: true },
 ];
+const BOTH_FAMILY_ROLL_CALL_NAMES = new Set(["brenda", "al", "alfred", "frank", "ladonna"]);
 const FAMILY_TREE_VIEWS = {
   center: {
     title: "Virgil and Della's branch",
@@ -230,7 +231,7 @@ function escapeHtml(value) {
 
 function galleryMedia(photo, options = {}) {
   const src = escapeHtml(photo.src);
-  const alt = escapeHtml(photo.alt || photo.people || photo.caption || "Hudson Hubbard family photo");
+  const alt = escapeHtml(photo.alt || photo.people || "Hudson Hubbard family photo");
 
   if (photo.type === "video") {
     const controls = options.controls ? " controls" : "";
@@ -248,18 +249,19 @@ function galleryMedia(photo, options = {}) {
 }
 
 function galleryCaption(photo, { thumbnail = false } = {}) {
-  const submitter = String(photo.caption || "").trim();
   const people = String(photo.people || "").trim();
 
-  if (thumbnail) {
-    return `${submitter ? `<span class="photo-gallery__credit">${escapeHtml(submitter)}</span>` : ""}${people ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>` : ""}`;
-  }
-
-  if (!submitter && !people) {
+  if (!people) {
     return "";
   }
 
-  return `<figcaption>${submitter ? `<span>Shared by ${escapeHtml(submitter)}</span>` : ""}${people ? `<strong>In this photo: ${escapeHtml(people)}</strong>` : ""}</figcaption>`;
+  return thumbnail
+    ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>`
+    : `<figcaption><strong>${escapeHtml(people)}</strong></figcaption>`;
+}
+
+function galleryPhotoLabel(photo) {
+  return String(photo.people || "family photo").trim();
 }
 
 function fitRotatedGalleryMedia(scope = document) {
@@ -312,7 +314,7 @@ function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
   const caption = galleryCaption(photo);
 
   featured.innerHTML = `
-    <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(photo.caption || "gallery item")} larger">
+    <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(galleryPhotoLabel(photo))} larger">
       ${galleryMedia(photo, { featured: true })}
     </button>
     ${caption}
@@ -350,13 +352,13 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
     .map((photo, index) => {
       const caption = galleryCaption(photo, { thumbnail: true });
       const current = index === activeGalleryIndex ? " is-active" : "";
-      return `<button class="photo-gallery__thumb${current}" type="button" data-gallery-index="${index}" aria-label="Show ${escapeHtml(photo.caption || "gallery item")}" aria-pressed="${index === activeGalleryIndex}">${galleryMedia(photo, { thumbnail: true })}${caption}</button>`;
+      return `<button class="photo-gallery__thumb${current}" type="button" data-gallery-index="${index}" aria-label="Show ${escapeHtml(galleryPhotoLabel(photo))}" aria-pressed="${index === activeGalleryIndex}">${galleryMedia(photo, { thumbnail: true })}${caption}</button>`;
     })
     .join("");
 
   photoGallery.innerHTML = `
     <figure class="photo-gallery__featured">
-      <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(featured.caption || "gallery item")} larger">
+      <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(galleryPhotoLabel(featured))} larger">
         ${galleryMedia(featured, { featured: true })}
       </button>
       ${featuredCaption}
@@ -639,9 +641,15 @@ function titleCase(value) {
     .replace(/\b([a-z])/g, (match) => match.toUpperCase());
 }
 
+function primaryNickname(value) {
+  return String(value || "")
+    .split(/\s*\/\s*|\s+\|\s+|\s*,\s*/)[0]
+    .trim();
+}
+
 function displayShortName(entry) {
   if (entry.nickname && entry.nickname.trim()) {
-    return titleCase(entry.nickname);
+    return titleCase(primaryNickname(entry.nickname));
   }
 
   return titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
@@ -878,19 +886,15 @@ function renderFamilyClans(entries = []) {
     return;
   }
 
-  const allInviters = new Set(FAMILY_CLANS.flatMap((clan) => clan.inviters.map((name) => name.toLowerCase())));
-  const assignedPeople = entries.filter(
-    (entry) => entry.name && allInviters.has(String(entry.invitedBy || "").toLowerCase())
-  );
+  const assignedPeople = entries.filter((entry) => entry.name && rollCallClan(entry));
 
   if (familyClansTotal) {
     familyClansTotal.textContent = `${assignedPeople.length} total RSVP${assignedPeople.length === 1 ? "" : "s"}`;
   }
 
   familyClansGrid.innerHTML = FAMILY_CLANS.map((clan) => {
-    const inviterSet = new Set(clan.inviters.map((name) => name.toLowerCase()));
     const people = entries
-      .filter((entry) => entry.name && inviterSet.has(String(entry.invitedBy || "").toLowerCase()))
+      .filter((entry) => entry.name && rollCallClan(entry) === clan.name)
       .sort((a, b) => familyRosterName(a).localeCompare(familyRosterName(b)));
     if (clan.hideWhenEmpty && !people.length) {
       return "";
@@ -901,6 +905,17 @@ function renderFamilyClans(entries = []) {
 
     return `<article><h4>${clan.name}</h4><strong>${people.length} checked in</strong>${roster}</article>`;
   }).join("");
+}
+
+function rollCallClan(entry) {
+  const firstName = String(entry.name || "").trim().toLowerCase().split(/\s+/)[0];
+
+  if (BOTH_FAMILY_ROLL_CALL_NAMES.has(firstName)) {
+    return "Both";
+  }
+
+  const savedFamily = String(entry.invitedBy || "").trim().toLowerCase();
+  return FAMILY_CLANS.find((clan) => clan.inviters.some((name) => name.toLowerCase() === savedFamily))?.name || "";
 }
 
 function renderFamilyTreeGraphic() {
@@ -996,7 +1011,7 @@ function renderFamilyTree(entries = []) {
 
 function familyRosterName(entry) {
   const firstName = titleCase(String(entry.name || "").trim().split(/\s+/)[0] || "Friend");
-  const nickname = titleCase(entry.nickname);
+  const nickname = titleCase(primaryNickname(entry.nickname));
 
   return nickname && nickname.toLowerCase() !== firstName.toLowerCase()
     ? `${nickname} · ${firstName}`
