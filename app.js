@@ -122,7 +122,7 @@ const FAMILY_TREE_VIEWS = {
         { id: "kimberly", name: "Kimberly", meta: "Diana's daughter", detail: "Kimberly is Diana's daughter and Trent's mother.", children: [{ id: "trent", name: "Trent", meta: "Kimberly's son", detail: "Trent is Kimberly's son." }] },
       ] },
       { id: "brenda", name: "Brenda", meta: "Child of Virgil + Della", detail: "Brenda's children are LaDonna, Frank, and Robert \"Joe\".", children: [
-        { id: "ladonna", name: "LaDonna", meta: "Brenda's daughter", detail: "LaDonna is Brenda's daughter and Skot's mother.", children: [{ id: "skot", name: "Skot", meta: "LaDonna's son", detail: "Skot is LaDonna's son." }] },
+        { id: "ladonna", name: "LaDonna", meta: "Brenda's daughter", detail: "LaDonna is Brenda's daughter and Skooter's mother.", children: [{ id: "skooter", name: "Skooter", meta: "LaDonna's son", detail: "Skooter is LaDonna's son." }] },
         { id: "frank", name: "Frank", meta: "Brenda's son", detail: "Frank is Brenda's son and Bella's father.", children: [{ id: "bella", name: "Bella", meta: "Frank's daughter", detail: "Bella is Frank's daughter." }] },
         { id: "robert-joe", name: "Robert \"Joe\"", meta: "Brenda's son", detail: "Robert \"Joe\" is Brenda's son and the father of JW and Abby J.", children: [
           { id: "jw", name: "JW", meta: "Robert's child", detail: "JW is Robert \"Joe\"'s child." },
