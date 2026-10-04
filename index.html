@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r13-family-branches" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r14-complete-tree" />
   </head>
   <body>
     <main>
@@ -697,25 +697,14 @@
               <p class="eyebrow">Find your branch</p>
               <h3 id="family-tree-title">The Hudson Hubbard Family Tree</h3>
               <p>
-                Start with Virgil and Della, then explore both sides of the family. Tap any
-                name to see where that person belongs.
+                Follow both families from their roots through Virgil and Della, then down
+                through every branch in one continuous view.
               </p>
             </div>
             <span class="family-tree__count" id="family-tree-count">Our shared family history</span>
           </header>
-          <div class="family-tree__tabs" role="tablist" aria-label="Choose a family tree view">
-            <button class="family-tree__tab is-active" type="button" role="tab" aria-selected="true" data-tree-view="center">Virgil + Della</button>
-            <button class="family-tree__tab" type="button" role="tab" aria-selected="false" data-tree-view="hudson">Hudson roots</button>
-            <button class="family-tree__tab" type="button" role="tab" aria-selected="false" data-tree-view="hubbard">Hubbard roots</button>
-          </div>
           <div class="family-tree__workspace">
             <div class="family-tree__graphic" id="family-tree-graphic" aria-live="polite"></div>
-            <aside class="family-tree__detail" id="family-tree-detail" aria-live="polite">
-              <span class="family-tree__detail-label">Selected family member</span>
-              <h4>Virgil Hudson + Della Hubbard</h4>
-              <p>The marriage that connects the two family branches shown here.</p>
-              <small>Choose any name in the tree to learn more.</small>
-            </aside>
           </div>
           <div class="family-tree__shared" id="family-tree-branches" aria-live="polite"></div>
           <p class="family-tree__note">
@@ -748,6 +737,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r12-family-branches"></script>
+    <script src="./app.js?v=2027-reunion-r13-complete-tree"></script>
   </body>
 </html>

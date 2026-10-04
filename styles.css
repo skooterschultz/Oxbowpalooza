@@ -1945,7 +1945,7 @@ dt {
 
 .family-tree__workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.34fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
   gap: clamp(0.9rem, 2vw, 1.4rem);
 }
@@ -1981,6 +1981,65 @@ dt {
 
 .family-tree__generations {
   display: grid;
+}
+
+.family-tree__complete {
+  display: grid;
+  gap: 0;
+}
+
+.family-tree__roots-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.family-tree__root-side {
+  min-width: 0;
+  padding: 0.85rem;
+  border: 2px solid rgba(16, 43, 77, 0.52);
+  background: rgba(255, 250, 240, 0.58);
+}
+
+.family-tree__root-side--hubbard {
+  background: rgba(219, 230, 199, 0.52);
+}
+
+.family-tree__root-children {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.family-tree__node--family-root {
+  width: 100%;
+  max-width: none;
+  background: var(--deep);
+  color: #fff8df;
+  text-align: center;
+}
+
+.family-tree__node--family-root span,
+.family-tree__node--family-root small {
+  color: rgba(255, 248, 223, 0.78);
+}
+
+.family-tree__union {
+  display: grid;
+  justify-items: center;
+  padding: 0 1rem;
+}
+
+.family-tree__union-line {
+  width: 58%;
+  height: 2.2rem;
+  border-right: 2px solid rgba(49, 84, 58, 0.58);
+  border-bottom: 2px solid rgba(49, 84, 58, 0.58);
+  border-left: 2px solid rgba(49, 84, 58, 0.58);
+}
+
+.family-tree__union .family-tree__generation-label {
+  margin-top: 0.7rem;
 }
 
 .family-tree__lineage {
@@ -2125,7 +2184,7 @@ dt {
   color: var(--deep);
   text-align: left;
   box-shadow: 3px 3px 0 rgba(16, 43, 77, 0.14);
-  cursor: pointer;
+  cursor: default;
   transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
@@ -2148,10 +2207,20 @@ dt {
   line-height: 1.25;
 }
 
+.family-tree__node small {
+  display: block;
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(16, 43, 77, 0.18);
+  color: rgba(22, 34, 56, 0.72);
+  font-size: 0.7rem;
+  font-weight: 560;
+  line-height: 1.38;
+}
+
 .family-tree__node:hover,
 .family-tree__node:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 4px 5px 0 rgba(16, 43, 77, 0.2);
+  transform: none;
 }
 
 .family-tree__node.is-selected {
@@ -2170,6 +2239,11 @@ dt {
 
 .family-tree__node--featured span {
   color: rgba(255, 248, 223, 0.76);
+}
+
+.family-tree__node--featured small {
+  border-top-color: rgba(255, 248, 223, 0.22);
+  color: rgba(255, 248, 223, 0.82);
 }
 
 .family-tree__node--featured.is-selected {
@@ -3137,7 +3211,22 @@ h3 {
     grid-template-columns: 1fr;
   }
 
+  .family-tree__roots-grid {
+    grid-template-columns: 1fr;
+  }
+
   .family-tree__branch-children {
     grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  }
+
+  .family-tree__root-children {
+    grid-template-columns: 1fr;
+  }
+
+  .family-tree__union-line {
+    width: 2px;
+    height: 1.7rem;
+    border: 0;
+    background: rgba(49, 84, 58, 0.58);
   }
 }

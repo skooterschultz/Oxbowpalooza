@@ -64,8 +64,6 @@ const familyClansTotal = document.querySelector("#family-clans-total");
 const familyTreeBranches = document.querySelector("#family-tree-branches");
 const familyTreeCount = document.querySelector("#family-tree-count");
 const familyTreeGraphic = document.querySelector("#family-tree-graphic");
-const familyTreeDetail = document.querySelector("#family-tree-detail");
-const familyTreeTabs = Array.from(document.querySelectorAll("[data-tree-view]"));
 const photoGallery = document.querySelector("#photo-gallery");
 const photoUploadForm = document.querySelector("#photo-upload-form");
 const photoUploadStatus = document.querySelector("#photo-upload-status");
@@ -885,138 +883,69 @@ function renderFamilyClans(entries = []) {
   }).join("");
 }
 
-function getFamilyTreePerson(personId) {
-  for (const view of Object.values(FAMILY_TREE_VIEWS)) {
-    if (view.root?.id === personId) {
-      return view.root;
-    }
-
-    for (const branch of view.branches || []) {
-      if (branch.id === personId) {
-        return branch;
-      }
-      for (const child of branch.children || []) {
-        if (child.id === personId) {
-          return child;
-        }
-        const grandchild = child.children?.find((entry) => entry.id === personId);
-        if (grandchild) {
-          return grandchild;
-        }
-      }
-    }
-
-    for (const generation of view.generations || []) {
-      const person = generation.people.find((entry) => entry.id === personId);
-      if (person) {
-        return person;
-      }
-    }
-  }
-
-  return null;
-}
-
-function showFamilyTreeDetail(personId) {
-  if (!familyTreeDetail) {
-    return;
-  }
-
-  const person = getFamilyTreePerson(personId);
-  if (!person) {
-    return;
-  }
-
-  familyTreeDetail.innerHTML = `
-    <span class="family-tree__detail-label">${escapeHtml(person.meta)}</span>
-    <h4>${escapeHtml(person.name)}</h4>
-    <p>${escapeHtml(person.detail)}</p>
-  `;
-
-  familyTreeGraphic?.querySelectorAll(".family-tree__node").forEach((node) => {
-    node.classList.toggle("is-selected", node.dataset.personId === personId);
-  });
-}
-
-function renderFamilyTreeGraphic(viewName = "center") {
+function renderFamilyTreeGraphic() {
   if (!familyTreeGraphic) {
     return;
   }
 
-  const view = FAMILY_TREE_VIEWS[viewName] || FAMILY_TREE_VIEWS.center;
-  const treeBody = view.branches
-    ? `<div class="family-tree__lineage">
-        <p class="family-tree__generation-label">The family bridge</p>
-        ${familyTreeNode(view.root, " family-tree__node--featured")}
+  const center = FAMILY_TREE_VIEWS.center;
+  const hudson = FAMILY_TREE_VIEWS.hudson;
+  const hubbard = FAMILY_TREE_VIEWS.hubbard;
+
+  familyTreeGraphic.innerHTML = `
+    <header class="family-tree__graphic-heading">
+      <span>Both sides of the family in one continuous view.</span>
+      <h4>From the roots to the newest branches</h4>
+    </header>
+    <div class="family-tree__complete">
+      <div class="family-tree__roots-grid">
+        ${familyTreeRootSide(hudson, "hudson")}
+        ${familyTreeRootSide(hubbard, "hubbard")}
+      </div>
+      <div class="family-tree__union">
+        <span class="family-tree__union-line" aria-hidden="true"></span>
+        <p class="family-tree__generation-label">The two families join</p>
+        ${familyTreeNode(center.root, " family-tree__node--featured", true)}
         <span class="family-tree__trunk family-tree__trunk--center" aria-hidden="true"></span>
-        <p class="family-tree__generation-label">Their children and branches</p>
+      </div>
+      <div class="family-tree__lineage">
+        <p class="family-tree__generation-label">Their children and every branch below</p>
         <div class="family-tree__branch-grid">
-          ${view.branches.map((branch) => `
+          ${center.branches.map((branch) => `
             <section class="family-tree__descendant-branch" aria-label="${escapeHtml(branch.name)}'s family branch">
-              ${familyTreeNode(branch, " family-tree__node--branch")}
+              ${familyTreeNode(branch, " family-tree__node--branch", true)}
               ${branch.children.length ? `<span class="family-tree__branch-line" aria-hidden="true"></span><div class="family-tree__branch-children">
                 ${branch.children.map((child) => `<div class="family-tree__descendant">
-                  ${familyTreeNode(child)}
-                  ${child.children?.length ? `<div class="family-tree__great-grandchildren">${child.children.map((grandchild) => familyTreeNode(grandchild, " family-tree__node--youngest")).join("")}</div>` : ""}
+                  ${familyTreeNode(child, "", true)}
+                  ${child.children?.length ? `<div class="family-tree__great-grandchildren">${child.children.map((grandchild) => familyTreeNode(grandchild, " family-tree__node--youngest", true)).join("")}</div>` : ""}
                 </div>`).join("")}
               </div>` : '<p class="family-tree__branch-open">More family grows from here.</p>'}
             </section>
           `).join("")}
         </div>
-      </div>`
-    : `<div class="family-tree__generations">
-        ${view.generations.map((generation, generationIndex) => `
-          <section class="family-tree__generation" aria-label="${escapeHtml(generation.label)}">
-            <p>${escapeHtml(generation.label)}</p>
-            <div class="family-tree__nodes">${generation.people.map((person) => familyTreeNode(person)).join("")}</div>
-            ${generationIndex < view.generations.length - 1 ? '<span class="family-tree__trunk" aria-hidden="true"></span>' : ""}
-          </section>
-        `).join("")}
-      </div>`;
-
-  familyTreeGraphic.innerHTML = `
-    <header class="family-tree__graphic-heading">
-      <span>${escapeHtml(view.subtitle)}</span>
-      <h4>${escapeHtml(view.title)}</h4>
-    </header>
-    ${treeBody}
+      </div>
+    </div>
   `;
-
-  const firstPerson = view.root || view.generations?.[0]?.people[0];
-  if (firstPerson) {
-    showFamilyTreeDetail(firstPerson.id);
-  }
 }
 
-function familyTreeNode(person, className = "") {
-  return `<button
-    class="family-tree__node${person.featured ? " family-tree__node--featured" : ""}${className}"
-    type="button"
-    data-person-id="${escapeHtml(person.id)}"
-    aria-label="Learn about ${escapeHtml(person.name)}"
-  >
+function familyTreeRootSide(view, side) {
+  const root = view.generations[0].people[0];
+  const children = view.generations[1].people;
+  return `<section class="family-tree__root-side family-tree__root-side--${side}" aria-label="${escapeHtml(view.title)}">
+    <p class="family-tree__generation-label">${escapeHtml(view.title)}</p>
+    ${familyTreeNode(root, " family-tree__node--family-root", true)}
+    <span class="family-tree__branch-line" aria-hidden="true"></span>
+    <div class="family-tree__root-children">${children.map((person) => familyTreeNode(person, "", true)).join("")}</div>
+  </section>`;
+}
+
+function familyTreeNode(person, className = "", showDetail = false) {
+  return `<article class="family-tree__node${person.featured ? " family-tree__node--featured" : ""}${className}">
     <strong>${escapeHtml(person.name)}</strong>
     <span>${escapeHtml(person.meta)}</span>
-  </button>`;
+    ${showDetail ? `<small>${escapeHtml(person.detail)}</small>` : ""}
+  </article>`;
 }
-
-familyTreeTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    familyTreeTabs.forEach((button) => {
-      const isActive = button === tab;
-      button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-selected", String(isActive));
-    });
-    renderFamilyTreeGraphic(tab.dataset.treeView);
-  });
-});
-
-familyTreeGraphic?.addEventListener("click", (event) => {
-  const node = event.target.closest("[data-person-id]");
-  if (node) {
-    showFamilyTreeDetail(node.dataset.personId);
-  }
-});
 
 renderFamilyTreeGraphic();
 
