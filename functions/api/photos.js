@@ -168,9 +168,56 @@ export async function onRequestPost({ request, env }) {
   });
 }
 
+export async function onRequestPatch({ request, env }) {
+  if (!env.PHOTOS) {
+    return json({ ok: false, error: "Photo storage is not connected yet." }, 503);
+  }
+
+  const requestOrigin = request.headers.get("Origin");
+  const siteOrigin = new URL(request.url).origin;
+  if (requestOrigin && requestOrigin !== siteOrigin) {
+    return json({ ok: false, error: "Photo names must be updated from the reunion website." }, 403);
+  }
+
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return json({ ok: false, error: "That name update could not be read." }, 400);
+  }
+
+  const id = String(payload.id || "");
+  const people = cleanPeople(payload.people);
+  if (!id.startsWith(PHOTO_PREFIX) || id.includes("..") || !people) {
+    return json({ ok: false, error: "Choose a photo and add at least one name." }, 400);
+  }
+
+  const photo = await env.PHOTOS.get(id);
+  if (!photo) {
+    return json({ ok: false, error: "That photo is no longer in the gallery." }, 404);
+  }
+
+  await env.PHOTOS.put(id, photo.body, {
+    httpMetadata: photo.httpMetadata,
+    customMetadata: {
+      ...photo.customMetadata,
+      people,
+    },
+  });
+
+  return json({
+    ok: true,
+    item: {
+      id,
+      people,
+      alt: `Hudson Hubbard family photo featuring ${people}`,
+    },
+  });
+}
+
 export function onRequestOptions() {
   return new Response(null, {
     status: 204,
-    headers: { Allow: "GET, POST, OPTIONS" },
+    headers: { Allow: "GET, POST, PATCH, OPTIONS" },
   });
 }

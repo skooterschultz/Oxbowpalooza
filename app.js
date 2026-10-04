@@ -264,6 +264,25 @@ function galleryPhotoLabel(photo) {
   return String(photo.people || "family photo").trim();
 }
 
+function galleryNameEditor(photo) {
+  return `
+    <div class="photo-gallery__names">
+      <button type="button" class="photo-gallery__edit-names" data-gallery-edit-names>Add or Edit Names</button>
+      <form class="photo-gallery__names-form" data-gallery-names-form hidden>
+        <label>
+          <span>Everyone in this photo</span>
+          <input name="people" type="text" maxlength="300" value="${escapeHtml(photo.people || "")}" placeholder="Add names, separated by commas" required />
+        </label>
+        <div>
+          <button type="submit">Save Names</button>
+          <button type="button" data-gallery-cancel-names>Cancel</button>
+        </div>
+        <p data-gallery-names-status role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  `;
+}
+
 function fitRotatedGalleryMedia(scope = document) {
   scope.querySelectorAll("[data-photo-rotation='90']").forEach((frame) => {
     const image = frame.querySelector("img");
@@ -318,6 +337,7 @@ function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
       ${galleryMedia(photo, { featured: true })}
     </button>
     ${caption}
+    ${galleryNameEditor(photo)}
   `;
 
   photoGallery.querySelectorAll("[data-gallery-index]").forEach((thumb) => {
@@ -362,6 +382,7 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
         ${galleryMedia(featured, { featured: true })}
       </button>
       ${featuredCaption}
+      ${galleryNameEditor(featured)}
     </figure>
     <div class="photo-gallery__thumbs" aria-label="Choose a photo">${thumbnails}</div>
   `;
@@ -435,9 +456,8 @@ async function loadPhotoGallery() {
 
     const photos = await response.json();
     const galleryItems = Array.isArray(photos) ? photos : photos.items || [];
-    const currentSrc = galleryPhotos[activeGalleryIndex]?.src;
-    const nextIndex = currentSrc ? galleryItems.findIndex((photo) => photo.src === currentSrc) : -1;
-    renderPhotoGallery(galleryItems, nextIndex >= 0 ? nextIndex : galleryItems.length - 1);
+    const randomIndex = galleryItems.length ? Math.floor(Math.random() * galleryItems.length) : 0;
+    renderPhotoGallery(galleryItems, randomIndex);
   } catch (error) {
     console.warn("Could not load photo gallery", error);
     photoGallery.innerHTML = "<p>The photo pile is taking a minute. Try refreshing in a bit.</p>";
@@ -509,9 +529,26 @@ if (photoUploadForm) {
 document.addEventListener("click", (event) => {
   const thumb = event.target.closest("[data-gallery-index]");
   const openButton = event.target.closest("[data-gallery-open]");
+  const editNamesButton = event.target.closest("[data-gallery-edit-names]");
+  const cancelNamesButton = event.target.closest("[data-gallery-cancel-names]");
   const closeButton = event.target.closest(".photo-lightbox__close");
   const lightboxStep = event.target.closest("[data-lightbox-step]");
   const lightbox = event.target.closest(".photo-lightbox");
+
+  if (editNamesButton && photoGallery.contains(editNamesButton)) {
+    const form = editNamesButton.parentElement.querySelector("[data-gallery-names-form]");
+    form.hidden = false;
+    editNamesButton.hidden = true;
+    form.elements.people.focus();
+    return;
+  }
+
+  if (cancelNamesButton && photoGallery.contains(cancelNamesButton)) {
+    const form = cancelNamesButton.closest("[data-gallery-names-form]");
+    form.hidden = true;
+    form.parentElement.querySelector("[data-gallery-edit-names]").hidden = false;
+    return;
+  }
 
   if (thumb && photoGallery.contains(thumb)) {
     if (suppressNextThumbnailClick) {
@@ -536,6 +573,48 @@ document.addEventListener("click", (event) => {
   if (closeButton || (lightbox && event.target === lightbox)) {
     lightbox.remove();
     document.body.classList.remove("has-photo-lightbox");
+  }
+});
+
+document.addEventListener("submit", async (event) => {
+  const form = event.target.closest("[data-gallery-names-form]");
+
+  if (!form || !photoGallery?.contains(form)) {
+    return;
+  }
+
+  event.preventDefault();
+  const photo = galleryPhotos[activeGalleryIndex];
+  const people = form.elements.people.value.trim();
+  const status = form.querySelector("[data-gallery-names-status]");
+  const submitButton = form.querySelector("button[type='submit']");
+
+  if (!photo || !people) {
+    status.textContent = "Add at least one name.";
+    return;
+  }
+
+  submitButton.disabled = true;
+  status.textContent = "Saving names...";
+
+  try {
+    const response = await fetch("/api/photos", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: photo.id, people }),
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.error || `Update returned ${response.status}`);
+    }
+
+    galleryPhotos[activeGalleryIndex] = { ...photo, people: result.item.people, alt: result.item.alt };
+    renderPhotoGallery(galleryPhotos, activeGalleryIndex);
+  } catch (error) {
+    console.warn("Could not update photo names", error);
+    status.textContent = error.message || "Those names could not be saved. Please try again.";
+    submitButton.disabled = false;
   }
 });
 

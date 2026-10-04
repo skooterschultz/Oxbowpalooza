@@ -1045,6 +1045,79 @@ dt {
   font-size: 0.88rem;
 }
 
+.photo-gallery__names {
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+  padding: 0.7rem;
+  border-top: 1px solid rgba(21, 17, 13, 0.18);
+  background: var(--cream);
+}
+
+.photo-gallery__edit-names,
+.photo-gallery__names-form button {
+  min-height: 42px;
+  padding: 0.65rem 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: var(--pine);
+  color: #fff;
+  font: inherit;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.photo-gallery__names-form {
+  width: min(100%, 680px);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.photo-gallery__names-form[hidden] {
+  display: none;
+}
+
+.photo-gallery__names-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--deep);
+  font-weight: 850;
+}
+
+.photo-gallery__names-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 0.8rem;
+  border: 2px solid rgba(21, 17, 13, 0.7);
+  border-radius: 5px;
+  background: #fffdf5;
+  color: var(--ink);
+  font: inherit;
+}
+
+.photo-gallery__names-form > div {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.photo-gallery__names-form button[type="button"] {
+  background: var(--rust);
+}
+
+.photo-gallery__names-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.photo-gallery__names-form p {
+  min-height: 1.2em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.9rem;
+}
+
 .photo-gallery__thumbs {
   display: grid;
   grid-auto-flow: column;
