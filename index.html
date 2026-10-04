@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r14-complete-tree" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r15-photo-identities" />
   </head>
   <body>
     <main>
@@ -98,6 +98,11 @@
                 multiple
                 required
               />
+            </label>
+            <label class="photo-upload-form__people">
+              <span>Who is in these photos?</span>
+              <input name="people" type="text" maxlength="300" placeholder="Add names, separated by commas" />
+              <small>Optional. If the people change between photos, upload those photos separately.</small>
             </label>
             <label class="photo-upload-form__trap" aria-hidden="true">
               Website
@@ -737,6 +742,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r13-complete-tree"></script>
+    <script src="./app.js?v=2027-reunion-r14-photo-identities"></script>
   </body>
 </html>

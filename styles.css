@@ -873,6 +873,19 @@ dt {
   text-transform: uppercase;
 }
 
+.photo-upload-form__people {
+  grid-column: 1 / -1;
+}
+
+.photo-upload-form__people small {
+  color: rgba(16, 43, 77, 0.72);
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.35;
+  text-transform: none;
+}
+
 .photo-upload-form input {
   width: 100%;
   min-height: 48px;
@@ -1011,6 +1024,8 @@ dt {
 }
 
 .photo-gallery figcaption {
+  display: grid;
+  gap: 0.25rem;
   padding: 0.55rem 0.65rem;
   background: rgba(255, 244, 220, 0.94);
   color: var(--deep);
@@ -1018,6 +1033,16 @@ dt {
   font-weight: 900;
   line-height: 1.2;
   text-align: center;
+}
+
+.photo-gallery figcaption span,
+.photo-gallery figcaption strong {
+  display: block;
+}
+
+.photo-gallery figcaption strong {
+  color: var(--pine);
+  font-size: 0.88rem;
 }
 
 .photo-gallery__thumbs {
@@ -1086,6 +1111,19 @@ dt {
   white-space: nowrap;
 }
 
+.photo-gallery__thumb .photo-gallery__people {
+  display: -webkit-box;
+  padding-top: 0;
+  color: var(--pine);
+  font-size: 0.68rem;
+  font-weight: 720;
+  line-height: 1.2;
+  text-overflow: clip;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .has-photo-lightbox {
   overflow: hidden;
 }
@@ -1122,11 +1160,23 @@ dt {
 }
 
 .photo-lightbox figcaption {
+  display: grid;
+  gap: 0.25rem;
   padding: 0.7rem;
   color: var(--deep);
   font-size: 1rem;
   font-weight: 900;
   text-align: center;
+}
+
+.photo-lightbox figcaption span,
+.photo-lightbox figcaption strong {
+  display: block;
+}
+
+.photo-lightbox figcaption strong {
+  color: var(--pine);
+  font-size: 0.9rem;
 }
 
 .photo-lightbox__close {

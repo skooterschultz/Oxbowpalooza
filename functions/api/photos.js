@@ -27,6 +27,14 @@ function cleanSubmitter(value) {
     .slice(0, 60);
 }
 
+function cleanPeople(value) {
+  return String(value || "")
+    .replace(/[<>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 300);
+}
+
 function toHex(buffer) {
   return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
@@ -64,11 +72,15 @@ export async function onRequestGet({ env }) {
     .sort((left, right) => new Date(right.uploaded) - new Date(left.uploaded))
     .map((object) => {
       const caption = cleanSubmitter(object.customMetadata?.submitter) || "Hudson Hubbard family";
+      const people = cleanPeople(object.customMetadata?.people);
       return {
         id: object.key,
         src: `/api/photo?id=${encodeURIComponent(object.key)}&v=${encodeURIComponent(object.etag)}`,
-        alt: `Hudson Hubbard family photo shared by ${caption}`,
+        alt: people
+          ? `Hudson Hubbard family photo featuring ${people}, shared by ${caption}`
+          : `Hudson Hubbard family photo shared by ${caption}`,
         caption,
+        people,
         uploaded: object.uploaded,
         type: "image",
       };
@@ -100,6 +112,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   const submitter = cleanSubmitter(form.get("submitter"));
+  const people = cleanPeople(form.get("people"));
   const photo = form.get("photo");
   if (!submitter) {
     return json({ ok: false, error: "Please add your name." }, 400);
@@ -139,6 +152,7 @@ export async function onRequestPost({ request, env }) {
       },
       customMetadata: {
         submitter,
+        people,
         originalName: String(photo.name || "photo").slice(0, 180),
       },
     });
@@ -151,6 +165,7 @@ export async function onRequestPost({ request, env }) {
       id: key,
       src: `/api/photo?id=${encodeURIComponent(key)}`,
       caption: existing?.customMetadata?.submitter || submitter,
+      people: cleanPeople(existing?.customMetadata?.people) || people,
       type: "image",
     },
   });

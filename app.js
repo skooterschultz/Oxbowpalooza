@@ -227,7 +227,7 @@ function escapeHtml(value) {
 
 function galleryMedia(photo, options = {}) {
   const src = escapeHtml(photo.src);
-  const alt = escapeHtml(photo.alt || photo.caption || "Hudson Hubbard family photo");
+  const alt = escapeHtml(photo.alt || photo.people || photo.caption || "Hudson Hubbard family photo");
 
   if (photo.type === "video") {
     const controls = options.controls ? " controls" : "";
@@ -242,6 +242,21 @@ function galleryMedia(photo, options = {}) {
   }
 
   return image;
+}
+
+function galleryCaption(photo, { thumbnail = false } = {}) {
+  const submitter = String(photo.caption || "").trim();
+  const people = String(photo.people || "").trim();
+
+  if (thumbnail) {
+    return `${submitter ? `<span class="photo-gallery__credit">${escapeHtml(submitter)}</span>` : ""}${people ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>` : ""}`;
+  }
+
+  if (!submitter && !people) {
+    return "";
+  }
+
+  return `<figcaption>${submitter ? `<span>Shared by ${escapeHtml(submitter)}</span>` : ""}${people ? `<strong>In this photo: ${escapeHtml(people)}</strong>` : ""}</figcaption>`;
 }
 
 function fitRotatedGalleryMedia(scope = document) {
@@ -291,7 +306,7 @@ function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
   }
 
   activeGalleryIndex = nextIndex;
-  const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+  const caption = galleryCaption(photo);
 
   featured.innerHTML = `
     <button type="button" class="photo-gallery__open" data-gallery-open="true" aria-label="Open ${escapeHtml(photo.caption || "gallery item")} larger">
@@ -327,10 +342,10 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
   activeGalleryIndex = Math.min(Math.max(selectedIndex, 0), photos.length - 1);
 
   const featured = photos[activeGalleryIndex];
-  const featuredCaption = featured.caption ? `<figcaption>${escapeHtml(featured.caption)}</figcaption>` : "";
+  const featuredCaption = galleryCaption(featured);
   const thumbnails = photos
     .map((photo, index) => {
-      const caption = photo.caption ? `<span>${escapeHtml(photo.caption)}</span>` : "";
+      const caption = galleryCaption(photo, { thumbnail: true });
       const current = index === activeGalleryIndex ? " is-active" : "";
       return `<button class="photo-gallery__thumb${current}" type="button" data-gallery-index="${index}" aria-label="Show ${escapeHtml(photo.caption || "gallery item")}" aria-pressed="${index === activeGalleryIndex}">${galleryMedia(photo, { thumbnail: true })}${caption}</button>`;
     })
@@ -357,7 +372,7 @@ function openGalleryLightbox(index = activeGalleryIndex) {
   }
 
   activeGalleryIndex = Math.min(Math.max(index, 0), galleryPhotos.length - 1);
-  const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+  const caption = galleryCaption(photo);
   const lightbox = document.createElement("div");
   lightbox.className = "photo-lightbox";
   lightbox.dataset.galleryLightbox = "true";
@@ -387,7 +402,7 @@ function showLightboxPhoto(step) {
   const currentIndex = Number(lightbox.dataset.galleryIndex || activeGalleryIndex);
   const nextIndex = (currentIndex + step + galleryPhotos.length) % galleryPhotos.length;
   const photo = galleryPhotos[nextIndex];
-  const caption = photo.caption ? `<figcaption>${escapeHtml(photo.caption)}</figcaption>` : "";
+  const caption = galleryCaption(photo);
   const figure = lightbox.querySelector("figure");
 
   activeGalleryIndex = nextIndex;
@@ -436,6 +451,7 @@ if (photoUploadForm) {
 
     const submitButton = photoUploadForm.querySelector("button[type='submit']");
     const submitter = photoUploadForm.elements.submitter.value.trim();
+    const people = photoUploadForm.elements.people.value.trim();
     const website = photoUploadForm.elements.website.value;
     const files = Array.from(photoUploadForm.elements.photos.files || []);
 
@@ -456,6 +472,7 @@ if (photoUploadForm) {
         photoUploadStatus.textContent = `Uploading photo ${index + 1} of ${files.length}...`;
         const formData = new FormData();
         formData.append("submitter", submitter);
+        formData.append("people", people);
         formData.append("website", website);
         formData.append("photo", files[index]);
 
