@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r11-mobile-itinerary" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r12-family-tree" />
   </head>
   <body>
     <main>
@@ -694,36 +694,32 @@
         <div class="family-tree" id="family-tree" aria-labelledby="family-tree-title">
           <header class="family-tree__header">
             <div>
-              <h3 id="family-tree-title">Our Family Connections</h3>
+              <p class="eyebrow">Find your branch</p>
+              <h3 id="family-tree-title">The Hudson Hubbard Family Tree</h3>
               <p>
-                Tell us who you know and how you are connected. As stories and relationships
-                come in, we will keep filling in the branches together.
+                Start with Virgil and Della, then explore both sides of the family. Tap any
+                name to see where that person belongs.
               </p>
             </div>
-            <span class="family-tree__count" id="family-tree-count">The story is just beginning</span>
+            <span class="family-tree__count" id="family-tree-count">Built from family notes</span>
           </header>
-          <div class="family-tree__branches" id="family-tree-branches">
-            <article class="family-tree__branch family-tree__branch--hudson">
-              <div class="family-tree__branch-heading">
-                <span>Hudson family</span>
-                <h4>If you know one of these people, you might be a Hudson.</h4>
-              </div>
-              <div class="family-tree__people">
-                <p class="family-tree__empty">Hudson connections will take root here as the family shares them.</p>
-              </div>
-            </article>
-            <article class="family-tree__branch family-tree__branch--hubbard">
-              <div class="family-tree__branch-heading">
-                <span>Hubbard family</span>
-                <h4>If you know one of these people, you might be a Hubbard.</h4>
-              </div>
-              <div class="family-tree__people">
-                <p class="family-tree__empty">Hubbard connections will take root here as the family shares them.</p>
-              </div>
-            </article>
+          <div class="family-tree__tabs" role="tablist" aria-label="Choose a family tree view">
+            <button class="family-tree__tab is-active" type="button" role="tab" aria-selected="true" data-tree-view="center">Virgil + Della</button>
+            <button class="family-tree__tab" type="button" role="tab" aria-selected="false" data-tree-view="hudson">Hudson roots</button>
+            <button class="family-tree__tab" type="button" role="tab" aria-selected="false" data-tree-view="hubbard">Hubbard roots</button>
           </div>
+          <div class="family-tree__workspace">
+            <div class="family-tree__graphic" id="family-tree-graphic" aria-live="polite"></div>
+            <aside class="family-tree__detail" id="family-tree-detail" aria-live="polite">
+              <span class="family-tree__detail-label">Selected family member</span>
+              <h4>Virgil Hudson + Della Hubbard</h4>
+              <p>The marriage that connects the two family branches shown here.</p>
+              <small>Choose any name in the tree to learn more.</small>
+            </aside>
+          </div>
+          <div class="family-tree__shared" id="family-tree-branches" aria-live="polite"></div>
           <p class="family-tree__note">
-            Family trees are living histories. If something looks incomplete, add what you know in your RSVP and we will keep growing it.
+            A question mark means the handwriting needs a family fact-check. Family trees are living histories, so add what you know in your RSVP and we will keep growing this one together.
           </p>
         </div>
         <div class="family-clans" aria-labelledby="family-clans-title">
@@ -752,6 +748,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r10-gallery-navigation"></script>
+    <script src="./app.js?v=2027-reunion-r11-family-tree"></script>
   </body>
 </html>
