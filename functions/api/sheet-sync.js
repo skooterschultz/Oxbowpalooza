@@ -175,62 +175,70 @@ async function updateFromSheet(env, entry) {
     return json({ ok: false, error: "A valid RSVP ID is required." }, 400);
   }
 
+  const name = clean(entry.name);
   const city = clean(entry.city);
   const address = clean(entry.address);
   const email = normalizeEmails(entry.email);
   const phone = clean(entry.phone);
-  const partyTotal = numeric(entry.partyTotal);
+  const requestedPartyTotal = numeric(entry.partyTotal);
+  const partyTotal = Number.isInteger(requestedPartyTotal) && requestedPartyTotal >= 1 && requestedPartyTotal <= 50
+    ? requestedPartyTotal
+    : 1;
 
-  if (!email) {
-    return json({ ok: false, error: "At least one email address is required." }, 400);
-  }
-
-  if (!phone) {
-    return json({ ok: false, error: "A phone number is required." }, 400);
-  }
-
-  if (!Number.isInteger(partyTotal) || partyTotal < 1 || partyTotal > 50) {
-    return json({ ok: false, error: "Party total must be a whole number from 1 to 50." }, 400);
-  }
-
-  if (!hasCityAndState(city)) {
-    return json({ ok: false, error: "City and state are required. Use a format like Anderson, Missouri." }, 400);
+  if (!name) {
+    return json({ ok: false, error: "A name is required." }, 400);
   }
 
   const atReunion = isReunionAddress(address, city);
-  const origin = atReunion ? DESTINATION : await geocode(city, address, env);
+  const origin = atReunion
+    ? DESTINATION
+    : hasCityAndState(city)
+      ? await geocode(city, address, env)
+      : null;
   const miles = atReunion ? 0 : distanceInMiles(origin, DESTINATION);
+  const existing = await env.DB.prepare("SELECT id FROM rsvps WHERE id = ?").bind(id).first();
 
   const result = await env.DB.prepare(
-    `UPDATE rsvps SET
-      name = ?,
-      nickname = ?,
-      email = ?,
-      phone = ?,
-      party_total = ?,
-      city = ?,
-      address = ?,
-      invited_by = ?,
-      family_connection = ?,
-      family_relationship = ?,
-      food_notes = ?,
-      days_attending = ?,
-      birth_month = ?,
-      birth_day = ?,
-      birth_year = ?,
-      height_inches = ?,
-      origin_lat = ?,
-      origin_lng = ?,
-      miles = ?,
-      flight_arrival_date = ?,
-      flight_arrival_time = ?,
-      arrival_airport = ?,
-      flight_departure_date = ?,
-      flight_departure_time = ?,
-      flight_notes = ?
-    WHERE id = ?`
+    `INSERT INTO rsvps (
+      id, created_at, name, nickname, email, phone, party_total, city, address,
+      invited_by, family_connection, family_relationship, food_notes, days_attending,
+      birth_month, birth_day, birth_year, height_inches, origin_lat, origin_lng, miles,
+      flight_arrival_date, flight_arrival_time, arrival_airport, flight_departure_date,
+      flight_departure_time, flight_notes
+    ) VALUES (
+      ?, COALESCE(NULLIF(?, ''), datetime('now')), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    )
+    ON CONFLICT(id) DO UPDATE SET
+      name = excluded.name,
+      nickname = excluded.nickname,
+      email = excluded.email,
+      phone = excluded.phone,
+      party_total = excluded.party_total,
+      city = excluded.city,
+      address = excluded.address,
+      invited_by = excluded.invited_by,
+      family_connection = excluded.family_connection,
+      family_relationship = excluded.family_relationship,
+      food_notes = excluded.food_notes,
+      days_attending = excluded.days_attending,
+      birth_month = excluded.birth_month,
+      birth_day = excluded.birth_day,
+      birth_year = excluded.birth_year,
+      height_inches = excluded.height_inches,
+      origin_lat = excluded.origin_lat,
+      origin_lng = excluded.origin_lng,
+      miles = excluded.miles,
+      flight_arrival_date = excluded.flight_arrival_date,
+      flight_arrival_time = excluded.flight_arrival_time,
+      arrival_airport = excluded.arrival_airport,
+      flight_departure_date = excluded.flight_departure_date,
+      flight_departure_time = excluded.flight_departure_time,
+      flight_notes = excluded.flight_notes`
   ).bind(
-    clean(entry.name),
+    id,
+    clean(entry.createdAt),
+    name,
     clean(entry.nickname),
     email,
     phone,
@@ -254,15 +262,14 @@ async function updateFromSheet(env, entry) {
     clean(entry.arrivalAirport),
     clean(entry.departureDate),
     clean(entry.departureTime),
-    clean(entry.flightNotes),
-    id
+    clean(entry.flightNotes)
   ).run();
 
   if (!result.meta?.changes) {
-    return json({ ok: false, error: "RSVP was not found." }, 404);
+    return json({ ok: false, error: "The RSVP could not be saved." }, 500);
   }
 
-  return json({ ok: true, id, miles });
+  return json({ ok: true, id, miles, created: !existing });
 }
 
 export async function onRequest({ request, env }) {
