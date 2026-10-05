@@ -257,10 +257,10 @@ function galleryCaption(photo, { thumbnail = false } = {}) {
   }
 
   if (thumbnail) {
-    return `${people ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>` : ""}${approximateYear ? `<span class="photo-gallery__year">Approx. ${escapeHtml(approximateYear)}</span>` : ""}`;
+    return `${people ? `<span class="photo-gallery__people">${escapeHtml(people)}</span>` : ""}${approximateYear ? `<span class="photo-gallery__year">${escapeHtml(approximateYear)}</span>` : ""}`;
   }
 
-  return `<figcaption>${people ? `<strong>${escapeHtml(people)}</strong>` : ""}${approximateYear ? `<span>Approx. year: ${escapeHtml(approximateYear)}</span>` : ""}</figcaption>`;
+  return `<figcaption>${people ? `<strong>${escapeHtml(people)}</strong>` : ""}${approximateYear ? `<span>${escapeHtml(approximateYear)}</span>` : ""}</figcaption>`;
 }
 
 function galleryPhotoLabel(photo) {
@@ -272,7 +272,7 @@ function galleryNameEditor(photo) {
     <div class="photo-gallery__names">
       <div class="photo-gallery__detail-buttons">
         <button type="button" class="photo-gallery__edit-names" data-gallery-edit-names>Add or Edit Names</button>
-        <button type="button" class="photo-gallery__edit-year" data-gallery-edit-year>Approx. Year</button>
+        <button type="button" class="photo-gallery__edit-year" data-gallery-edit-year>Year</button>
       </div>
       <form class="photo-gallery__names-form" data-gallery-names-form hidden>
         <label>
@@ -287,8 +287,8 @@ function galleryNameEditor(photo) {
       </form>
       <form class="photo-gallery__names-form" data-gallery-year-form hidden>
         <label>
-          <span>About when was this taken?</span>
-          <input name="approximateYear" type="text" maxlength="40" value="${escapeHtml(photo.approximateYear || "")}" placeholder="Example: late 1980s" required />
+          <span>When was this taken?</span>
+          <input name="approximateYear" type="text" maxlength="40" value="${escapeHtml(photo.approximateYear || "")}" placeholder="Example: 2024" required />
         </label>
         <div>
           <button type="submit">Save Year</button>
@@ -678,7 +678,7 @@ document.addEventListener("submit", async (event) => {
   const submitButton = form.querySelector("button[type='submit']");
 
   if (!photo || !approximateYear) {
-    status.textContent = "Add your best guess for the year.";
+    status.textContent = "Add the year or wording you want displayed.";
     return;
   }
 
