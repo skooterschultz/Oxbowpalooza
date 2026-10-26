@@ -132,7 +132,9 @@ const FAMILY_TREE_VIEWS = {
       { id: "brenda", name: "Brenda", meta: "Child of Virgil + Della", detail: "Brenda's children are LaDonna, Frank, and Robert \"Joe\".", children: [
         { id: "ladonna", name: "LaDonna", meta: "Brenda's daughter", detail: "LaDonna is Brenda's daughter and the mother of Skooter and Robbey.", children: [
           { id: "skooter", name: "Skooter", meta: "LaDonna's son", detail: "Skooter is LaDonna's son." },
-          { id: "robbey", name: "Robbey", meta: "LaDonna's son", detail: "Robbey is LaDonna's son." },
+          { id: "robbey", name: "Robbey", meta: "LaDonna's son", detail: "Robbey is LaDonna's son and Emma's father.", children: [
+            { id: "emma", name: "Emma", meta: "Robbey's daughter", detail: "Emma is Robbey's daughter." },
+          ] },
         ] },
         { id: "frank", name: "Frank", meta: "Brenda's son", detail: "Frank is Brenda's son and Bella's father.", children: [{ id: "bella", name: "Bella", meta: "Frank's daughter", detail: "Bella is Frank's daughter." }] },
         { id: "robert-joe", name: "Robert \"Joe\"", meta: "Brenda's son", detail: "Robert \"Joe\" is Brenda's son and the father of JW and Abby J.", children: [
@@ -224,6 +226,7 @@ const FAMILY_TREE_VIEWS = {
 
 const BOTANICAL_TREE_SIZE = { width: 2800, height: 1630 };
 const BOTANICAL_TREE_NODES = [
+  { id: "emma", x: 1020, y: 30 },
   { id: "trent", x: 820, y: 110 }, { id: "skooter", x: 940, y: 110 },
   { id: "robbey", x: 1020, y: 110 }, { id: "bella", x: 1100, y: 110 },
   { id: "jw", x: 1190, y: 110 }, { id: "abby-j", x: 1270, y: 110 },
@@ -276,7 +279,7 @@ const BOTANICAL_TREE_EDGES = [
   ["brenda", "ladonna"], ["brenda", "frank"], ["brenda", "robert-joe"],
   ["mike", "jeremy"], ["mike", "jessica"], ["david", "bethany"],
   ["david", "seth"], ["laura", "christine"], ["kimberly", "trent"],
-  ["ladonna", "skooter"], ["ladonna", "robbey"], ["frank", "bella"],
+  ["ladonna", "skooter"], ["ladonna", "robbey"], ["robbey", "emma"], ["frank", "bella"],
   ["robert-joe", "jw"], ["robert-joe", "abby-j"],
   ["betty", "donnie"], ["betty", "elaine"], ["betty", "sherry"],
   ["clarence", "charles"], ["clarence", "caroline"], ["jane", "billie-jean"],
