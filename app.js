@@ -64,6 +64,9 @@ const familyClansTotal = document.querySelector("#family-clans-total");
 const familyTreeBranches = document.querySelector("#family-tree-branches");
 const familyTreeCount = document.querySelector("#family-tree-count");
 const familyTreeGraphic = document.querySelector("#family-tree-graphic");
+const familyTreeBotanical = document.querySelector("#family-tree-botanical");
+const familyTreeModeButtons = Array.from(document.querySelectorAll("[data-family-tree-mode]"));
+const familyTreeViews = Array.from(document.querySelectorAll("[data-family-tree-view]"));
 const photoGallery = document.querySelector("#photo-gallery");
 const photoUploadForm = document.querySelector("#photo-upload-form");
 const photoUploadStatus = document.querySelector("#photo-upload-status");
@@ -160,13 +163,17 @@ const FAMILY_TREE_VIEWS = {
       {
         label: "Their children",
         people: [
-          { id: "betty", name: "Betty", meta: "Married Floyd", detail: "Betty and Floyd's children are Donnie, Elaine, and Sherry." },
-          { id: "clarence", name: "Clarence", meta: "1922-2020", detail: "Clarence married Hazel Mae. Their children are Charles and Caroline." },
+          { id: "betty", name: "Betty", meta: "Married Floyd", detail: "Betty and Floyd's children are Donnie, Elaine, and Sherry.", children: [
+            { id: "donnie", name: "Donnie" }, { id: "elaine", name: "Elaine" }, { id: "sherry", name: "Sherry" },
+          ] },
+          { id: "clarence", name: "Clarence", meta: "1922-2020", detail: "Clarence married Hazel Mae. Their children are Charles and Caroline.", children: [
+            { id: "charles", name: "Charles" }, { id: "caroline", name: "Caroline" },
+          ] },
           { id: "mary", name: "Mary", meta: "Hudson sibling", detail: "Mary is one of Harvey and Ada's children." },
           { id: "virgil", name: "Virgil", meta: "1925-1990", detail: "Virgil married Della Hubbard. Their children are Diana, Brenda, Mike, Chris, David, and Laura." },
-          { id: "jane", name: "Jane", meta: "Married Bill", detail: "Jane and Bill's child is Billie." },
+          { id: "jane", name: "Jane", meta: "Married Bill", detail: "Jane and Bill's child is Billie.", children: [{ id: "billie-jane", name: "Billie" }] },
           { id: "billie-rae", name: "Billie Rae", meta: "Hudson sibling", detail: "Billie Rae is one of Harvey and Ada's children." },
-          { id: "richard", name: "Richard", meta: "1927-2019", detail: "Richard's son is Rick." },
+          { id: "richard", name: "Richard", meta: "1927-2019", detail: "Richard's son is Rick.", children: [{ id: "rick", name: "Rick" }] },
         ],
       },
     ],
@@ -184,16 +191,80 @@ const FAMILY_TREE_VIEWS = {
       {
         label: "Their children",
         people: [
-          { id: "kenneth", name: "Kenneth", meta: "Married Ginger", detail: "Kenneth and Ginger's children are Gary, Gloria, Sheila, and Iris." },
-          { id: "jackie", name: "Jackie", meta: "Married Bob", detail: "Jackie and Bob's children are Robbie, Billie, Patty, Linda, and Lou Ann." },
+          { id: "kenneth", name: "Kenneth", meta: "Married Ginger", detail: "Kenneth and Ginger's children are Gary, Gloria, Sheila, and Iris.", children: [
+            { id: "gary", name: "Gary" }, { id: "gloria", name: "Gloria" }, { id: "sheila", name: "Sheila" }, { id: "iris", name: "Iris" },
+          ] },
+          { id: "jackie", name: "Jackie", meta: "Married Bob", detail: "Jackie and Bob's children are Robbie, Billie, Patty, Linda, and Lou Ann.", children: [
+            { id: "robbie", name: "Robbie" }, { id: "billie-jackie", name: "Billie" }, { id: "patty", name: "Patty" }, { id: "linda", name: "Linda" }, { id: "lou-ann", name: "Lou Ann" },
+          ] },
           { id: "della", name: "Della", meta: "Married Virgil Hudson", detail: "Della and Virgil connect the Hubbard and Hudson branches. Their children are Diana, Brenda, Mike, Chris, David, and Laura." },
-          { id: "freddie", name: "Freddie", meta: "Married Patty", detail: "Freddie and Patty's child is Tammy." },
-          { id: "claudine", name: "Claudine", meta: "Hubbard sibling", detail: "Claudine's children are Margaret and Jeanie." },
+          { id: "freddie", name: "Freddie", meta: "Married Patty", detail: "Freddie and Patty's child is Tammy.", children: [{ id: "tammy", name: "Tammy" }] },
+          { id: "claudine", name: "Claudine", meta: "Hubbard sibling", detail: "Claudine's children are Margaret and Jeanie.", children: [
+            { id: "margaret", name: "Margaret" }, { id: "jeanie", name: "Jeanie" },
+          ] },
         ],
       },
     ],
   },
 };
+
+const BOTANICAL_TREE_NODES = [
+  { id: "trent", x: 500, y: 110 }, { id: "skooter", x: 640, y: 110 },
+  { id: "robbey", x: 750, y: 110 }, { id: "bella", x: 860, y: 110 },
+  { id: "jw", x: 970, y: 110 }, { id: "abby-j", x: 1060, y: 110 },
+  { id: "brian", x: 410, y: 360 }, { id: "todd", x: 500, y: 360 },
+  { id: "kimberly", x: 590, y: 360 }, { id: "ladonna", x: 700, y: 360 },
+  { id: "frank", x: 810, y: 360 }, { id: "robert-joe", x: 920, y: 360 },
+  { id: "jeremy", x: 1040, y: 360 }, { id: "jessica", x: 1140, y: 360 },
+  { id: "bethany", x: 1320, y: 360 }, { id: "seth", x: 1420, y: 360 },
+  { id: "christine", x: 1620, y: 360 },
+  { id: "diana", x: 500, y: 650, featured: true },
+  { id: "brenda", x: 810, y: 650, featured: true },
+  { id: "mike", x: 1090, y: 650, featured: true },
+  { id: "chris", x: 1200, y: 650, featured: true },
+  { id: "david", x: 1370, y: 650, featured: true },
+  { id: "laura", x: 1620, y: 650, featured: true },
+  { id: "virgil-della", x: 1040, y: 850, couple: true },
+  { id: "donnie", x: 42, y: 1030, compact: true }, { id: "elaine", x: 136, y: 1030, compact: true },
+  { id: "sherry", x: 230, y: 1030, compact: true }, { id: "charles", x: 324, y: 1030, compact: true },
+  { id: "caroline", x: 418, y: 1030, compact: true }, { id: "billie-jane", x: 512, y: 1030, compact: true },
+  { id: "rick", x: 700, y: 1030, compact: true }, { id: "gary", x: 790, y: 1030, compact: true },
+  { id: "gloria", x: 888, y: 1030, compact: true }, { id: "sheila", x: 986, y: 1030, compact: true },
+  { id: "iris", x: 1084, y: 1030, compact: true }, { id: "robbie", x: 1182, y: 1030, compact: true },
+  { id: "billie-jackie", x: 1280, y: 1030, compact: true }, { id: "patty", x: 1378, y: 1030, compact: true },
+  { id: "linda", x: 1476, y: 1030, compact: true }, { id: "lou-ann", x: 1574, y: 1030, compact: true },
+  { id: "tammy", x: 1672, y: 1030, compact: true }, { id: "margaret", x: 1768, y: 1030, compact: true },
+  { id: "jeanie", x: 1812, y: 1120, compact: true },
+  { id: "betty", x: 136, y: 1240 }, { id: "clarence", x: 371, y: 1240 },
+  { id: "mary", x: 500, y: 1240 }, { id: "jane", x: 610, y: 1240 },
+  { id: "billie-rae", x: 720, y: 1240 }, { id: "richard", x: 830, y: 1240 },
+  { id: "kenneth", x: 936, y: 1240 }, { id: "jackie", x: 1378, y: 1240 },
+  { id: "freddie", x: 1672, y: 1240 }, { id: "claudine", x: 1790, y: 1240 },
+  { id: "harvey-ada", x: 430, y: 1490, couple: true },
+  { id: "sherman-beuna", x: 1430, y: 1490, couple: true },
+];
+
+const BOTANICAL_TREE_EDGES = [
+  ["harvey-ada", "betty"], ["harvey-ada", "clarence"], ["harvey-ada", "mary"],
+  ["harvey-ada", "jane"], ["harvey-ada", "billie-rae"], ["harvey-ada", "richard"],
+  ["harvey-ada", "virgil-della"], ["sherman-beuna", "kenneth"], ["sherman-beuna", "jackie"],
+  ["sherman-beuna", "freddie"], ["sherman-beuna", "claudine"], ["sherman-beuna", "virgil-della"],
+  ["virgil-della", "diana"], ["virgil-della", "brenda"], ["virgil-della", "mike"],
+  ["virgil-della", "chris"], ["virgil-della", "david"], ["virgil-della", "laura"],
+  ["diana", "brian"], ["diana", "todd"], ["diana", "kimberly"],
+  ["brenda", "ladonna"], ["brenda", "frank"], ["brenda", "robert-joe"],
+  ["mike", "jeremy"], ["mike", "jessica"], ["david", "bethany"],
+  ["david", "seth"], ["laura", "christine"], ["kimberly", "trent"],
+  ["ladonna", "skooter"], ["ladonna", "robbey"], ["frank", "bella"],
+  ["robert-joe", "jw"], ["robert-joe", "abby-j"],
+  ["betty", "donnie"], ["betty", "elaine"], ["betty", "sherry"],
+  ["clarence", "charles"], ["clarence", "caroline"], ["jane", "billie-jane"],
+  ["richard", "rick"], ["kenneth", "gary"], ["kenneth", "gloria"],
+  ["kenneth", "sheila"], ["kenneth", "iris"], ["jackie", "robbie"],
+  ["jackie", "billie-jackie"], ["jackie", "patty"], ["jackie", "linda"],
+  ["jackie", "lou-ann"], ["freddie", "tammy"], ["claudine", "margaret"],
+  ["claudine", "jeanie"],
+];
 
 function setFormStatus(message) {
   if (formStatus) {
@@ -1154,6 +1225,147 @@ function familyTreeNode(person, className = "", showDetail = false) {
 }
 
 renderFamilyTreeGraphic();
+
+function familyTreePeopleById() {
+  const people = new Map();
+  const addPerson = (person) => {
+    people.set(person.id, person);
+    (person.children || []).forEach(addPerson);
+  };
+
+  addPerson(FAMILY_TREE_VIEWS.center.root);
+  FAMILY_TREE_VIEWS.center.branches.forEach(addPerson);
+  FAMILY_TREE_VIEWS.hudson.generations.forEach((generation) => generation.people.forEach(addPerson));
+  FAMILY_TREE_VIEWS.hubbard.generations.forEach((generation) => generation.people.forEach(addPerson));
+  return people;
+}
+
+const FAMILY_TREE_PEOPLE_BY_ID = familyTreePeopleById();
+const BOTANICAL_TREE_NAME_OVERRIDES = {
+  "harvey-ada": "Harvey & Ada",
+  "sherman-beuna": "Sherman & Beuna",
+  "virgil-della": "Virgil & Della",
+  "robert-joe": "Robert",
+};
+
+function botanicalTreeName(id) {
+  return BOTANICAL_TREE_NAME_OVERRIDES[id] || FAMILY_TREE_PEOPLE_BY_ID.get(id)?.name || "";
+}
+
+function botanicalTreeNode(node) {
+  const name = botanicalTreeName(node.id);
+  const width = node.couple
+    ? 220
+    : node.compact
+      ? Math.max(66, Math.min(105, 28 + name.length * 8.5))
+      : Math.max(82, Math.min(144, 42 + name.length * 11));
+  const height = node.couple ? 58 : node.compact ? 42 : 48;
+  const x = node.x - width / 2;
+  const y = node.y - height / 2;
+  const classes = [
+    "botanical-tree__name",
+    node.featured ? "botanical-tree__name--featured" : "",
+    node.couple ? "botanical-tree__name--couple" : "",
+    node.compact ? "botanical-tree__name--compact" : "",
+  ].filter(Boolean).join(" ");
+
+  return `<g class="${classes}" data-tree-person="${escapeHtml(node.id)}">
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="2"></rect>
+    <text x="${node.x}" y="${node.y + 1}" text-anchor="middle" dominant-baseline="middle">${escapeHtml(name)}</text>
+  </g>`;
+}
+
+function botanicalTreeEdge(from, to) {
+  const fromHeight = from.couple ? 58 : from.compact ? 42 : 48;
+  const toHeight = to.couple ? 58 : to.compact ? 42 : 48;
+  const startY = from.y - fromHeight / 2;
+  const endY = to.y + toHeight / 2;
+  const bendY = endY + (startY - endY) * 0.48;
+  const isTrunk = from.id.includes("ada") || from.id.includes("beuna") || to.id === "virgil-della";
+
+  return `<path class="botanical-tree__branch${isTrunk ? " botanical-tree__branch--trunk" : ""}" d="M ${from.x} ${startY} C ${from.x} ${bendY}, ${to.x} ${bendY}, ${to.x} ${endY}" vector-effect="non-scaling-stroke"></path>`;
+}
+
+function botanicalTreeSprig(x, y, rotation = 0, scale = 1) {
+  return `<g class="botanical-tree__sprig" transform="translate(${x} ${y}) rotate(${rotation}) scale(${scale})">
+    <path d="M -22 7 C -8 4, 6 -2, 24 -13"></path>
+    <ellipse cx="-12" cy="2" rx="7" ry="3.2" transform="rotate(24 -12 2)"></ellipse>
+    <ellipse cx="0" cy="-3" rx="7" ry="3.2" transform="rotate(-28 0 -3)"></ellipse>
+    <ellipse cx="12" cy="-8" rx="7" ry="3.2" transform="rotate(22 12 -8)"></ellipse>
+    <ellipse cx="21" cy="-14" rx="6" ry="3" transform="rotate(-26 21 -14)"></ellipse>
+  </g>`;
+}
+
+function renderBotanicalFamilyTree() {
+  if (!familyTreeBotanical) {
+    return;
+  }
+
+  const nodes = new Map(BOTANICAL_TREE_NODES.map((node) => [node.id, node]));
+  const edges = BOTANICAL_TREE_EDGES.map(([fromId, toId]) => botanicalTreeEdge(nodes.get(fromId), nodes.get(toId))).join("");
+  const sprigs = [
+    [500, 238, -68, 0.92], [695, 236, -62, 0.9], [810, 236, -70, 0.9],
+    [920, 236, -66, 0.9], [1010, 236, -64, 0.88], [500, 520, -56, 0.95],
+    [810, 520, -52, 0.95], [1090, 520, -58, 0.95], [1370, 520, -54, 0.95],
+    [1620, 520, -58, 0.95], [1040, 758, -4, 1.12], [94, 1136, -64, 0.82],
+    [254, 1136, -62, 0.82], [490, 1136, -66, 0.82], [770, 1136, -64, 0.82],
+    [1120, 1136, -62, 0.82], [1440, 1136, -66, 0.82], [1650, 1136, -64, 0.82],
+    [1750, 1136, -62, 0.82], [430, 1380, 10, 1.08], [1430, 1380, -10, 1.08],
+  ].map((sprig) => botanicalTreeSprig(...sprig)).join("");
+
+  familyTreeBotanical.innerHTML = `<svg class="botanical-tree" viewBox="0 0 1850 1600" role="img" aria-labelledby="botanical-tree-title botanical-tree-description" preserveAspectRatio="xMidYMin meet">
+    <title id="botanical-tree-title">Hudson and Hubbard family tree</title>
+    <desc id="botanical-tree-description">A botanical family tree connecting the Hudson and Hubbard ancestors to Virgil and Della and their descendants.</desc>
+    <path class="botanical-tree__root-line" d="M 128 1550 C 390 1508, 650 1526, 930 1580 C 1210 1526, 1510 1508, 1790 1550" vector-effect="non-scaling-stroke"></path>
+    <g aria-hidden="true">${edges}${sprigs}</g>
+    <g>${BOTANICAL_TREE_NODES.map(botanicalTreeNode).join("")}</g>
+  </svg>`;
+}
+
+function setFamilyTreeMode(mode, focusSelected = false) {
+  familyTreeModeButtons.forEach((button) => {
+    const selected = button.dataset.familyTreeMode === mode;
+    button.classList.toggle("is-active", selected);
+    button.setAttribute("aria-selected", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    if (selected && focusSelected) {
+      button.focus();
+    }
+  });
+
+  familyTreeViews.forEach((view) => {
+    view.hidden = view.dataset.familyTreeView !== mode;
+  });
+
+  if (mode === "tree" && familyTreeBotanical) {
+    window.requestAnimationFrame(() => {
+      familyTreeBotanical.scrollLeft = Math.max(0, (familyTreeBotanical.scrollWidth - familyTreeBotanical.clientWidth) / 2);
+    });
+  }
+}
+
+renderBotanicalFamilyTree();
+
+familyTreeModeButtons.forEach((button, index) => {
+  button.addEventListener("click", () => setFamilyTreeMode(button.dataset.familyTreeMode));
+  button.addEventListener("keydown", (event) => {
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const nextButton = familyTreeModeButtons[(index + direction + familyTreeModeButtons.length) % familyTreeModeButtons.length];
+    setFamilyTreeMode(nextButton.dataset.familyTreeMode, true);
+  });
+});
+
+const requestedFamilyTreeMode = new URLSearchParams(window.location.search).get("family-tree");
+setFamilyTreeMode(requestedFamilyTreeMode === "tree" ? "tree" : "guide");
+
+if (window.location.hash === "#family-tree") {
+  window.setTimeout(() => document.querySelector("#family-tree")?.scrollIntoView({ block: "start" }), 100);
+}
 
 function renderFamilyTree(entries = []) {
   if (!familyTreeBranches) {

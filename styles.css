@@ -2063,6 +2063,53 @@ dt {
   gap: 2px;
 }
 
+.family-tree__modes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(30rem, 100%);
+  border: 1px solid var(--deep);
+  background: var(--deep);
+  gap: 1px;
+}
+
+.family-tree__mode {
+  min-height: 3.15rem;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0;
+  background: #f7edce;
+  color: var(--deep);
+  font: 700 0.92rem/1.15 "Libre Baskerville", Georgia, serif;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.family-tree__mode:hover,
+.family-tree__mode:focus-visible {
+  background: #e8d59e;
+}
+
+.family-tree__mode:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid #b77928;
+  outline-offset: 3px;
+}
+
+.family-tree__mode.is-active {
+  background: var(--deep);
+  color: #fff8df;
+}
+
+.family-tree__view[hidden] {
+  display: none;
+}
+
+.family-tree__view {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .family-tree__tab {
   min-height: 3.35rem;
   padding: 0.7rem 0.8rem;
@@ -2096,6 +2143,115 @@ dt {
   padding: clamp(1rem, 3vw, 1.7rem);
   border: 1px solid rgba(16, 43, 77, 0.5);
   background: #f9f1d7;
+}
+
+.family-tree__botanical {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgba(16, 43, 77, 0.5);
+  background: #f7efd9;
+  scrollbar-color: #31543a #e8dcc0;
+  scrollbar-width: thin;
+  overscroll-behavior-inline: contain;
+}
+
+.family-tree__botanical::-webkit-scrollbar {
+  height: 0.75rem;
+}
+
+.family-tree__botanical::-webkit-scrollbar-track {
+  background: #e8dcc0;
+}
+
+.family-tree__botanical::-webkit-scrollbar-thumb {
+  border: 2px solid #e8dcc0;
+  border-radius: 999px;
+  background: #31543a;
+}
+
+.botanical-tree {
+  display: block;
+  width: 100%;
+  min-width: 70rem;
+  height: auto;
+  background: #f7efd9;
+}
+
+.botanical-tree__branch,
+.botanical-tree__root-line {
+  fill: none;
+  stroke: #637651;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+}
+
+.botanical-tree__branch--trunk {
+  stroke: #6d5940;
+  stroke-width: 3.4;
+}
+
+.botanical-tree__root-line {
+  stroke: rgba(109, 89, 64, 0.72);
+  stroke-width: 2.6;
+}
+
+.botanical-tree__sprig path {
+  fill: none;
+  stroke: #637651;
+  stroke-linecap: round;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.botanical-tree__sprig ellipse {
+  fill: #7f8f67;
+  stroke: #586a47;
+  stroke-width: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.botanical-tree__name rect {
+  fill: #fbf6e8;
+  stroke: rgba(49, 84, 58, 0.78);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.botanical-tree__name text {
+  fill: #102b4d;
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.botanical-tree__name--featured rect {
+  fill: #e4ead2;
+  stroke: #31543a;
+  stroke-width: 1.7;
+}
+
+.botanical-tree__name--compact text {
+  font-size: 18px;
+}
+
+.botanical-tree__name--featured text {
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.botanical-tree__name--couple rect {
+  fill: #102b4d;
+  stroke: #102b4d;
+  stroke-width: 1.5;
+}
+
+.botanical-tree__name--couple text {
+  fill: #fff8df;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .family-tree__graphic-heading {

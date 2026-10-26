@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r17-photo-year" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r21-botanical-tree" />
   </head>
   <body>
     <main>
@@ -708,8 +708,55 @@
             </div>
             <span class="family-tree__count" id="family-tree-count">Our shared family history</span>
           </header>
+          <div class="family-tree__modes" role="tablist" aria-label="Family tree view">
+            <button
+              class="family-tree__mode is-active"
+              id="family-tree-guide-tab"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="family-tree-guide-panel"
+              data-family-tree-mode="guide"
+            >
+              Family guide
+            </button>
+            <button
+              class="family-tree__mode"
+              id="family-tree-art-tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="family-tree-art-panel"
+              data-family-tree-mode="tree"
+            >
+              Family tree
+            </button>
+          </div>
           <div class="family-tree__workspace">
-            <div class="family-tree__graphic" id="family-tree-graphic" aria-live="polite"></div>
+            <section
+              class="family-tree__view"
+              id="family-tree-guide-panel"
+              role="tabpanel"
+              aria-labelledby="family-tree-guide-tab"
+              data-family-tree-view="guide"
+            >
+              <div class="family-tree__graphic" id="family-tree-graphic" aria-live="polite"></div>
+            </section>
+            <section
+              class="family-tree__view"
+              id="family-tree-art-panel"
+              role="tabpanel"
+              aria-labelledby="family-tree-art-tab"
+              data-family-tree-view="tree"
+              hidden
+            >
+              <div
+                class="family-tree__botanical"
+                id="family-tree-botanical"
+                tabindex="0"
+                aria-label="Scrollable Hudson and Hubbard family tree"
+              ></div>
+            </section>
           </div>
           <div class="family-tree__shared" id="family-tree-branches" aria-live="polite"></div>
           <p class="family-tree__note">
@@ -742,6 +789,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r20-photo-year-label"></script>
+    <script src="./app.js?v=2027-reunion-r24-botanical-tree"></script>
   </body>
 </html>
