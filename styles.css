@@ -941,6 +941,7 @@ dt {
 .photo-gallery {
   display: grid;
   gap: 0.8rem;
+  overflow-anchor: none;
 }
 
 .photo-gallery p {

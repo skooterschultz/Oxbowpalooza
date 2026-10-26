@@ -90,6 +90,9 @@ const PHOTO_GALLERY_ENDPOINT = "/api/photos?v=2027-reunion-gallery";
 const PHOTO_GALLERY_REFRESH_MS = 180000;
 let galleryPhotos = [];
 let activeGalleryIndex = 0;
+let activeGalleryKey = "";
+let hasLoadedPhotoGallery = false;
+let galleryDataFingerprint = "";
 let thumbnailDrag = null;
 let suppressNextThumbnailClick = false;
 const MISSOURI_CITIES = new Set([
@@ -338,6 +341,21 @@ function galleryPhotoLabel(photo) {
   return String(photo.people || "family photo").trim();
 }
 
+function galleryPhotoKey(photo) {
+  return String(photo?.id || photo?.key || photo?.src || "");
+}
+
+function galleryFingerprint(photos) {
+  return JSON.stringify(photos.map((photo) => [
+    galleryPhotoKey(photo),
+    photo.src,
+    photo.people,
+    photo.approximateYear,
+    photo.rotation,
+    photo.type,
+  ]));
+}
+
 function galleryNameEditor(photo) {
   return `
     <div class="photo-gallery__names">
@@ -400,15 +418,7 @@ function fitRotatedGalleryMedia(scope = document) {
   });
 }
 
-function scrollActiveThumbnailIntoView() {
-  const activeThumb = photoGallery?.querySelector(".photo-gallery__thumb.is-active");
-
-  if (activeThumb) {
-    activeThumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }
-}
-
-function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
+function selectGalleryPhoto(index) {
   const nextIndex = Math.min(Math.max(Number(index) || 0, 0), galleryPhotos.length - 1);
   const photo = galleryPhotos[nextIndex];
   const featured = photoGallery?.querySelector(".photo-gallery__featured");
@@ -418,6 +428,7 @@ function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
   }
 
   activeGalleryIndex = nextIndex;
+  activeGalleryKey = galleryPhotoKey(photo);
   const caption = galleryCaption(photo);
 
   featured.innerHTML = `
@@ -435,26 +446,37 @@ function selectGalleryPhoto(index, { scrollThumbnail = true } = {}) {
   });
 
   window.requestAnimationFrame(() => fitRotatedGalleryMedia(featured));
-
-  if (scrollThumbnail) {
-    scrollActiveThumbnailIntoView();
-  }
 }
 
-function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGalleryIndex) {
+function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGalleryIndex, { preservePagePosition = false } = {}) {
   if (!photoGallery) {
     return;
   }
 
+  const pagePosition = preservePagePosition
+    ? { x: window.scrollX, y: window.scrollY }
+    : null;
+
   if (!photos.length) {
+    galleryPhotos = [];
+    activeGalleryIndex = 0;
+    activeGalleryKey = "";
+    galleryDataFingerprint = galleryFingerprint([]);
     photoGallery.innerHTML = "<p>The reunion gallery is ready for its first family memory.</p>";
+    if (pagePosition) {
+      window.scrollTo(pagePosition.x, pagePosition.y);
+    }
     return;
   }
 
+  const existingThumbnails = photoGallery.querySelector(".photo-gallery__thumbs");
+  const previousThumbnailScroll = existingThumbnails?.scrollLeft || 0;
   galleryPhotos = photos;
   activeGalleryIndex = Math.min(Math.max(selectedIndex, 0), photos.length - 1);
 
   const featured = photos[activeGalleryIndex];
+  activeGalleryKey = galleryPhotoKey(featured);
+  galleryDataFingerprint = galleryFingerprint(photos);
   const featuredCaption = galleryCaption(featured);
   const thumbnails = photos
     .map((photo, index) => {
@@ -474,8 +496,19 @@ function renderPhotoGallery(photos = galleryPhotos, selectedIndex = activeGaller
     </figure>
     <div class="photo-gallery__thumbs" aria-label="Choose a photo">${thumbnails}</div>
   `;
-  window.requestAnimationFrame(() => fitRotatedGalleryMedia(photoGallery));
-  window.setTimeout(scrollActiveThumbnailIntoView, 0);
+  if (pagePosition) {
+    window.scrollTo(pagePosition.x, pagePosition.y);
+  }
+  window.requestAnimationFrame(() => {
+    fitRotatedGalleryMedia(photoGallery);
+    const updatedThumbnails = photoGallery.querySelector(".photo-gallery__thumbs");
+    if (updatedThumbnails) {
+      updatedThumbnails.scrollLeft = previousThumbnailScroll;
+    }
+    if (pagePosition) {
+      window.scrollTo(pagePosition.x, pagePosition.y);
+    }
+  });
 }
 
 function openGalleryLightbox(index = activeGalleryIndex) {
@@ -520,10 +553,11 @@ function showLightboxPhoto(step) {
   const figure = lightbox.querySelector("figure");
 
   activeGalleryIndex = nextIndex;
+  activeGalleryKey = galleryPhotoKey(photo);
   lightbox.dataset.galleryIndex = String(nextIndex);
   figure.innerHTML = `${galleryMedia(photo, { featured: true, controls: photo.type === "video" })}${caption}`;
   window.requestAnimationFrame(() => fitRotatedGalleryMedia(figure));
-  renderPhotoGallery(galleryPhotos, nextIndex);
+  selectGalleryPhoto(nextIndex);
 }
 
 window.addEventListener("resize", () => fitRotatedGalleryMedia());
@@ -544,11 +578,33 @@ async function loadPhotoGallery() {
 
     const photos = await response.json();
     const galleryItems = Array.isArray(photos) ? photos : photos.items || [];
-    const randomIndex = galleryItems.length ? Math.floor(Math.random() * galleryItems.length) : 0;
-    renderPhotoGallery(galleryItems, randomIndex);
+    const nextFingerprint = galleryFingerprint(galleryItems);
+    let selectedIndex = 0;
+
+    if (galleryItems.length) {
+      if (!hasLoadedPhotoGallery) {
+        selectedIndex = Math.floor(Math.random() * galleryItems.length);
+      } else {
+        const matchingIndex = galleryItems.findIndex((photo) => galleryPhotoKey(photo) === activeGalleryKey);
+        selectedIndex = matchingIndex >= 0
+          ? matchingIndex
+          : Math.min(activeGalleryIndex, galleryItems.length - 1);
+      }
+    }
+
+    if (hasLoadedPhotoGallery && nextFingerprint === galleryDataFingerprint) {
+      galleryPhotos = galleryItems;
+      activeGalleryIndex = selectedIndex;
+      return;
+    }
+
+    renderPhotoGallery(galleryItems, selectedIndex, { preservePagePosition: hasLoadedPhotoGallery });
+    hasLoadedPhotoGallery = true;
   } catch (error) {
     console.warn("Could not load photo gallery", error);
-    photoGallery.innerHTML = "<p>The photo pile is taking a minute. Try refreshing in a bit.</p>";
+    if (!galleryPhotos.length) {
+      photoGallery.innerHTML = "<p>The photo pile is taking a minute. Try refreshing in a bit.</p>";
+    }
   }
 }
 
