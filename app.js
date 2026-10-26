@@ -65,6 +65,7 @@ const familyTreeBranches = document.querySelector("#family-tree-branches");
 const familyTreeCount = document.querySelector("#family-tree-count");
 const familyTreeGraphic = document.querySelector("#family-tree-graphic");
 const familyTreeBotanical = document.querySelector("#family-tree-botanical");
+const familyTreeExpandButtons = Array.from(document.querySelectorAll("[data-family-tree-expand]"));
 const familyTreeModeButtons = Array.from(document.querySelectorAll("[data-family-tree-mode]"));
 const familyTreeViews = Array.from(document.querySelectorAll("[data-family-tree-view]"));
 const photoGallery = document.querySelector("#photo-gallery");
@@ -1378,6 +1379,93 @@ function renderBotanicalFamilyTree() {
   </svg>`;
 }
 
+let familyTreeViewerTrigger = null;
+let familyTreeViewerZoom = 1;
+
+function applyFamilyTreeViewerZoom(viewer, fit = false) {
+  const stage = viewer?.querySelector(".family-tree-viewer__stage");
+  const svg = viewer?.querySelector(".botanical-tree");
+  const output = viewer?.querySelector("[data-family-tree-zoom-output]");
+
+  if (!stage || !svg || !output) {
+    return;
+  }
+
+  if (fit) {
+    const fitWidth = Math.min(
+      Math.max(280, stage.clientWidth - 24),
+      Math.max(280, (stage.clientHeight - 24) * (1850 / 1600)),
+    );
+    svg.style.width = `${Math.round(fitWidth)}px`;
+    output.textContent = "Fit";
+    return;
+  }
+
+  const stageWidth = Math.max(320, stage.clientWidth - 24);
+  const readableWidth = Math.max(stageWidth, 1040);
+  svg.style.width = `${Math.round(readableWidth * familyTreeViewerZoom)}px`;
+  output.textContent = `${Math.round(familyTreeViewerZoom * 100)}%`;
+}
+
+function closeFamilyTreeViewer() {
+  const viewer = document.querySelector("[data-family-tree-viewer]");
+
+  if (!viewer) {
+    return;
+  }
+
+  viewer.remove();
+  document.body.classList.remove("has-family-tree-viewer");
+  familyTreeViewerTrigger?.focus();
+  familyTreeViewerTrigger = null;
+}
+
+function openFamilyTreeViewer(trigger) {
+  const sourceTree = familyTreeBotanical?.querySelector(".botanical-tree");
+
+  if (!sourceTree || document.querySelector("[data-family-tree-viewer]")) {
+    return;
+  }
+
+  familyTreeViewerTrigger = trigger || familyTreeBotanical;
+  familyTreeViewerZoom = 1;
+
+  const viewer = document.createElement("div");
+  viewer.className = "family-tree-viewer";
+  viewer.dataset.familyTreeViewer = "true";
+  viewer.setAttribute("role", "dialog");
+  viewer.setAttribute("aria-modal", "true");
+  viewer.setAttribute("aria-labelledby", "family-tree-viewer-title");
+  viewer.innerHTML = `
+    <header class="family-tree-viewer__toolbar">
+      <h2 id="family-tree-viewer-title">Hudson &amp; Hubbard Family Tree</h2>
+      <div class="family-tree-viewer__controls" aria-label="Family tree viewing controls">
+        <button type="button" data-family-tree-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" data-family-tree-fit>Fit</button>
+        <span data-family-tree-zoom-output aria-live="polite">100%</span>
+        <button type="button" data-family-tree-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" class="family-tree-viewer__close" data-family-tree-close>Close</button>
+      </div>
+    </header>
+    <div class="family-tree-viewer__stage" data-family-tree-viewer-stage></div>
+  `;
+
+  const expandedTree = sourceTree.cloneNode(true);
+  expandedTree.removeAttribute("aria-labelledby");
+  expandedTree.setAttribute("aria-label", "Complete Hudson and Hubbard family tree");
+  expandedTree.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+  viewer.querySelector("[data-family-tree-viewer-stage]").append(expandedTree);
+  document.body.append(viewer);
+  document.body.classList.add("has-family-tree-viewer");
+
+  window.requestAnimationFrame(() => {
+    applyFamilyTreeViewerZoom(viewer);
+    const stage = viewer.querySelector(".family-tree-viewer__stage");
+    stage.scrollLeft = Math.max(0, (stage.scrollWidth - stage.clientWidth) / 2);
+    viewer.querySelector("[data-family-tree-close]").focus();
+  });
+}
+
 function setFamilyTreeMode(mode, focusSelected = false) {
   familyTreeModeButtons.forEach((button) => {
     const selected = button.dataset.familyTreeMode === mode;
@@ -1401,6 +1489,51 @@ function setFamilyTreeMode(mode, focusSelected = false) {
 }
 
 renderBotanicalFamilyTree();
+
+familyTreeExpandButtons.forEach((button) => {
+  button.addEventListener("click", () => openFamilyTreeViewer(button));
+});
+
+familyTreeBotanical?.addEventListener("click", () => openFamilyTreeViewer(familyTreeBotanical));
+familyTreeBotanical?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    openFamilyTreeViewer(familyTreeBotanical);
+  }
+});
+
+document.addEventListener("click", (event) => {
+  const viewer = event.target.closest("[data-family-tree-viewer]");
+
+  if (!viewer) {
+    return;
+  }
+
+  if (event.target.matches("[data-family-tree-viewer]") || event.target.closest("[data-family-tree-close]")) {
+    closeFamilyTreeViewer();
+    return;
+  }
+
+  if (event.target.closest("[data-family-tree-fit]")) {
+    applyFamilyTreeViewerZoom(viewer, true);
+    return;
+  }
+
+  const zoomButton = event.target.closest("[data-family-tree-zoom]");
+  if (!zoomButton) {
+    return;
+  }
+
+  const direction = zoomButton.dataset.familyTreeZoom === "in" ? 0.25 : -0.25;
+  familyTreeViewerZoom = Math.min(2.5, Math.max(0.5, familyTreeViewerZoom + direction));
+  applyFamilyTreeViewerZoom(viewer);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.querySelector("[data-family-tree-viewer]")) {
+    closeFamilyTreeViewer();
+  }
+});
 
 familyTreeModeButtons.forEach((button, index) => {
   button.addEventListener("click", () => setFamilyTreeMode(button.dataset.familyTreeMode));

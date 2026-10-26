@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r22-gallery-hold" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r23-tree-viewer" />
   </head>
   <body>
     <main>
@@ -750,12 +750,23 @@
               data-family-tree-view="tree"
               hidden
             >
-              <div
-                class="family-tree__botanical"
-                id="family-tree-botanical"
-                tabindex="0"
-                aria-label="Scrollable Hudson and Hubbard family tree"
-              ></div>
+              <div class="family-tree__botanical-wrap">
+                <button
+                  class="family-tree__expand"
+                  type="button"
+                  data-family-tree-expand
+                  aria-label="Enlarge the complete family tree"
+                >
+                  Enlarge tree
+                </button>
+                <div
+                  class="family-tree__botanical"
+                  id="family-tree-botanical"
+                  tabindex="0"
+                  role="button"
+                  aria-label="Enlarge the complete Hudson and Hubbard family tree"
+                ></div>
+              </div>
             </section>
           </div>
           <div class="family-tree__shared" id="family-tree-branches" aria-live="polite"></div>
@@ -789,6 +800,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r25-gallery-hold"></script>
+    <script src="./app.js?v=2027-reunion-r26-tree-viewer"></script>
   </body>
 </html>
