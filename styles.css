@@ -2148,15 +2148,41 @@ dt {
 
 .family-tree__botanical-wrap {
   position: relative;
+  border: 1px solid rgba(16, 43, 77, 0.5);
+  background: #f7efd9;
+}
+
+.family-tree__botanical-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.8rem;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid rgba(16, 43, 77, 0.35);
+  background: #e8dcc0;
+}
+
+.family-tree__botanical-toolbar p {
+  margin: 0;
+  color: rgba(16, 43, 77, 0.82);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.family-tree__botanical-toolbar > div {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.5rem;
 }
 
 .family-tree__botanical {
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
-  border: 1px solid rgba(16, 43, 77, 0.5);
   background: #f7efd9;
-  cursor: zoom-in;
   scrollbar-color: #31543a #e8dcc0;
   scrollbar-width: thin;
   overscroll-behavior-inline: contain;
@@ -2167,11 +2193,8 @@ dt {
   outline-offset: 3px;
 }
 
-.family-tree__expand {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  z-index: 2;
+.family-tree__expand,
+.family-tree__clear {
   min-height: 44px;
   padding: 0.65rem 0.85rem;
   border: 2px solid #fff8df;
@@ -2185,9 +2208,19 @@ dt {
   box-shadow: 3px 3px 0 rgba(49, 84, 58, 0.35);
 }
 
+.family-tree__clear {
+  border-color: #31543a;
+  background: #f7edce;
+  color: #102b4d;
+  box-shadow: none;
+}
+
 .family-tree__expand:hover,
-.family-tree__expand:focus-visible {
+.family-tree__expand:focus-visible,
+.family-tree__clear:hover,
+.family-tree__clear:focus-visible {
   background: var(--rust);
+  color: #fff8df;
 }
 
 .family-tree__botanical::-webkit-scrollbar {
@@ -2207,43 +2240,41 @@ dt {
 .botanical-tree {
   display: block;
   width: 100%;
-  min-width: 96rem;
+  min-width: 108rem;
   height: auto;
   background: #f7efd9;
 }
 
-.botanical-tree__branch,
-.botanical-tree__root-line {
+.botanical-tree__family path {
   fill: none;
   stroke: #637651;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2.2;
+  transition: opacity 180ms ease, stroke 180ms ease, stroke-width 180ms ease;
 }
 
-.botanical-tree__branch--trunk {
+.botanical-tree__family--trunk path,
+.botanical-tree__family--union .botanical-tree__marriage,
+.botanical-tree__family--union .botanical-tree__family-trunk {
   stroke: #6d5940;
-  stroke-width: 3.4;
+  stroke-width: 3;
 }
 
-.botanical-tree__root-line {
-  stroke: rgba(109, 89, 64, 0.72);
-  stroke-width: 2.6;
+.botanical-tree__marriage {
+  stroke-dasharray: 7 6;
 }
 
-.botanical-tree__sprig path {
-  fill: none;
-  stroke: #637651;
-  stroke-linecap: round;
-  stroke-width: 1.4;
-  vector-effect: non-scaling-stroke;
+.botanical-tree__family.is-dimmed,
+.botanical-tree__child-stem.is-dimmed,
+.botanical-tree__family-bus.is-dimmed {
+  opacity: 0.1;
 }
 
-.botanical-tree__sprig ellipse {
-  fill: #7f8f67;
-  stroke: #586a47;
-  stroke-width: 0.7;
-  vector-effect: non-scaling-stroke;
+.botanical-tree__name {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 180ms ease;
 }
 
 .botanical-tree__name rect {
@@ -2251,6 +2282,7 @@ dt {
   stroke: rgba(49, 84, 58, 0.78);
   stroke-width: 1.25;
   vector-effect: non-scaling-stroke;
+  transition: fill 180ms ease, stroke 180ms ease, stroke-width 180ms ease;
 }
 
 .botanical-tree__name text {
@@ -2259,6 +2291,7 @@ dt {
   font-size: 22px;
   font-weight: 400;
   letter-spacing: 0;
+  pointer-events: none;
 }
 
 .botanical-tree__name--featured rect {
@@ -2288,6 +2321,35 @@ dt {
   font-weight: 700;
 }
 
+.botanical-tree__name:hover rect,
+.botanical-tree__name:focus-visible rect {
+  fill: #fff3bd;
+  stroke: #b77928;
+  stroke-width: 2.5;
+}
+
+.botanical-tree__name.is-dimmed {
+  opacity: 0.14;
+}
+
+.botanical-tree__name.is-focused {
+  opacity: 1;
+}
+
+.botanical-tree__name.is-focused rect,
+.botanical-tree__name--couple.is-focused rect,
+.botanical-tree__name--featured.is-focused rect {
+  fill: #b7542d;
+  stroke: #71331d;
+  stroke-width: 3;
+}
+
+.botanical-tree__name.is-focused text,
+.botanical-tree__name--featured.is-focused text {
+  fill: #fff8df;
+  font-weight: 700;
+}
+
 .has-family-tree-viewer {
   overflow: hidden;
 }
@@ -2300,7 +2362,7 @@ dt {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 0.75rem;
   padding: clamp(0.65rem, 2vw, 1.25rem);
-  background: rgba(7, 28, 43, 0.96);
+  background: #071c2b;
 }
 
 .family-tree-viewer__toolbar {
@@ -2319,6 +2381,15 @@ dt {
   font-family: "Libre Baskerville", Georgia, serif;
   font-size: clamp(1rem, 2vw, 1.35rem);
   letter-spacing: 0;
+}
+
+.family-tree-viewer__toolbar p {
+  margin: 0.25rem 0 0;
+  color: rgba(255, 248, 223, 0.76);
+  font-family: "Libre Baskerville", Georgia, serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .family-tree-viewer__controls {
@@ -2345,6 +2416,10 @@ dt {
 
 .family-tree-viewer__controls button {
   cursor: pointer;
+}
+
+.family-tree-viewer__controls [hidden] {
+  display: none;
 }
 
 .family-tree-viewer__controls button:hover,
@@ -2396,6 +2471,10 @@ dt {
     text-align: center;
   }
 
+  .family-tree-viewer__toolbar p {
+    text-align: center;
+  }
+
   .family-tree-viewer__controls {
     width: 100%;
     justify-content: center;
@@ -2407,9 +2486,18 @@ dt {
     min-height: 42px;
   }
 
-  .family-tree__expand {
-    top: 0.5rem;
-    right: 0.5rem;
+  .family-tree__botanical-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .family-tree__botanical-toolbar > div {
+    width: 100%;
+  }
+
+  .family-tree__expand,
+  .family-tree__clear {
+    flex: 1 1 0;
   }
 }
 

@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r24-tree-corrections" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r30-balanced-branches" />
   </head>
   <body>
     <main>
@@ -702,8 +702,8 @@
               <p class="eyebrow">Find your branch</p>
               <h3 id="family-tree-title">The Hudson Hubbard Family Tree</h3>
               <p>
-                Follow both families from their roots through Virgil and Della, then down
-                through every branch in one continuous view.
+                Follow the Hudson and Hubbard siblings as equal branches, then choose any
+                name to focus on that person's lineage.
               </p>
             </div>
             <span class="family-tree__count" id="family-tree-count">Our shared family history</span>
@@ -751,20 +751,28 @@
               hidden
             >
               <div class="family-tree__botanical-wrap">
-                <button
-                  class="family-tree__expand"
-                  type="button"
-                  data-family-tree-expand
-                  aria-label="Enlarge the complete family tree"
-                >
-                  Enlarge tree
-                </button>
+                <div class="family-tree__botanical-toolbar">
+                  <p data-family-tree-focus-output>Select a name to focus on one family branch.</p>
+                  <div>
+                    <button class="family-tree__clear" type="button" data-family-tree-clear hidden>
+                      Show all branches
+                    </button>
+                    <button
+                      class="family-tree__expand"
+                      type="button"
+                      data-family-tree-expand
+                      aria-label="Enlarge the complete family tree"
+                    >
+                      Enlarge tree
+                    </button>
+                  </div>
+                </div>
                 <div
                   class="family-tree__botanical"
                   id="family-tree-botanical"
                   tabindex="0"
-                  role="button"
-                  aria-label="Enlarge the complete Hudson and Hubbard family tree"
+                  role="region"
+                  aria-label="Interactive Hudson and Hubbard family tree. Select a name to focus that branch."
                 ></div>
               </div>
             </section>
@@ -800,6 +808,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r29-emma-branch"></script>
+    <script src="./app.js?v=2027-reunion-r30-balanced-branches"></script>
   </body>
 </html>

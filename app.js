@@ -224,73 +224,78 @@ const FAMILY_TREE_VIEWS = {
   },
 };
 
-const BOTANICAL_TREE_SIZE = { width: 2800, height: 1630 };
+const BOTANICAL_TREE_SIZE = { width: 3600, height: 1900 };
 const BOTANICAL_TREE_NODES = [
-  { id: "emma", x: 1020, y: 30 },
-  { id: "trent", x: 820, y: 110 }, { id: "skooter", x: 940, y: 110 },
-  { id: "robbey", x: 1020, y: 110 }, { id: "bella", x: 1100, y: 110 },
-  { id: "jw", x: 1190, y: 110 }, { id: "abby-j", x: 1270, y: 110 },
-  { id: "brian", x: 580, y: 360 }, { id: "todd", x: 700, y: 360 },
-  { id: "kimberly", x: 820, y: 360 }, { id: "ladonna", x: 980, y: 360 },
-  { id: "frank", x: 1100, y: 360 }, { id: "robert-joe", x: 1220, y: 360 },
-  { id: "jeremy", x: 1420, y: 360 }, { id: "jessica", x: 1540, y: 360 },
-  { id: "bethany", x: 1950, y: 360 }, { id: "seth", x: 2070, y: 360 },
-  { id: "christine", x: 2400, y: 360 },
-  { id: "diana", x: 700, y: 650, featured: true },
-  { id: "brenda", x: 1080, y: 650, featured: true },
-  { id: "mike", x: 1480, y: 650, featured: true },
-  { id: "chris", x: 1710, y: 650, featured: true },
-  { id: "david", x: 2030, y: 650, featured: true },
-  { id: "laura", x: 2400, y: 650, featured: true },
-  { id: "virgil-della", x: 1400, y: 850, couple: true },
-  { id: "donnie", x: 210, y: 1040, compact: true }, { id: "elaine", x: 310, y: 1040, compact: true },
-  { id: "sherry", x: 410, y: 1040, compact: true }, { id: "charles", x: 510, y: 1040, compact: true },
-  { id: "caroline", x: 610, y: 1040, compact: true }, { id: "billie-jean", x: 710, y: 1040, compact: true },
-  { id: "bobbie-joe", x: 810, y: 1040, compact: true }, { id: "sue", x: 900, y: 1040, compact: true },
-  { id: "kim", x: 990, y: 1040, compact: true }, { id: "rick", x: 1080, y: 1040, compact: true },
-  { id: "steve", x: 1170, y: 1040, compact: true }, { id: "scott", x: 1260, y: 1040, compact: true },
-  { id: "gary", x: 1500, y: 1040, compact: true }, { id: "gloria", x: 1590, y: 1040, compact: true },
-  { id: "sheila", x: 1680, y: 1040, compact: true }, { id: "iris", x: 1770, y: 1040, compact: true },
-  { id: "gayla", x: 1860, y: 1040, compact: true }, { id: "sherman", x: 1950, y: 1040, compact: true },
-  { id: "robbie", x: 2040, y: 1040, compact: true }, { id: "billie-jackie", x: 2130, y: 1040, compact: true },
-  { id: "patty", x: 2220, y: 1040, compact: true }, { id: "linda", x: 2310, y: 1040, compact: true },
-  { id: "lou-ann", x: 2400, y: 1040, compact: true }, { id: "tammy", x: 2475, y: 1040, compact: true },
-  { id: "brent", x: 2545, y: 1040, compact: true }, { id: "margaret", x: 2625, y: 1040, compact: true },
-  { id: "jeannie", x: 2700, y: 1120, compact: true }, { id: "bradley", x: 2745, y: 1040, compact: true },
-  { id: "floyd", x: 120, y: 1260 }, { id: "betty", x: 280, y: 1260 },
-  { id: "clarence", x: 460, y: 1260 }, { id: "mary", x: 630, y: 1260 },
-  { id: "jane", x: 800, y: 1260 }, { id: "billie-rae", x: 970, y: 1260 },
-  { id: "richard", x: 1140, y: 1260 }, { id: "carl", x: 1280, y: 1260 },
-  { id: "kenneth", x: 1710, y: 1260 }, { id: "jackie", x: 2200, y: 1260 },
-  { id: "freddie", x: 2510, y: 1260 }, { id: "claudine", x: 2700, y: 1260 },
-  { id: "harvey-ada", x: 720, y: 1510, couple: true },
-  { id: "sherman-beuna", x: 2200, y: 1510, couple: true },
+  { id: "emma", x: 1210, y: 90 },
+  { id: "trent", x: 940, y: 300 }, { id: "skooter", x: 1090, y: 300 },
+  { id: "robbey", x: 1210, y: 300 }, { id: "bella", x: 1370, y: 300 },
+  { id: "jw", x: 1510, y: 300 }, { id: "abby-j", x: 1640, y: 300 },
+  { id: "brian", x: 650, y: 570 }, { id: "todd", x: 800, y: 570 },
+  { id: "kimberly", x: 940, y: 570 }, { id: "ladonna", x: 1150, y: 570 },
+  { id: "frank", x: 1370, y: 570 }, { id: "robert-joe", x: 1570, y: 570 },
+  { id: "jeremy", x: 1810, y: 570 }, { id: "jessica", x: 1970, y: 570 },
+  { id: "bethany", x: 2300, y: 570 }, { id: "seth", x: 2450, y: 570 },
+  { id: "christine", x: 2780, y: 570 },
+  { id: "diana", x: 820, y: 850, featured: true },
+  { id: "brenda", x: 1370, y: 850, featured: true },
+  { id: "mike", x: 1890, y: 850, featured: true },
+  { id: "chris", x: 2110, y: 850, featured: true },
+  { id: "david", x: 2390, y: 850, featured: true },
+  { id: "laura", x: 2780, y: 850, featured: true },
+  { id: "donnie", x: 100, y: 1280, compact: true }, { id: "elaine", x: 220, y: 1280, compact: true },
+  { id: "sherry", x: 340, y: 1280, compact: true }, { id: "charles", x: 480, y: 1280, compact: true },
+  { id: "caroline", x: 610, y: 1280, compact: true }, { id: "billie-jean", x: 750, y: 1280, compact: true },
+  { id: "bobbie-joe", x: 880, y: 1280, compact: true }, { id: "sue", x: 1000, y: 1280, compact: true },
+  { id: "kim", x: 1110, y: 1280, compact: true }, { id: "rick", x: 1220, y: 1280, compact: true },
+  { id: "steve", x: 1330, y: 1280, compact: true }, { id: "scott", x: 1440, y: 1280, compact: true },
+  { id: "gary", x: 1840, y: 1280, compact: true }, { id: "gloria", x: 1940, y: 1280, compact: true },
+  { id: "sheila", x: 2040, y: 1280, compact: true }, { id: "iris", x: 2140, y: 1280, compact: true },
+  { id: "gayla", x: 2240, y: 1280, compact: true }, { id: "sherman", x: 2340, y: 1280, compact: true },
+  { id: "robbie", x: 2460, y: 1280, compact: true }, { id: "billie-jackie", x: 2570, y: 1280, compact: true },
+  { id: "patty", x: 2680, y: 1280, compact: true }, { id: "linda", x: 2790, y: 1280, compact: true },
+  { id: "lou-ann", x: 2900, y: 1280, compact: true }, { id: "tammy", x: 3020, y: 1280, compact: true },
+  { id: "brent", x: 3130, y: 1280, compact: true }, { id: "margaret", x: 3260, y: 1280, compact: true },
+  { id: "jeannie", x: 3380, y: 1280, compact: true }, { id: "bradley", x: 3500, y: 1280, compact: true },
+  { id: "floyd", x: 100, y: 1530 }, { id: "betty", x: 270, y: 1530 },
+  { id: "clarence", x: 470, y: 1530 }, { id: "mary", x: 650, y: 1530 },
+  { id: "jane", x: 830, y: 1530 }, { id: "billie-rae", x: 1030, y: 1530 },
+  { id: "richard", x: 1220, y: 1530 }, { id: "carl", x: 1380, y: 1530 },
+  { id: "virgil", x: 1530, y: 1530, featured: true },
+  { id: "della", x: 1780, y: 1530, featured: true },
+  { id: "kenneth", x: 2100, y: 1530 }, { id: "jackie", x: 2680, y: 1530 },
+  { id: "freddie", x: 3070, y: 1530 }, { id: "claudine", x: 3400, y: 1530 },
+  { id: "harvey-ada", x: 800, y: 1810, couple: true },
+  { id: "sherman-beuna", x: 2600, y: 1810, couple: true },
 ];
 
-const BOTANICAL_TREE_EDGES = [
-  ["harvey-ada", "floyd"], ["harvey-ada", "betty"], ["harvey-ada", "clarence"],
-  ["harvey-ada", "mary"], ["harvey-ada", "jane"], ["harvey-ada", "billie-rae"],
-  ["harvey-ada", "richard"], ["harvey-ada", "carl"],
-  ["harvey-ada", "virgil-della"], ["sherman-beuna", "kenneth"], ["sherman-beuna", "jackie"],
-  ["sherman-beuna", "freddie"], ["sherman-beuna", "claudine"], ["sherman-beuna", "virgil-della"],
-  ["virgil-della", "diana"], ["virgil-della", "brenda"], ["virgil-della", "mike"],
-  ["virgil-della", "chris"], ["virgil-della", "david"], ["virgil-della", "laura"],
-  ["diana", "brian"], ["diana", "todd"], ["diana", "kimberly"],
-  ["brenda", "ladonna"], ["brenda", "frank"], ["brenda", "robert-joe"],
-  ["mike", "jeremy"], ["mike", "jessica"], ["david", "bethany"],
-  ["david", "seth"], ["laura", "christine"], ["kimberly", "trent"],
-  ["ladonna", "skooter"], ["ladonna", "robbey"], ["robbey", "emma"], ["frank", "bella"],
-  ["robert-joe", "jw"], ["robert-joe", "abby-j"],
-  ["betty", "donnie"], ["betty", "elaine"], ["betty", "sherry"],
-  ["clarence", "charles"], ["clarence", "caroline"], ["jane", "billie-jean"],
-  ["jane", "bobbie-joe"], ["jane", "sue"], ["jane", "kim"],
-  ["billie-rae", "rick"], ["billie-rae", "steve"], ["richard", "scott"],
-  ["kenneth", "gary"], ["kenneth", "gloria"], ["kenneth", "sheila"],
-  ["kenneth", "iris"], ["kenneth", "gayla"], ["kenneth", "sherman"], ["jackie", "robbie"],
-  ["jackie", "billie-jackie"], ["jackie", "patty"], ["jackie", "linda"],
-  ["jackie", "lou-ann"], ["freddie", "tammy"], ["freddie", "brent"],
-  ["claudine", "margaret"], ["claudine", "jeannie"], ["claudine", "bradley"],
+const BOTANICAL_TREE_FAMILIES = [
+  { parents: ["harvey-ada"], children: ["floyd", "betty", "clarence", "mary", "jane", "billie-rae", "richard", "carl", "virgil"], tone: "trunk" },
+  { parents: ["sherman-beuna"], children: ["della", "kenneth", "jackie", "freddie", "claudine"], tone: "trunk" },
+  { parents: ["virgil", "della"], children: ["diana", "brenda", "mike", "chris", "david", "laura"], tone: "union" },
+  { parents: ["diana"], children: ["brian", "todd", "kimberly"] },
+  { parents: ["brenda"], children: ["ladonna", "frank", "robert-joe"] },
+  { parents: ["mike"], children: ["jeremy", "jessica"] },
+  { parents: ["david"], children: ["bethany", "seth"] },
+  { parents: ["laura"], children: ["christine"] },
+  { parents: ["kimberly"], children: ["trent"] },
+  { parents: ["ladonna"], children: ["skooter", "robbey"] },
+  { parents: ["robbey"], children: ["emma"] },
+  { parents: ["frank"], children: ["bella"] },
+  { parents: ["robert-joe"], children: ["jw", "abby-j"] },
+  { parents: ["betty"], children: ["donnie", "elaine", "sherry"] },
+  { parents: ["clarence"], children: ["charles", "caroline"] },
+  { parents: ["jane"], children: ["billie-jean", "bobbie-joe", "sue", "kim"] },
+  { parents: ["billie-rae"], children: ["rick", "steve"] },
+  { parents: ["richard"], children: ["scott"] },
+  { parents: ["kenneth"], children: ["gary", "gloria", "sheila", "iris", "gayla", "sherman"] },
+  { parents: ["jackie"], children: ["robbie", "billie-jackie", "patty", "linda", "lou-ann"] },
+  { parents: ["freddie"], children: ["tammy", "brent"] },
+  { parents: ["claudine"], children: ["margaret", "jeannie", "bradley"] },
 ];
+
+const BOTANICAL_TREE_EDGES = BOTANICAL_TREE_FAMILIES.flatMap((family) =>
+  family.parents.flatMap((parentId) => family.children.map((childId) => [parentId, childId])),
+);
 
 function setFormStatus(message) {
   if (formStatus) {
@@ -1323,7 +1328,6 @@ const FAMILY_TREE_PEOPLE_BY_ID = familyTreePeopleById();
 const BOTANICAL_TREE_NAME_OVERRIDES = {
   "harvey-ada": "Harvey & Ada Hudson",
   "sherman-beuna": "Sherman & Beuna Hubbard",
-  "virgil-della": "Virgil Hudson & Della Hubbard",
   "robert-joe": "Robert",
 };
 
@@ -1331,14 +1335,18 @@ function botanicalTreeName(id) {
   return BOTANICAL_TREE_NAME_OVERRIDES[id] || FAMILY_TREE_PEOPLE_BY_ID.get(id)?.name || "";
 }
 
+function botanicalTreeNodeHeight(node) {
+  return node.couple ? 58 : node.compact ? 42 : 48;
+}
+
 function botanicalTreeNode(node) {
   const name = botanicalTreeName(node.id);
   const width = node.couple
-    ? Math.max(240, Math.min(390, 70 + name.length * 11))
+    ? Math.max(250, 74 + name.length * 12)
     : node.compact
-      ? Math.max(66, Math.min(105, 28 + name.length * 8.5))
-      : Math.max(82, Math.min(144, 42 + name.length * 11));
-  const height = node.couple ? 58 : node.compact ? 42 : 48;
+      ? Math.max(82, 30 + name.length * 9)
+      : Math.max(104, 42 + name.length * 11);
+  const height = botanicalTreeNodeHeight(node);
   const x = node.x - width / 2;
   const y = node.y - height / 2;
   const classes = [
@@ -1348,31 +1356,72 @@ function botanicalTreeNode(node) {
     node.compact ? "botanical-tree__name--compact" : "",
   ].filter(Boolean).join(" ");
 
-  return `<g class="${classes}" data-tree-person="${escapeHtml(node.id)}">
+  return `<g class="${classes}" data-tree-person="${escapeHtml(node.id)}" data-tree-x="${node.x}" role="button" tabindex="0" aria-label="Focus on ${escapeHtml(name)}'s family branch" aria-pressed="false">
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="2"></rect>
     <text x="${node.x}" y="${node.y + 1}" text-anchor="middle" dominant-baseline="middle">${escapeHtml(name)}</text>
   </g>`;
 }
 
-function botanicalTreeEdge(from, to) {
-  const fromHeight = from.couple ? 58 : from.compact ? 42 : 48;
-  const toHeight = to.couple ? 58 : to.compact ? 42 : 48;
-  const startY = from.y - fromHeight / 2;
-  const endY = to.y + toHeight / 2;
-  const bendY = endY + (startY - endY) * 0.48;
-  const isTrunk = from.id.includes("ada") || from.id.includes("beuna") || to.id === "virgil-della";
+function botanicalTreeFamily(family, nodes, index) {
+  const parents = family.parents.map((id) => nodes.get(id)).filter(Boolean);
+  const children = family.children.map((id) => nodes.get(id)).filter(Boolean);
 
-  return `<path class="botanical-tree__branch${isTrunk ? " botanical-tree__branch--trunk" : ""}" d="M ${from.x} ${startY} C ${from.x} ${bendY}, ${to.x} ${bendY}, ${to.x} ${endY}" vector-effect="non-scaling-stroke"></path>`;
+  if (!parents.length || !children.length) {
+    return "";
+  }
+
+  const parentCenterX = parents.reduce((total, node) => total + node.x, 0) / parents.length;
+  const parentTopY = Math.min(...parents.map((node) => node.y - botanicalTreeNodeHeight(node) / 2));
+  const childBottomY = Math.max(...children.map((node) => node.y + botanicalTreeNodeHeight(node) / 2));
+  const busY = Math.round(childBottomY + (parentTopY - childBottomY) * 0.48);
+  const childXs = children.map((node) => node.x);
+  const familyIds = [...family.parents, ...family.children].join(" ");
+  const toneClass = family.tone ? ` botanical-tree__family--${family.tone}` : "";
+  const marriageLine = parents.length > 1
+    ? `<path class="botanical-tree__marriage" d="M ${Math.min(...parents.map((node) => node.x))} ${parents[0].y} H ${Math.max(...parents.map((node) => node.x))}" vector-effect="non-scaling-stroke"></path>`
+    : "";
+  const busPoints = [...new Set([parentCenterX, ...childXs])].sort((a, b) => a - b);
+  const horizontalBus = busPoints.slice(0, -1).map((startX, pointIndex) => {
+    const endX = busPoints[pointIndex + 1];
+    const connectedChildren = children
+      .filter((child) => {
+        const pathStart = Math.min(parentCenterX, child.x);
+        const pathEnd = Math.max(parentCenterX, child.x);
+        return startX >= pathStart && endX <= pathEnd;
+      })
+      .map((child) => child.id)
+      .join(" ");
+    return `<path class="botanical-tree__family-bus" data-tree-bus-children="${escapeHtml(connectedChildren)}" d="M ${startX} ${busY} H ${endX}" vector-effect="non-scaling-stroke"></path>`;
+  }).join("");
+  const childStems = children.map((child) =>
+    `<path class="botanical-tree__child-stem" data-tree-to="${escapeHtml(child.id)}" d="M ${child.x} ${busY} V ${child.y + botanicalTreeNodeHeight(child) / 2}" vector-effect="non-scaling-stroke"></path>`,
+  ).join("");
+
+  return `<g class="botanical-tree__family${toneClass}" data-tree-family="${escapeHtml(familyIds)}" data-tree-family-index="${index}">
+    ${marriageLine}
+    <path class="botanical-tree__family-trunk" d="M ${parentCenterX} ${parentTopY} V ${busY}" vector-effect="non-scaling-stroke"></path>
+    ${horizontalBus}
+    ${childStems}
+  </g>`;
 }
 
-function botanicalTreeSprig(x, y, rotation = 0, scale = 1) {
-  return `<g class="botanical-tree__sprig" transform="translate(${x} ${y}) rotate(${rotation}) scale(${scale})">
-    <path d="M -22 7 C -8 4, 6 -2, 24 -13"></path>
-    <ellipse cx="-12" cy="2" rx="7" ry="3.2" transform="rotate(24 -12 2)"></ellipse>
-    <ellipse cx="0" cy="-3" rx="7" ry="3.2" transform="rotate(-28 0 -3)"></ellipse>
-    <ellipse cx="12" cy="-8" rx="7" ry="3.2" transform="rotate(22 12 -8)"></ellipse>
-    <ellipse cx="21" cy="-14" rx="6" ry="3" transform="rotate(-26 21 -14)"></ellipse>
-  </g>`;
+function sizeBotanicalTreeLabels(tree) {
+  tree?.querySelectorAll(".botanical-tree__name").forEach((group) => {
+    const textElement = group.querySelector("text");
+    const rect = group.querySelector("rect");
+    const centerX = Number(group.dataset.treeX);
+    const isCouple = group.classList.contains("botanical-tree__name--couple");
+    const isCompact = group.classList.contains("botanical-tree__name--compact");
+    const minimumWidth = isCouple ? 250 : isCompact ? 82 : 104;
+    const padding = isCouple ? 44 : isCompact ? 26 : 34;
+    const measuredWidth = textElement?.getComputedTextLength?.() || 0;
+    const width = Math.max(minimumWidth, Math.ceil(measuredWidth + padding));
+
+    if (rect && Number.isFinite(centerX)) {
+      rect.setAttribute("x", String(centerX - width / 2));
+      rect.setAttribute("width", String(width));
+    }
+  });
 }
 
 function renderBotanicalFamilyTree() {
@@ -1381,24 +1430,110 @@ function renderBotanicalFamilyTree() {
   }
 
   const nodes = new Map(BOTANICAL_TREE_NODES.map((node) => [node.id, node]));
-  const edges = BOTANICAL_TREE_EDGES.map(([fromId, toId]) => botanicalTreeEdge(nodes.get(fromId), nodes.get(toId))).join("");
-  const sprigs = [
-    [700, 238, -68, 0.92], [940, 236, -62, 0.9], [1100, 236, -70, 0.9],
-    [1220, 236, -66, 0.9], [700, 520, -56, 0.95], [1080, 520, -52, 0.95],
-    [1480, 520, -58, 0.95], [2030, 520, -54, 0.95], [2400, 520, -58, 0.95],
-    [1400, 758, -4, 1.12], [210, 1146, -64, 0.82], [510, 1146, -62, 0.82],
-    [800, 1146, -66, 0.82], [1080, 1146, -64, 0.82], [1500, 1146, -62, 0.82],
-    [1860, 1146, -66, 0.82], [2220, 1146, -64, 0.82], [2545, 1146, -62, 0.82],
-    [2700, 1146, -66, 0.82], [720, 1400, 10, 1.08], [2200, 1400, -10, 1.08],
-  ].map((sprig) => botanicalTreeSprig(...sprig)).join("");
+  const families = BOTANICAL_TREE_FAMILIES.map((family, index) => botanicalTreeFamily(family, nodes, index)).join("");
 
   familyTreeBotanical.innerHTML = `<svg class="botanical-tree" viewBox="0 0 ${BOTANICAL_TREE_SIZE.width} ${BOTANICAL_TREE_SIZE.height}" role="img" aria-labelledby="botanical-tree-title botanical-tree-description" preserveAspectRatio="xMidYMin meet">
     <title id="botanical-tree-title">Hudson and Hubbard family tree</title>
-    <desc id="botanical-tree-description">A botanical family tree connecting the Hudson and Hubbard ancestors to Virgil and Della and their descendants.</desc>
-    <path class="botanical-tree__root-line" d="M 120 1580 C 650 1535, 1040 1550, 1400 1610 C 1760 1550, 2220 1535, 2680 1580" vector-effect="non-scaling-stroke"></path>
-    <g aria-hidden="true">${edges}${sprigs}</g>
+    <desc id="botanical-tree-description">A balanced, interactive family tree showing the Hudson and Hubbard families as equal branches. Select any name to focus that lineage.</desc>
+    <g aria-hidden="true">${families}</g>
     <g>${BOTANICAL_TREE_NODES.map(botanicalTreeNode).join("")}</g>
   </svg>`;
+
+  window.requestAnimationFrame(() => sizeBotanicalTreeLabels(familyTreeBotanical.querySelector(".botanical-tree")));
+  document.fonts?.ready.then(() => sizeBotanicalTreeLabels(familyTreeBotanical.querySelector(".botanical-tree")));
+}
+
+const BOTANICAL_TREE_PARENTS = new Map();
+const BOTANICAL_TREE_CHILDREN = new Map();
+BOTANICAL_TREE_EDGES.forEach(([parentId, childId]) => {
+  if (!BOTANICAL_TREE_PARENTS.has(childId)) {
+    BOTANICAL_TREE_PARENTS.set(childId, new Set());
+  }
+  if (!BOTANICAL_TREE_CHILDREN.has(parentId)) {
+    BOTANICAL_TREE_CHILDREN.set(parentId, new Set());
+  }
+  BOTANICAL_TREE_PARENTS.get(childId).add(parentId);
+  BOTANICAL_TREE_CHILDREN.get(parentId).add(childId);
+});
+
+let focusedBotanicalBranchId = "";
+
+function walkBotanicalRelations(startId, relationMap, result) {
+  relationMap.get(startId)?.forEach((relatedId) => {
+    if (result.has(relatedId)) {
+      return;
+    }
+    result.add(relatedId);
+    walkBotanicalRelations(relatedId, relationMap, result);
+  });
+}
+
+function botanicalBranchIds(personId) {
+  const branchIds = new Set([personId]);
+  walkBotanicalRelations(personId, BOTANICAL_TREE_PARENTS, branchIds);
+  walkBotanicalRelations(personId, BOTANICAL_TREE_CHILDREN, branchIds);
+
+  // Shared descendants keep both parents and both ancestral paths visible.
+  Array.from(branchIds).forEach((id) => {
+    const parents = BOTANICAL_TREE_PARENTS.get(id);
+    if (!parents || parents.size < 2) {
+      return;
+    }
+    parents.forEach((parentId) => {
+      branchIds.add(parentId);
+      walkBotanicalRelations(parentId, BOTANICAL_TREE_PARENTS, branchIds);
+    });
+  });
+
+  return branchIds;
+}
+
+function applyBotanicalBranchFocus(personId = focusedBotanicalBranchId) {
+  focusedBotanicalBranchId = personId || "";
+  const activeIds = focusedBotanicalBranchId ? botanicalBranchIds(focusedBotanicalBranchId) : null;
+  const focusedName = focusedBotanicalBranchId ? botanicalTreeName(focusedBotanicalBranchId) : "";
+
+  document.querySelectorAll(".botanical-tree").forEach((tree) => {
+    tree.classList.toggle("has-branch-focus", Boolean(activeIds));
+    tree.querySelectorAll(".botanical-tree__name").forEach((node) => {
+      const nodeId = node.dataset.treePerson;
+      const isSelected = nodeId === focusedBotanicalBranchId;
+      node.classList.toggle("is-dimmed", Boolean(activeIds) && !activeIds.has(nodeId));
+      node.classList.toggle("is-focused", isSelected);
+      node.setAttribute("aria-pressed", String(isSelected));
+    });
+
+    tree.querySelectorAll(".botanical-tree__family").forEach((family) => {
+      const familyIds = String(family.dataset.treeFamily || "").split(" ").filter(Boolean);
+      const parents = BOTANICAL_TREE_FAMILIES[Number(family.dataset.treeFamilyIndex)]?.parents || [];
+      const children = BOTANICAL_TREE_FAMILIES[Number(family.dataset.treeFamilyIndex)]?.children || [];
+      const familyIsActive = !activeIds || (
+        parents.some((id) => activeIds.has(id)) && children.some((id) => activeIds.has(id))
+      );
+      family.classList.toggle("is-dimmed", !familyIsActive || (Boolean(activeIds) && !familyIds.some((id) => activeIds.has(id))));
+      family.querySelectorAll(".botanical-tree__child-stem").forEach((stem) => {
+        stem.classList.toggle("is-dimmed", Boolean(activeIds) && !activeIds.has(stem.dataset.treeTo));
+      });
+      family.querySelectorAll(".botanical-tree__family-bus").forEach((segment) => {
+        const connectedChildren = String(segment.dataset.treeBusChildren || "").split(" ").filter(Boolean);
+        segment.classList.toggle("is-dimmed", Boolean(activeIds) && !connectedChildren.some((id) => activeIds.has(id)));
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-family-tree-focus-output]").forEach((output) => {
+    output.textContent = focusedName ? `Showing ${focusedName}'s family branch` : "Select a name to focus on one family branch.";
+  });
+  document.querySelectorAll("[data-family-tree-clear]").forEach((button) => {
+    button.hidden = !focusedBotanicalBranchId;
+  });
+}
+
+function focusBotanicalBranch(personId) {
+  if (!personId || !BOTANICAL_TREE_NODES.some((node) => node.id === personId)) {
+    return;
+  }
+  applyBotanicalBranchFocus(personId);
 }
 
 let familyTreeViewerTrigger = null;
@@ -1419,7 +1554,7 @@ function applyFamilyTreeViewerZoom(viewer, fit = false) {
       Math.max(280, (stage.clientHeight - 24) * (BOTANICAL_TREE_SIZE.width / BOTANICAL_TREE_SIZE.height)),
     );
     svg.style.width = `${Math.round(fitWidth)}px`;
-    output.textContent = "Fit";
+    output.textContent = "Auto";
     return;
   }
 
@@ -1460,8 +1595,12 @@ function openFamilyTreeViewer(trigger) {
   viewer.setAttribute("aria-labelledby", "family-tree-viewer-title");
   viewer.innerHTML = `
     <header class="family-tree-viewer__toolbar">
-      <h2 id="family-tree-viewer-title">Hudson &amp; Hubbard Family Tree</h2>
+      <div>
+        <h2 id="family-tree-viewer-title">Hudson &amp; Hubbard Family Tree</h2>
+        <p data-family-tree-focus-output>Select a name to focus on one family branch.</p>
+      </div>
       <div class="family-tree-viewer__controls" aria-label="Family tree viewing controls">
+        <button type="button" data-family-tree-clear hidden>Show all</button>
         <button type="button" data-family-tree-zoom="out" aria-label="Zoom out">−</button>
         <button type="button" data-family-tree-fit>Fit</button>
         <span data-family-tree-zoom-output aria-live="polite">100%</span>
@@ -1479,6 +1618,8 @@ function openFamilyTreeViewer(trigger) {
   viewer.querySelector("[data-family-tree-viewer-stage]").append(expandedTree);
   document.body.append(viewer);
   document.body.classList.add("has-family-tree-viewer");
+  sizeBotanicalTreeLabels(expandedTree);
+  applyBotanicalBranchFocus();
 
   window.requestAnimationFrame(() => {
     applyFamilyTreeViewerZoom(viewer);
@@ -1505,19 +1646,35 @@ function setFamilyTreeMode(mode, focusSelected = false) {
 
   if (mode === "tree" && familyTreeBotanical) {
     window.requestAnimationFrame(() => {
+      sizeBotanicalTreeLabels(familyTreeBotanical.querySelector(".botanical-tree"));
       familyTreeBotanical.scrollLeft = Math.max(0, (familyTreeBotanical.scrollWidth - familyTreeBotanical.clientWidth) / 2);
     });
   }
 }
 
 renderBotanicalFamilyTree();
+applyBotanicalBranchFocus();
 
 familyTreeExpandButtons.forEach((button) => {
   button.addEventListener("click", () => openFamilyTreeViewer(button));
 });
 
-familyTreeBotanical?.addEventListener("click", () => openFamilyTreeViewer(familyTreeBotanical));
+familyTreeBotanical?.addEventListener("click", (event) => {
+  const person = event.target.closest("[data-tree-person]");
+  if (person) {
+    focusBotanicalBranch(person.dataset.treePerson);
+    return;
+  }
+  openFamilyTreeViewer(familyTreeBotanical);
+});
 familyTreeBotanical?.addEventListener("keydown", (event) => {
+  const person = event.target.closest("[data-tree-person]");
+  if (person && (event.key === "Enter" || event.key === " ")) {
+    event.preventDefault();
+    event.stopPropagation();
+    focusBotanicalBranch(person.dataset.treePerson);
+    return;
+  }
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     openFamilyTreeViewer(familyTreeBotanical);
@@ -1527,7 +1684,18 @@ familyTreeBotanical?.addEventListener("keydown", (event) => {
 document.addEventListener("click", (event) => {
   const viewer = event.target.closest("[data-family-tree-viewer]");
 
+  if (event.target.closest("[data-family-tree-clear]")) {
+    applyBotanicalBranchFocus("");
+    return;
+  }
+
   if (!viewer) {
+    return;
+  }
+
+  const person = event.target.closest("[data-tree-person]");
+  if (person) {
+    focusBotanicalBranch(person.dataset.treePerson);
     return;
   }
 
@@ -1552,6 +1720,12 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  const person = event.target.closest("[data-tree-person]");
+  if (person && (event.key === "Enter" || event.key === " ")) {
+    event.preventDefault();
+    focusBotanicalBranch(person.dataset.treePerson);
+    return;
+  }
   if (event.key === "Escape" && document.querySelector("[data-family-tree-viewer]")) {
     closeFamilyTreeViewer();
   }
