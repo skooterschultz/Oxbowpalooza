@@ -1318,9 +1318,9 @@ function familyTreePeopleById() {
 
 const FAMILY_TREE_PEOPLE_BY_ID = familyTreePeopleById();
 const BOTANICAL_TREE_NAME_OVERRIDES = {
-  "harvey-ada": "Harvey & Ada",
-  "sherman-beuna": "Sherman & Beuna",
-  "virgil-della": "Virgil & Della",
+  "harvey-ada": "Harvey & Ada Hudson",
+  "sherman-beuna": "Sherman & Beuna Hubbard",
+  "virgil-della": "Virgil Hudson & Della Hubbard",
   "robert-joe": "Robert",
 };
 
@@ -1331,7 +1331,7 @@ function botanicalTreeName(id) {
 function botanicalTreeNode(node) {
   const name = botanicalTreeName(node.id);
   const width = node.couple
-    ? 220
+    ? Math.max(240, Math.min(390, 70 + name.length * 11))
     : node.compact
       ? Math.max(66, Math.min(105, 28 + name.length * 8.5))
       : Math.max(82, Math.min(144, 42 + name.length * 11));
