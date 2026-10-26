@@ -2207,7 +2207,7 @@ dt {
 .botanical-tree {
   display: block;
   width: 100%;
-  min-width: 70rem;
+  min-width: 96rem;
   height: auto;
   background: #f7efd9;
 }

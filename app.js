@@ -167,7 +167,8 @@ const FAMILY_TREE_VIEWS = {
       {
         label: "Their children",
         people: [
-          { id: "betty", name: "Betty", meta: "Married Floyd", detail: "Betty and Floyd's children are Donnie, Elaine, and Sherry.", children: [
+          { id: "floyd", name: "Floyd", meta: "Hudson sibling", detail: "Floyd is a son of Harvey and Ada." },
+          { id: "betty", name: "Betty", meta: "Hudson sibling", detail: "Betty's children are Donnie, Elaine, and Sherry.", children: [
             { id: "donnie", name: "Donnie" }, { id: "elaine", name: "Elaine" }, { id: "sherry", name: "Sherry" },
           ] },
           { id: "clarence", name: "Clarence", meta: "1922-2020", detail: "Clarence married Hazel Mae. Their children are Charles and Caroline.", children: [
@@ -175,9 +176,15 @@ const FAMILY_TREE_VIEWS = {
           ] },
           { id: "mary", name: "Mary", meta: "Hudson sibling", detail: "Mary is one of Harvey and Ada's children." },
           { id: "virgil", name: "Virgil", meta: "1925-1990", detail: "Virgil married Della Hubbard. Their children are Diana, Brenda, Mike, Chris, David, and Laura." },
-          { id: "jane", name: "Jane", meta: "Married Bill", detail: "Jane and Bill's child is Billie.", children: [{ id: "billie-jane", name: "Billie" }] },
-          { id: "billie-rae", name: "Billie Rae", meta: "Hudson sibling", detail: "Billie Rae is one of Harvey and Ada's children." },
-          { id: "richard", name: "Richard", meta: "1927-2019", detail: "Richard's son is Rick.", children: [{ id: "rick", name: "Rick" }] },
+          { id: "jane", name: "Jane", meta: "Married Bill", detail: "Jane and Bill's children are Billie Jean, Bobbie Joe, Sue, and Kim.", children: [
+            { id: "billie-jean", name: "Billie Jean" }, { id: "bobbie-joe", name: "Bobbie Joe" },
+            { id: "sue", name: "Sue" }, { id: "kim", name: "Kim" },
+          ] },
+          { id: "billie-rae", name: "Billie Rae", meta: "Hudson sibling", detail: "Billie Rae's children are Rick and Steve.", children: [
+            { id: "rick", name: "Rick" }, { id: "steve", name: "Steve" },
+          ] },
+          { id: "richard", name: "Richard", meta: "1927-2019", detail: "Richard's son is Scott.", children: [{ id: "scott", name: "Scott" }] },
+          { id: "carl", name: "Carl", meta: "Hudson sibling", detail: "Carl is a son of Harvey and Ada." },
         ],
       },
     ],
@@ -195,16 +202,19 @@ const FAMILY_TREE_VIEWS = {
       {
         label: "Their children",
         people: [
-          { id: "kenneth", name: "Kenneth", meta: "Married Ginger", detail: "Kenneth and Ginger's children are Gary, Gloria, Sheila, and Iris.", children: [
-            { id: "gary", name: "Gary" }, { id: "gloria", name: "Gloria" }, { id: "sheila", name: "Sheila" }, { id: "iris", name: "Iris" },
+          { id: "kenneth", name: "Kenneth", meta: "Married Ginger", detail: "Kenneth and Ginger's children are Gary, Gloria, Sheila, Iris, Gayla, and Sherman.", children: [
+            { id: "gary", name: "Gary" }, { id: "gloria", name: "Gloria" }, { id: "sheila", name: "Sheila" },
+            { id: "iris", name: "Iris" }, { id: "gayla", name: "Gayla" }, { id: "sherman", name: "Sherman" },
           ] },
           { id: "jackie", name: "Jackie", meta: "Married Bob", detail: "Jackie and Bob's children are Robbie, Billie, Patty, Linda, and Lou Ann.", children: [
             { id: "robbie", name: "Robbie" }, { id: "billie-jackie", name: "Billie" }, { id: "patty", name: "Patty" }, { id: "linda", name: "Linda" }, { id: "lou-ann", name: "Lou Ann" },
           ] },
           { id: "della", name: "Della", meta: "Married Virgil Hudson", detail: "Della and Virgil connect the Hubbard and Hudson branches. Their children are Diana, Brenda, Mike, Chris, David, and Laura." },
-          { id: "freddie", name: "Freddie", meta: "Married Patty", detail: "Freddie and Patty's child is Tammy.", children: [{ id: "tammy", name: "Tammy" }] },
-          { id: "claudine", name: "Claudine", meta: "Hubbard sibling", detail: "Claudine's children are Margaret and Jeanie.", children: [
-            { id: "margaret", name: "Margaret" }, { id: "jeanie", name: "Jeanie" },
+          { id: "freddie", name: "Freddie", meta: "Married Patty", detail: "Freddie and Patty's children are Tammy and Brent.", children: [
+            { id: "tammy", name: "Tammy" }, { id: "brent", name: "Brent" },
+          ] },
+          { id: "claudine", name: "Claudine", meta: "Hubbard sibling", detail: "Claudine's children are Margaret, Jeannie, and Bradley.", children: [
+            { id: "margaret", name: "Margaret" }, { id: "jeannie", name: "Jeannie" }, { id: "bradley", name: "Bradley" },
           ] },
         ],
       },
@@ -212,45 +222,52 @@ const FAMILY_TREE_VIEWS = {
   },
 };
 
+const BOTANICAL_TREE_SIZE = { width: 2800, height: 1630 };
 const BOTANICAL_TREE_NODES = [
-  { id: "trent", x: 500, y: 110 }, { id: "skooter", x: 640, y: 110 },
-  { id: "robbey", x: 750, y: 110 }, { id: "bella", x: 860, y: 110 },
-  { id: "jw", x: 970, y: 110 }, { id: "abby-j", x: 1060, y: 110 },
-  { id: "brian", x: 410, y: 360 }, { id: "todd", x: 500, y: 360 },
-  { id: "kimberly", x: 590, y: 360 }, { id: "ladonna", x: 700, y: 360 },
-  { id: "frank", x: 810, y: 360 }, { id: "robert-joe", x: 920, y: 360 },
-  { id: "jeremy", x: 1040, y: 360 }, { id: "jessica", x: 1140, y: 360 },
-  { id: "bethany", x: 1320, y: 360 }, { id: "seth", x: 1420, y: 360 },
-  { id: "christine", x: 1620, y: 360 },
-  { id: "diana", x: 500, y: 650, featured: true },
-  { id: "brenda", x: 810, y: 650, featured: true },
-  { id: "mike", x: 1090, y: 650, featured: true },
-  { id: "chris", x: 1200, y: 650, featured: true },
-  { id: "david", x: 1370, y: 650, featured: true },
-  { id: "laura", x: 1620, y: 650, featured: true },
-  { id: "virgil-della", x: 1040, y: 850, couple: true },
-  { id: "donnie", x: 42, y: 1030, compact: true }, { id: "elaine", x: 136, y: 1030, compact: true },
-  { id: "sherry", x: 230, y: 1030, compact: true }, { id: "charles", x: 324, y: 1030, compact: true },
-  { id: "caroline", x: 418, y: 1030, compact: true }, { id: "billie-jane", x: 512, y: 1030, compact: true },
-  { id: "rick", x: 700, y: 1030, compact: true }, { id: "gary", x: 790, y: 1030, compact: true },
-  { id: "gloria", x: 888, y: 1030, compact: true }, { id: "sheila", x: 986, y: 1030, compact: true },
-  { id: "iris", x: 1084, y: 1030, compact: true }, { id: "robbie", x: 1182, y: 1030, compact: true },
-  { id: "billie-jackie", x: 1280, y: 1030, compact: true }, { id: "patty", x: 1378, y: 1030, compact: true },
-  { id: "linda", x: 1476, y: 1030, compact: true }, { id: "lou-ann", x: 1574, y: 1030, compact: true },
-  { id: "tammy", x: 1672, y: 1030, compact: true }, { id: "margaret", x: 1768, y: 1030, compact: true },
-  { id: "jeanie", x: 1812, y: 1120, compact: true },
-  { id: "betty", x: 136, y: 1240 }, { id: "clarence", x: 371, y: 1240 },
-  { id: "mary", x: 500, y: 1240 }, { id: "jane", x: 610, y: 1240 },
-  { id: "billie-rae", x: 720, y: 1240 }, { id: "richard", x: 830, y: 1240 },
-  { id: "kenneth", x: 936, y: 1240 }, { id: "jackie", x: 1378, y: 1240 },
-  { id: "freddie", x: 1672, y: 1240 }, { id: "claudine", x: 1790, y: 1240 },
-  { id: "harvey-ada", x: 430, y: 1490, couple: true },
-  { id: "sherman-beuna", x: 1430, y: 1490, couple: true },
+  { id: "trent", x: 820, y: 110 }, { id: "skooter", x: 940, y: 110 },
+  { id: "robbey", x: 1020, y: 110 }, { id: "bella", x: 1100, y: 110 },
+  { id: "jw", x: 1190, y: 110 }, { id: "abby-j", x: 1270, y: 110 },
+  { id: "brian", x: 580, y: 360 }, { id: "todd", x: 700, y: 360 },
+  { id: "kimberly", x: 820, y: 360 }, { id: "ladonna", x: 980, y: 360 },
+  { id: "frank", x: 1100, y: 360 }, { id: "robert-joe", x: 1220, y: 360 },
+  { id: "jeremy", x: 1420, y: 360 }, { id: "jessica", x: 1540, y: 360 },
+  { id: "bethany", x: 1950, y: 360 }, { id: "seth", x: 2070, y: 360 },
+  { id: "christine", x: 2400, y: 360 },
+  { id: "diana", x: 700, y: 650, featured: true },
+  { id: "brenda", x: 1080, y: 650, featured: true },
+  { id: "mike", x: 1480, y: 650, featured: true },
+  { id: "chris", x: 1710, y: 650, featured: true },
+  { id: "david", x: 2030, y: 650, featured: true },
+  { id: "laura", x: 2400, y: 650, featured: true },
+  { id: "virgil-della", x: 1400, y: 850, couple: true },
+  { id: "donnie", x: 210, y: 1040, compact: true }, { id: "elaine", x: 310, y: 1040, compact: true },
+  { id: "sherry", x: 410, y: 1040, compact: true }, { id: "charles", x: 510, y: 1040, compact: true },
+  { id: "caroline", x: 610, y: 1040, compact: true }, { id: "billie-jean", x: 710, y: 1040, compact: true },
+  { id: "bobbie-joe", x: 810, y: 1040, compact: true }, { id: "sue", x: 900, y: 1040, compact: true },
+  { id: "kim", x: 990, y: 1040, compact: true }, { id: "rick", x: 1080, y: 1040, compact: true },
+  { id: "steve", x: 1170, y: 1040, compact: true }, { id: "scott", x: 1260, y: 1040, compact: true },
+  { id: "gary", x: 1500, y: 1040, compact: true }, { id: "gloria", x: 1590, y: 1040, compact: true },
+  { id: "sheila", x: 1680, y: 1040, compact: true }, { id: "iris", x: 1770, y: 1040, compact: true },
+  { id: "gayla", x: 1860, y: 1040, compact: true }, { id: "sherman", x: 1950, y: 1040, compact: true },
+  { id: "robbie", x: 2040, y: 1040, compact: true }, { id: "billie-jackie", x: 2130, y: 1040, compact: true },
+  { id: "patty", x: 2220, y: 1040, compact: true }, { id: "linda", x: 2310, y: 1040, compact: true },
+  { id: "lou-ann", x: 2400, y: 1040, compact: true }, { id: "tammy", x: 2475, y: 1040, compact: true },
+  { id: "brent", x: 2545, y: 1040, compact: true }, { id: "margaret", x: 2625, y: 1040, compact: true },
+  { id: "jeannie", x: 2700, y: 1120, compact: true }, { id: "bradley", x: 2745, y: 1040, compact: true },
+  { id: "floyd", x: 120, y: 1260 }, { id: "betty", x: 280, y: 1260 },
+  { id: "clarence", x: 460, y: 1260 }, { id: "mary", x: 630, y: 1260 },
+  { id: "jane", x: 800, y: 1260 }, { id: "billie-rae", x: 970, y: 1260 },
+  { id: "richard", x: 1140, y: 1260 }, { id: "carl", x: 1280, y: 1260 },
+  { id: "kenneth", x: 1710, y: 1260 }, { id: "jackie", x: 2200, y: 1260 },
+  { id: "freddie", x: 2510, y: 1260 }, { id: "claudine", x: 2700, y: 1260 },
+  { id: "harvey-ada", x: 720, y: 1510, couple: true },
+  { id: "sherman-beuna", x: 2200, y: 1510, couple: true },
 ];
 
 const BOTANICAL_TREE_EDGES = [
-  ["harvey-ada", "betty"], ["harvey-ada", "clarence"], ["harvey-ada", "mary"],
-  ["harvey-ada", "jane"], ["harvey-ada", "billie-rae"], ["harvey-ada", "richard"],
+  ["harvey-ada", "floyd"], ["harvey-ada", "betty"], ["harvey-ada", "clarence"],
+  ["harvey-ada", "mary"], ["harvey-ada", "jane"], ["harvey-ada", "billie-rae"],
+  ["harvey-ada", "richard"], ["harvey-ada", "carl"],
   ["harvey-ada", "virgil-della"], ["sherman-beuna", "kenneth"], ["sherman-beuna", "jackie"],
   ["sherman-beuna", "freddie"], ["sherman-beuna", "claudine"], ["sherman-beuna", "virgil-della"],
   ["virgil-della", "diana"], ["virgil-della", "brenda"], ["virgil-della", "mike"],
@@ -262,12 +279,14 @@ const BOTANICAL_TREE_EDGES = [
   ["ladonna", "skooter"], ["ladonna", "robbey"], ["frank", "bella"],
   ["robert-joe", "jw"], ["robert-joe", "abby-j"],
   ["betty", "donnie"], ["betty", "elaine"], ["betty", "sherry"],
-  ["clarence", "charles"], ["clarence", "caroline"], ["jane", "billie-jane"],
-  ["richard", "rick"], ["kenneth", "gary"], ["kenneth", "gloria"],
-  ["kenneth", "sheila"], ["kenneth", "iris"], ["jackie", "robbie"],
+  ["clarence", "charles"], ["clarence", "caroline"], ["jane", "billie-jean"],
+  ["jane", "bobbie-joe"], ["jane", "sue"], ["jane", "kim"],
+  ["billie-rae", "rick"], ["billie-rae", "steve"], ["richard", "scott"],
+  ["kenneth", "gary"], ["kenneth", "gloria"], ["kenneth", "sheila"],
+  ["kenneth", "iris"], ["kenneth", "gayla"], ["kenneth", "sherman"], ["jackie", "robbie"],
   ["jackie", "billie-jackie"], ["jackie", "patty"], ["jackie", "linda"],
-  ["jackie", "lou-ann"], ["freddie", "tammy"], ["claudine", "margaret"],
-  ["claudine", "jeanie"],
+  ["jackie", "lou-ann"], ["freddie", "tammy"], ["freddie", "brent"],
+  ["claudine", "margaret"], ["claudine", "jeannie"], ["claudine", "bradley"],
 ];
 
 function setFormStatus(message) {
@@ -1361,19 +1380,19 @@ function renderBotanicalFamilyTree() {
   const nodes = new Map(BOTANICAL_TREE_NODES.map((node) => [node.id, node]));
   const edges = BOTANICAL_TREE_EDGES.map(([fromId, toId]) => botanicalTreeEdge(nodes.get(fromId), nodes.get(toId))).join("");
   const sprigs = [
-    [500, 238, -68, 0.92], [695, 236, -62, 0.9], [810, 236, -70, 0.9],
-    [920, 236, -66, 0.9], [1010, 236, -64, 0.88], [500, 520, -56, 0.95],
-    [810, 520, -52, 0.95], [1090, 520, -58, 0.95], [1370, 520, -54, 0.95],
-    [1620, 520, -58, 0.95], [1040, 758, -4, 1.12], [94, 1136, -64, 0.82],
-    [254, 1136, -62, 0.82], [490, 1136, -66, 0.82], [770, 1136, -64, 0.82],
-    [1120, 1136, -62, 0.82], [1440, 1136, -66, 0.82], [1650, 1136, -64, 0.82],
-    [1750, 1136, -62, 0.82], [430, 1380, 10, 1.08], [1430, 1380, -10, 1.08],
+    [700, 238, -68, 0.92], [940, 236, -62, 0.9], [1100, 236, -70, 0.9],
+    [1220, 236, -66, 0.9], [700, 520, -56, 0.95], [1080, 520, -52, 0.95],
+    [1480, 520, -58, 0.95], [2030, 520, -54, 0.95], [2400, 520, -58, 0.95],
+    [1400, 758, -4, 1.12], [210, 1146, -64, 0.82], [510, 1146, -62, 0.82],
+    [800, 1146, -66, 0.82], [1080, 1146, -64, 0.82], [1500, 1146, -62, 0.82],
+    [1860, 1146, -66, 0.82], [2220, 1146, -64, 0.82], [2545, 1146, -62, 0.82],
+    [2700, 1146, -66, 0.82], [720, 1400, 10, 1.08], [2200, 1400, -10, 1.08],
   ].map((sprig) => botanicalTreeSprig(...sprig)).join("");
 
-  familyTreeBotanical.innerHTML = `<svg class="botanical-tree" viewBox="0 0 1850 1600" role="img" aria-labelledby="botanical-tree-title botanical-tree-description" preserveAspectRatio="xMidYMin meet">
+  familyTreeBotanical.innerHTML = `<svg class="botanical-tree" viewBox="0 0 ${BOTANICAL_TREE_SIZE.width} ${BOTANICAL_TREE_SIZE.height}" role="img" aria-labelledby="botanical-tree-title botanical-tree-description" preserveAspectRatio="xMidYMin meet">
     <title id="botanical-tree-title">Hudson and Hubbard family tree</title>
     <desc id="botanical-tree-description">A botanical family tree connecting the Hudson and Hubbard ancestors to Virgil and Della and their descendants.</desc>
-    <path class="botanical-tree__root-line" d="M 128 1550 C 390 1508, 650 1526, 930 1580 C 1210 1526, 1510 1508, 1790 1550" vector-effect="non-scaling-stroke"></path>
+    <path class="botanical-tree__root-line" d="M 120 1580 C 650 1535, 1040 1550, 1400 1610 C 1760 1550, 2220 1535, 2680 1580" vector-effect="non-scaling-stroke"></path>
     <g aria-hidden="true">${edges}${sprigs}</g>
     <g>${BOTANICAL_TREE_NODES.map(botanicalTreeNode).join("")}</g>
   </svg>`;
@@ -1394,7 +1413,7 @@ function applyFamilyTreeViewerZoom(viewer, fit = false) {
   if (fit) {
     const fitWidth = Math.min(
       Math.max(280, stage.clientWidth - 24),
-      Math.max(280, (stage.clientHeight - 24) * (1850 / 1600)),
+      Math.max(280, (stage.clientHeight - 24) * (BOTANICAL_TREE_SIZE.width / BOTANICAL_TREE_SIZE.height)),
     );
     svg.style.width = `${Math.round(fitWidth)}px`;
     output.textContent = "Fit";
@@ -1402,7 +1421,7 @@ function applyFamilyTreeViewerZoom(viewer, fit = false) {
   }
 
   const stageWidth = Math.max(320, stage.clientWidth - 24);
-  const readableWidth = Math.max(stageWidth, 1040);
+  const readableWidth = Math.max(stageWidth, 1900);
   svg.style.width = `${Math.round(readableWidth * familyTreeViewerZoom)}px`;
   output.textContent = `${Math.round(familyTreeViewerZoom * 100)}%`;
 }
