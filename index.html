@@ -30,7 +30,7 @@
       rel="stylesheet"
     />
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r30-balanced-branches" />
+    <link rel="stylesheet" href="./styles.css?v=2027-reunion-r31-rsvp-requirements" />
   </head>
   <body>
     <main>
@@ -506,17 +506,17 @@
               <input name="nickname" placeholder="Optional, but encouraged" />
             </label>
             <label>
-              Email address(es)
-              <input name="email" type="email" multiple autocomplete="email" placeholder="name@example.com, another@example.com" required />
-              <small>Separate multiple addresses with commas.</small>
+              <span class="field-label">Email address(es) <small class="field-optional">Optional</small></span>
+              <input name="email" type="email" multiple autocomplete="email" placeholder="name@example.com, another@example.com" />
+              <small>Add one if you want to update this RSVP by email later. Separate multiple addresses with commas.</small>
             </label>
             <label>
-              Phone number
+              <span class="field-label">Phone number <small class="field-required">Required</small></span>
               <input name="phone" type="tel" autocomplete="tel" placeholder="(417) 555-0123" required />
             </label>
             <label>
-              How many people are in your party total?
-              <input name="partyTotal" type="number" inputmode="numeric" min="1" max="50" step="1" value="1" required />
+              <span class="field-label">How many people are in your party total? <small class="field-required">Required</small></span>
+              <input name="partyTotal" type="number" inputmode="numeric" min="1" max="50" step="1" placeholder="1" required />
               <small>Include yourself and everyone covered by this RSVP.</small>
             </label>
             <label>
@@ -808,6 +808,6 @@
     </footer>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.11.0/mapbox-gl.js"></script>
-    <script src="./app.js?v=2027-reunion-r30-balanced-branches"></script>
+    <script src="./app.js?v=2027-reunion-r31-rsvp-requirements"></script>
   </body>
 </html>

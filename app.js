@@ -2115,12 +2115,6 @@ if (travelForm) {
     payload.daysAttending = daysAttending.join(", ");
     payload.heightInches = (Number(payload.heightFeet) || 0) * 12 + (Number(payload.heightInches) || 0);
 
-    if (!String(payload.email || "").trim()) {
-      setFormStatus("Add at least one email address so we can save or update your RSVP.");
-      travelForm.elements.email?.focus();
-      return;
-    }
-
     if (!String(payload.phone || "").trim()) {
       setFormStatus("Add a phone number for your party.");
       travelForm.elements.phone?.focus();

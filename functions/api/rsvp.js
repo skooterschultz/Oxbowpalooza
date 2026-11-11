@@ -60,6 +60,10 @@ function normalizeEmails(value) {
   return [...emailSet(value)].join(", ");
 }
 
+function phoneDigits(value) {
+  return clean(value).replace(/\D/g, "");
+}
+
 async function syncToGoogleSheet(env, entry) {
   if (!env.GOOGLE_SHEET_WEB_APP_URL || !env.SHEET_SYNC_SECRET) {
     return { configured: false, synced: false };
@@ -100,17 +104,26 @@ async function syncToGoogleSheet(env, entry) {
   }
 }
 
-async function findExistingByEmail(env, email) {
+async function findExistingByContact(env, email, phone) {
   const incoming = emailSet(email);
-  if (!incoming.size) {
-    return null;
+  if (incoming.size) {
+    const { results } = await env.DB.prepare(
+      "SELECT id, email, phone FROM rsvps WHERE email IS NOT NULL AND trim(email) <> '' ORDER BY created_at DESC LIMIT 500"
+    ).all();
+    const emailMatch = (results || []).find((row) => [...emailSet(row.email)].some((item) => incoming.has(item)));
+    if (emailMatch) {
+      return emailMatch;
+    }
   }
 
+  const incomingPhone = phoneDigits(phone);
+  if (incomingPhone.length < 7) {
+    return null;
+  }
   const { results } = await env.DB.prepare(
-    "SELECT id, email FROM rsvps WHERE email IS NOT NULL AND trim(email) <> '' ORDER BY created_at DESC LIMIT 500"
+    "SELECT id, email, phone FROM rsvps WHERE phone IS NOT NULL AND trim(phone) <> '' ORDER BY created_at DESC LIMIT 500"
   ).all();
-
-  return (results || []).find((row) => [...emailSet(row.email)].some((item) => incoming.has(item))) || null;
+  return (results || []).find((row) => phoneDigits(row.phone) === incomingPhone) || null;
 }
 
 function geocodeQuery(address, city) {
@@ -408,10 +421,6 @@ async function createEntry(request, env) {
     return json({ ok: false, error: "Name is required." }, 400);
   }
 
-  if (!email) {
-    return json({ ok: false, error: "At least one email address is required." }, 400);
-  }
-
   if (!phone) {
     return json({ ok: false, error: "A phone number is required." }, 400);
   }
@@ -453,7 +462,8 @@ async function createEntry(request, env) {
     columns.has("flight_departure_time") &&
     columns.has("flight_notes") &&
     columns.has("arrival_airport");
-  const existing = await findExistingByEmail(env, email);
+  const existing = await findExistingByContact(env, email, phone);
+  const savedEmail = email || clean(existing?.email);
   const wasUpdated = Boolean(existing?.id);
   let savedId = existing?.id || null;
 
@@ -499,7 +509,7 @@ async function createEntry(request, env) {
       .bind(
         name,
         clean(body.nickname),
-        email,
+        savedEmail,
         phone,
         partyTotal,
         city,
@@ -562,7 +572,7 @@ async function createEntry(request, env) {
     .bind(
       name,
       clean(body.nickname),
-      email,
+      savedEmail,
       phone,
       partyTotal,
       city,

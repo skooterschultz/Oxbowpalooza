@@ -1495,6 +1495,27 @@ dt {
   text-transform: uppercase;
 }
 
+.field-label {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.55rem;
+}
+
+.field-label small {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.field-required {
+  color: var(--rust);
+}
+
+.field-optional {
+  color: var(--pine);
+}
+
 .days-field {
   margin: 0;
   padding: 0;

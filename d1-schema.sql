@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS rsvps (
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   name TEXT NOT NULL,
   nickname TEXT,
-  email TEXT NOT NULL,
+  email TEXT,
   phone TEXT NOT NULL,
   party_total INTEGER NOT NULL DEFAULT 1,
   city TEXT,
